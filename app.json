@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "CoFounder",
+    "slug": "cofounder-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": { "resizeMode": "contain", "backgroundColor": "#0B0B0F" },
+    "assetBundlePatterns": ["**/*"],
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.cofounder.app" },
+    "android": { "package": "com.cofounder.app" },
+    "web": { "bundler": "metro" }
+  }
+}
