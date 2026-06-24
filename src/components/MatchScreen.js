@@ -1,7 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
-export default function MatchScreen({ profile, onSchedule, onKeepSwiping }) {
+export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwiping }) {
+  const myInitials = myProfile?.name
+    ? myProfile.name.split(' ').map((n) => n[0]).join('')
+    : 'YOU';
   return (
     <View style={styles.overlay}>
       <Text style={styles.title}>It's a Match!</Text>
@@ -11,7 +14,7 @@ export default function MatchScreen({ profile, onSchedule, onKeepSwiping }) {
 
       <View style={styles.avatars}>
         <View style={[styles.avatar, { backgroundColor: '#6C5CE7' }]}>
-          <Text style={styles.avatarInitials}>YOU</Text>
+          <Text style={styles.avatarInitials}>{myInitials}</Text>
         </View>
         <View style={[styles.avatar, styles.avatarOverlap, { backgroundColor: '#00B894' }]}>
           <Text style={styles.avatarInitials}>

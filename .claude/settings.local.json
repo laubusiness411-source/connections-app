@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(git --version)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git commit *)",
+      "Bash(npx expo *)",
+      "Bash(git add *)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "PowerShell($gh = Get-Command gh -ErrorAction SilentlyContinue; if \\($gh\\) { \"gh found: $\\($gh.Source\\)\"; gh auth status } else { \"gh NOT installed\" })"
     ]
   }
 }

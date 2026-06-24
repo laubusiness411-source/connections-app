@@ -5,7 +5,7 @@ import SwipeCard from '../components/SwipeCard';
 import MatchScreen from '../components/MatchScreen';
 import { PROFILES } from '../data/profiles';
 
-export default function SwipeScreen() {
+export default function SwipeScreen({ myProfile }) {
   const [index, setIndex] = useState(0);
   const [match, setMatch] = useState(null);
 
@@ -74,6 +74,7 @@ export default function SwipeScreen() {
       {match && (
         <MatchScreen
           profile={match}
+          myProfile={myProfile}
           onSchedule={() => setMatch(null)}
           onKeepSwiping={() => setMatch(null)}
         />
