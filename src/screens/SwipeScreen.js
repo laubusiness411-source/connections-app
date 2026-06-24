@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SwipeCard from '../components/SwipeCard';
@@ -11,7 +11,16 @@ export default function SwipeScreen({ myProfile }) {
   const [match, setMatch] = useState(null);
   const [scheduling, setScheduling] = useState(null);
 
+  // Guards against a second swipe firing before the deck re-renders, which
+  // could skip a profile or act on a stale card (e.g. rapid button taps).
+  const lockRef = useRef(false);
+  useEffect(() => {
+    lockRef.current = false;
+  }, [index]);
+
   const handleSwipe = useCallback((direction, profile) => {
+    if (lockRef.current || !profile) return;
+    lockRef.current = true;
     // Match = you swiped right AND they already liked you
     if (direction === 'right' && profile.likesYou) {
       setMatch(profile);
