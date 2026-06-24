@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,6 +10,13 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+// Grid geometry (kept in sync with styles below) for drag hit-testing.
+const GUTTER_W = 58;
+const CELL_H = 44;
+const ROW_GAP = 6;
+const ROW_STRIDE = CELL_H + ROW_GAP;
 
 // when2meet-style availability: next 7 days x 4 time-of-day blocks.
 // The user taps the blocks they're free; we send those options to the match.
@@ -55,15 +62,60 @@ export default function SchedulingScreen({ profile, onClose }) {
   const [note, setNote] = useState('');
   const [sent, setSent] = useState(false);
 
-  const toggle = (dayKey, blockIdx) => {
-    const key = `${dayKey}|${blockIdx}`;
+  // Refs let the drag callbacks read fresh state without stale closures.
+  const selectedRef = useRef(selected);
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
+  const gridWidthRef = useRef(0);
+  const paintOnRef = useRef(true); // whether the active drag is filling or erasing
+
+  const setKey = (key, on) => {
     setSelected((prev) => {
       const next = { ...prev };
-      if (next[key]) delete next[key];
-      else next[key] = true;
+      if (on) next[key] = true;
+      else delete next[key];
       return next;
     });
   };
+
+  const toggle = (dayKey, blockIdx) => {
+    const key = `${dayKey}|${blockIdx}`;
+    setKey(key, !selectedRef.current[key]);
+  };
+
+  // Map a touch point (relative to the grid wrapper) to a day/block cell.
+  const hitTest = (x, y) => {
+    const w = gridWidthRef.current;
+    if (!w || x < GUTTER_W) return null;
+    const colW = (w - GUTTER_W) / TIME_BLOCKS.length;
+    const col = Math.floor((x - GUTTER_W) / colW);
+    const row = Math.floor(y / ROW_STRIDE);
+    if (col < 0 || col >= TIME_BLOCKS.length) return null;
+    if (row < 0 || row >= days.length) return null;
+    return `${days[row].key}|${col}`;
+  };
+
+  const startPaint = (x, y) => {
+    const key = hitTest(x, y);
+    if (!key) return;
+    paintOnRef.current = !selectedRef.current[key];
+    setKey(key, paintOnRef.current);
+  };
+
+  const movePaint = (x, y) => {
+    const key = hitTest(x, y);
+    if (key) setKey(key, paintOnRef.current);
+  };
+
+  // Long-press to start (so quick vertical drags still scroll the page),
+  // then drag across cells to paint or erase availability. These callbacks
+  // run on the JS thread (no 'worklet'), so they touch React state directly.
+  const dragGesture = Gesture.Pan()
+    .activateAfterLongPress(180)
+    .runOnJS(true)
+    .onStart((e) => startPaint(e.x, e.y))
+    .onUpdate((e) => movePaint(e.x, e.y));
 
   const count = Object.keys(selected).length;
 
@@ -123,29 +175,37 @@ export default function SchedulingScreen({ profile, onClose }) {
             ))}
           </View>
 
-          {days.map((day) => (
-            <View key={day.key} style={styles.gridRow}>
-              <View style={styles.dayGutter}>
-                <Text style={styles.dayWeekday}>{day.weekday}</Text>
-                <Text style={styles.dayLabel}>{day.label}</Text>
-              </View>
-              {TIME_BLOCKS.map((b, blockIdx) => {
-                const isOn = !!selected[`${day.key}|${blockIdx}`];
-                return (
-                  <TouchableOpacity
-                    key={blockIdx}
-                    style={[styles.cell, isOn && styles.cellOn]}
-                    onPress={() => toggle(day.key, blockIdx)}
-                    activeOpacity={0.7}
-                  />
-                );
-              })}
+          <GestureDetector gesture={dragGesture}>
+            <View
+              onLayout={(e) => {
+                gridWidthRef.current = e.nativeEvent.layout.width;
+              }}
+            >
+              {days.map((day) => (
+                <View key={day.key} style={styles.gridRow}>
+                  <View style={styles.dayGutter}>
+                    <Text style={styles.dayWeekday}>{day.weekday}</Text>
+                    <Text style={styles.dayLabel}>{day.label}</Text>
+                  </View>
+                  {TIME_BLOCKS.map((b, blockIdx) => {
+                    const isOn = !!selected[`${day.key}|${blockIdx}`];
+                    return (
+                      <TouchableOpacity
+                        key={blockIdx}
+                        style={[styles.cell, isOn && styles.cellOn]}
+                        onPress={() => toggle(day.key, blockIdx)}
+                        activeOpacity={0.7}
+                      />
+                    );
+                  })}
+                </View>
+              ))}
             </View>
-          ))}
+          </GestureDetector>
 
           <Text style={styles.count}>
             {count === 0
-              ? 'Tap the blocks when you’re free'
+              ? 'Tap blocks when you’re free — or press & drag to paint'
               : `${count} time slot${count === 1 ? '' : 's'} selected`}
           </Text>
 
