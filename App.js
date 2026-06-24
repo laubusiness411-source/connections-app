@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SwipeScreen from './src/screens/SwipeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
-import { loadProfile, saveProfile } from './src/data/profileStorage';
+import { loadProfile, saveProfile, clearProfile } from './src/data/profileStorage';
 
 export default function App() {
   // null = still loading from storage; undefined = loaded, no profile yet
@@ -25,6 +25,16 @@ export default function App() {
     setProfile(newProfile);
   }, []);
 
+  const handleUpdateProfile = useCallback(async (updated) => {
+    await saveProfile(updated);
+    setProfile(updated);
+  }, []);
+
+  const handleResetProfile = useCallback(async () => {
+    await clearProfile();
+    setProfile(null);
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
@@ -34,7 +44,11 @@ export default function App() {
             <ActivityIndicator color="#6C5CE7" size="large" />
           </View>
         ) : profile ? (
-          <SwipeScreen myProfile={profile} />
+          <SwipeScreen
+            myProfile={profile}
+            onUpdateProfile={handleUpdateProfile}
+            onResetProfile={handleResetProfile}
+          />
         ) : (
           <OnboardingScreen onComplete={handleOnboardingComplete} />
         )}

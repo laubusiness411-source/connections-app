@@ -1,22 +1,28 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SwipeCard from '../components/SwipeCard';
 import MatchScreen from '../components/MatchScreen';
 import SchedulingScreen from '../components/SchedulingScreen';
+import SettingsScreen from './SettingsScreen';
+import EditProfileScreen from './EditProfileScreen';
 import { PROFILES } from '../data/profiles';
 
-export default function SwipeScreen({ myProfile }) {
-  const [index, setIndex] = useState(0);
+export default function SwipeScreen({ myProfile, onUpdateProfile, onResetProfile }) {
+  // Deck holds profiles not yet acted on; acting removes from the front.
+  const [deck, setDeck] = useState(PROFILES);
   const [match, setMatch] = useState(null);
   const [scheduling, setScheduling] = useState(null);
+  const [blocked, setBlocked] = useState([]);
+  const [showSettings, setShowSettings] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   // Guards against a second swipe firing before the deck re-renders, which
   // could skip a profile or act on a stale card (e.g. rapid button taps).
   const lockRef = useRef(false);
   useEffect(() => {
     lockRef.current = false;
-  }, [index]);
+  }, [deck]);
 
   const handleSwipe = useCallback((direction, profile) => {
     if (lockRef.current || !profile) return;
@@ -25,17 +31,67 @@ export default function SwipeScreen({ myProfile }) {
     if (direction === 'right' && profile.likesYou) {
       setMatch(profile);
     }
-    setIndex((i) => i + 1);
+    setDeck((d) => d.slice(1));
   }, []);
 
-  const remaining = PROFILES.slice(index);
-  const reachedEnd = remaining.length === 0;
+  const blockProfile = useCallback((profile, { reported } = {}) => {
+    setDeck((d) => d.filter((p) => p.id !== profile.id));
+    setBlocked((b) => (b.some((x) => x.id === profile.id) ? b : [...b, profile]));
+    if (reported) {
+      Alert.alert(
+        'Report received',
+        `Thanks — we'll review ${profile.name.split(' ')[0]}'s profile. They won't appear again.`
+      );
+    }
+  }, []);
+
+  const handleReport = useCallback(
+    (profile) => {
+      Alert.alert(profile.name, 'What would you like to do?', [
+        {
+          text: 'Block',
+          style: 'destructive',
+          onPress: () => blockProfile(profile),
+        },
+        {
+          text: 'Report',
+          style: 'destructive',
+          onPress: () => blockProfile(profile, { reported: true }),
+        },
+        { text: 'Cancel', style: 'cancel' },
+      ]);
+    },
+    [blockProfile]
+  );
+
+  const unblock = useCallback(
+    (id) => {
+      setBlocked((b) => {
+        const p = b.find((x) => x.id === id);
+        if (p) setDeck((d) => (d.some((x) => x.id === id) ? d : [...d, p]));
+        return b.filter((x) => x.id !== id);
+      });
+    },
+    []
+  );
+
+  const reachedEnd = deck.length === 0;
+  const top = deck[0];
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <Text style={styles.logo}>CoFounder</Text>
-        <Text style={styles.headerSub}>Find your match</Text>
+        <View>
+          <Text style={styles.logo}>CoFounder</Text>
+          <Text style={styles.headerSub}>Find your match</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.gearBtn}
+          onPress={() => setShowSettings(true)}
+          hitSlop={10}
+        >
+          <Text style={styles.gear}>⚙</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.deck}>
@@ -48,7 +104,7 @@ export default function SwipeScreen({ myProfile }) {
           </View>
         ) : (
           // Render up to 2 cards: render back card first so top sits above it
-          remaining
+          deck
             .slice(0, 2)
             .reverse()
             .map((profile, i, arr) => {
@@ -59,6 +115,7 @@ export default function SwipeScreen({ myProfile }) {
                   profile={profile}
                   isTop={isTop}
                   onSwipe={handleSwipe}
+                  onReport={handleReport}
                 />
               );
             })
@@ -69,13 +126,13 @@ export default function SwipeScreen({ myProfile }) {
         <View style={styles.controls}>
           <TouchableOpacity
             style={[styles.controlBtn, styles.passBtn]}
-            onPress={() => handleSwipe('left', remaining[0])}
+            onPress={() => handleSwipe('left', top)}
           >
             <Text style={styles.passIcon}>✕</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.controlBtn, styles.likeBtn]}
-            onPress={() => handleSwipe('right', remaining[0])}
+            onPress={() => handleSwipe('right', top)}
           >
             <Text style={styles.likeIcon}>✓</Text>
           </TouchableOpacity>
@@ -95,10 +152,36 @@ export default function SwipeScreen({ myProfile }) {
       )}
 
       {scheduling && (
-        <View style={styles.fullOverlay}>
+        <View style={[styles.fullOverlay, { zIndex: 200 }]}>
           <SchedulingScreen
             profile={scheduling}
             onClose={() => setScheduling(null)}
+          />
+        </View>
+      )}
+
+      {showSettings && (
+        <View style={[styles.fullOverlay, { zIndex: 300 }]}>
+          <SettingsScreen
+            profile={myProfile}
+            blocked={blocked}
+            onUnblock={unblock}
+            onEditProfile={() => setEditing(true)}
+            onResetProfile={onResetProfile}
+            onClose={() => setShowSettings(false)}
+          />
+        </View>
+      )}
+
+      {editing && (
+        <View style={[styles.fullOverlay, { zIndex: 400 }]}>
+          <EditProfileScreen
+            initialProfile={myProfile}
+            onSave={(updated) => {
+              onUpdateProfile(updated);
+              setEditing(false);
+            }}
+            onCancel={() => setEditing(false)}
           />
         </View>
       )}
@@ -108,9 +191,27 @@ export default function SwipeScreen({ myProfile }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0B0B0F' },
-  header: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 12 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 12,
+  },
   logo: { color: '#6C5CE7', fontSize: 26, fontWeight: '800' },
   headerSub: { color: '#6A6A78', fontSize: 13, marginTop: 2 },
+  gearBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#16161D',
+    borderWidth: 1,
+    borderColor: '#26262F',
+  },
+  gear: { color: '#B8B8C7', fontSize: 20 },
   deck: { flex: 1, marginHorizontal: 16, marginVertical: 8 },
   controls: {
     flexDirection: 'row',
@@ -133,7 +234,6 @@ const styles = StyleSheet.create({
   fullOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#0B0B0F',
-    zIndex: 200,
   },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },

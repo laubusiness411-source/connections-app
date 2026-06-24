@@ -10,56 +10,16 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ChipSelect from '../components/ChipSelect';
+import {
+  ROLES,
+  COMMITMENTS,
+  IDEA_STATUSES,
+  LOOKING_FOR,
+  MAX_SKILLS,
+} from '../data/profileFields';
 
-// Option sets mirror the vocabulary used in src/data/profiles.js so the
-// user's own profile is shaped exactly like the demo cards they'll swipe on.
-const ROLES = [
-  'Technical Co-Founder',
-  'Business Co-Founder',
-  'Design + Product',
-  'Growth + Marketing',
-  'Other',
-];
-const COMMITMENTS = ['Full-time', 'Nights & weekends', 'Part-time'];
-const IDEA_STATUSES = [
-  'Open to ideas',
-  'Have an idea, validating',
-  'Have an idea, committed',
-  'Building MVP',
-];
-const LOOKING_FOR = [
-  'Technical partner',
-  'Business / GTM partner',
-  'Design / Product partner',
-  'Engineering partner',
-  'Any great partner',
-];
-
-const MAX_SKILLS = 5;
 const TOTAL_STEPS = 5;
-
-// Reusable single-select chip row.
-function ChipSelect({ options, value, onChange }) {
-  return (
-    <View style={styles.chipWrap}>
-      {options.map((opt) => {
-        const selected = value === opt;
-        return (
-          <TouchableOpacity
-            key={opt}
-            style={[styles.chip, selected && styles.chipSelected]}
-            onPress={() => onChange(opt)}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
-              {opt}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  );
-}
 
 export default function OnboardingScreen({ onComplete }) {
   const [step, setStep] = useState(0);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -14,7 +14,7 @@ import Animated, {
 const { width: SCREEN_W } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_W * 0.28;
 
-export default function SwipeCard({ profile, isTop, onSwipe }) {
+export default function SwipeCard({ profile, isTop, onSwipe, onReport }) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
@@ -71,6 +71,16 @@ export default function SwipeCard({ profile, isTop, onSwipe }) {
         <Animated.View style={[styles.badge, styles.nopeBadge, nopeStyle]}>
           <Text style={styles.nopeText}>PASS</Text>
         </Animated.View>
+
+        {isTop && onReport && (
+          <TouchableOpacity
+            style={styles.reportBtn}
+            onPress={() => onReport(profile)}
+            hitSlop={10}
+          >
+            <Text style={styles.reportIcon}>⋯</Text>
+          </TouchableOpacity>
+        )}
 
         <View style={styles.avatarWrap}>
           <View style={styles.avatar}>
@@ -173,4 +183,17 @@ const styles = StyleSheet.create({
   nopeBadge: { left: 20, borderColor: '#FF4D6D', transform: [{ rotate: '-12deg' }] },
   likeText: { color: '#2ECC71', fontSize: 22, fontWeight: '800' },
   nopeText: { color: '#FF4D6D', fontSize: 22, fontWeight: '800' },
+  reportBtn: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    zIndex: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reportIcon: { color: '#fff', fontSize: 22, fontWeight: '800', lineHeight: 24 },
 });
