@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -83,11 +83,15 @@ export default function SwipeCard({ profile, isTop, onSwipe, onReport }) {
         )}
 
         <View style={styles.avatarWrap}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarInitials}>
-              {profile.name.split(' ').map((n) => n[0]).join('')}
-            </Text>
-          </View>
+          {profile.photoUri ? (
+            <Image source={{ uri: profile.photoUri }} style={styles.photo} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarInitials}>
+                {profile.name.split(' ').map((n) => n[0]).join('')}
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.body}>
@@ -146,6 +150,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarInitials: { color: '#fff', fontSize: 34, fontWeight: '700' },
+  photo: { width: '100%', height: '100%' },
   body: { padding: 20, flex: 1 },
   name: { color: '#fff', fontSize: 24, fontWeight: '700' },
   role: { color: '#6C5CE7', fontSize: 15, fontWeight: '600', marginTop: 2 },

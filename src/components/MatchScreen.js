@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 
 export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwiping }) {
   const myInitials = myProfile?.name
@@ -13,14 +13,28 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
       </Text>
 
       <View style={styles.avatars}>
-        <View style={[styles.avatar, { backgroundColor: '#6C5CE7' }]}>
-          <Text style={styles.avatarInitials}>{myInitials}</Text>
-        </View>
-        <View style={[styles.avatar, styles.avatarOverlap, { backgroundColor: '#00B894' }]}>
-          <Text style={styles.avatarInitials}>
-            {profile.name.split(' ').map((n) => n[0]).join('')}
-          </Text>
-        </View>
+        {myProfile?.photoUri ? (
+          <Image
+            source={{ uri: myProfile.photoUri }}
+            style={[styles.avatar, { borderColor: '#0B0B0F' }]}
+          />
+        ) : (
+          <View style={[styles.avatar, { backgroundColor: '#6C5CE7' }]}>
+            <Text style={styles.avatarInitials}>{myInitials}</Text>
+          </View>
+        )}
+        {profile?.photoUri ? (
+          <Image
+            source={{ uri: profile.photoUri }}
+            style={[styles.avatar, styles.avatarOverlap, { borderColor: '#0B0B0F' }]}
+          />
+        ) : (
+          <View style={[styles.avatar, styles.avatarOverlap, { backgroundColor: '#00B894' }]}>
+            <Text style={styles.avatarInitials}>
+              {profile.name.split(' ').map((n) => n[0]).join('')}
+            </Text>
+          </View>
+        )}
       </View>
 
       <Text style={styles.matchName}>{profile.name}</Text>

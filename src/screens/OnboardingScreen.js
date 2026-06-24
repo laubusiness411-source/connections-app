@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ChipSelect from '../components/ChipSelect';
+import AvatarPicker from '../components/AvatarPicker';
 import {
   ROLES,
   COMMITMENTS,
@@ -24,6 +25,7 @@ const TOTAL_STEPS = 5;
 export default function OnboardingScreen({ onComplete }) {
   const [step, setStep] = useState(0);
 
+  const [photoUri, setPhotoUri] = useState(null);
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [location, setLocation] = useState('');
@@ -69,6 +71,7 @@ export default function OnboardingScreen({ onComplete }) {
   const finish = () => {
     const profile = {
       id: 'me',
+      photoUri,
       name: name.trim(),
       role,
       location: location.trim(),
@@ -132,6 +135,13 @@ export default function OnboardingScreen({ onComplete }) {
 
           {step === 0 && (
             <>
+              <View style={styles.avatarRow}>
+                <AvatarPicker
+                  name={name}
+                  photoUri={photoUri}
+                  onChange={setPhotoUri}
+                />
+              </View>
               <Text style={styles.label}>Your name</Text>
               <TextInput
                 style={styles.input}
@@ -297,6 +307,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 24 },
   title: { color: '#fff', fontSize: 28, fontWeight: '800', marginBottom: 8 },
+  avatarRow: { alignItems: 'center', marginTop: 12, marginBottom: 4 },
   label: {
     color: '#B8B8C7',
     fontSize: 14,

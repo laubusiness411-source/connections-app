@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
+  Image,
   TouchableOpacity,
   ScrollView,
   Alert,
@@ -44,9 +45,13 @@ export default function SettingsScreen({
       <ScrollView contentContainerStyle={styles.content}>
         {/* Profile summary */}
         <View style={styles.profileCard}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{initials}</Text>
-          </View>
+          {profile?.photoUri ? (
+            <Image source={{ uri: profile.photoUri }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{initials}</Text>
+            </View>
+          )}
           <View style={styles.profileText}>
             <Text style={styles.name}>{profile?.name}</Text>
             <Text style={styles.role}>{profile?.role}</Text>

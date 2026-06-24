@@ -8,6 +8,14 @@
     "newArchEnabled": true,
     "splash": { "resizeMode": "contain", "backgroundColor": "#0B0B0F" },
     "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow CoFounder to access your photos so you can set a profile picture."
+        }
+      ]
+    ],
     "ios": { "supportsTablet": true, "bundleIdentifier": "com.cofounder.app" },
     "android": { "package": "com.cofounder.app" },
     "web": { "bundler": "metro" }

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ChipSelect from '../components/ChipSelect';
+import AvatarPicker from '../components/AvatarPicker';
 import {
   ROLES,
   COMMITMENTS,
@@ -22,6 +23,7 @@ import {
 // Single-page form for editing an existing profile (vs the step wizard
 // used for first-time onboarding).
 export default function EditProfileScreen({ initialProfile, onSave, onCancel }) {
+  const [photoUri, setPhotoUri] = useState(initialProfile.photoUri || null);
   const [name, setName] = useState(initialProfile.name || '');
   const [role, setRole] = useState(initialProfile.role || '');
   const [location, setLocation] = useState(initialProfile.location || '');
@@ -58,6 +60,7 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
     if (!valid) return;
     onSave({
       ...initialProfile,
+      photoUri,
       name: name.trim(),
       role,
       location: location.trim(),
@@ -91,6 +94,10 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
+          <View style={styles.avatarRow}>
+            <AvatarPicker name={name} photoUri={photoUri} onChange={setPhotoUri} />
+          </View>
+
           <Text style={styles.label}>Name</Text>
           <TextInput
             style={styles.input}
@@ -207,6 +214,7 @@ const styles = StyleSheet.create({
   save: { color: '#6C5CE7', fontWeight: '700' },
   saveDisabled: { color: '#3A3A48' },
   content: { paddingHorizontal: 24, paddingBottom: 32 },
+  avatarRow: { alignItems: 'center', marginTop: 8 },
   label: {
     color: '#B8B8C7',
     fontSize: 14,
