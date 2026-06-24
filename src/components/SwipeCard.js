@@ -84,7 +84,7 @@ export default function SwipeCard({ profile, isTop, onSwipe }) {
           <Text style={styles.name}>{profile.name}</Text>
           <Text style={styles.role}>{profile.role}</Text>
           <Text style={styles.meta}>
-            {profile.location}  Â·  {profile.commitment}
+            {profile.location}  ·  {profile.commitment}
           </Text>
 
           <View style={styles.pill}>

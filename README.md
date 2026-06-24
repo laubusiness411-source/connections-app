@@ -1,4 +1,4 @@
-# CoFounder â€” Expo App
+# CoFounder — Expo App
 
 "Tinder for co-founders." Swipe-based matching to find a business partner.
 This is the Co-Founder Mode MVP scaffold, ported from the single-file web prototype
@@ -36,16 +36,16 @@ Then:
 
 ## Core loop
 
-- Drag a card past the threshold (or tap âœ“ / âœ•) to swipe right/left.
+- Drag a card past the threshold (or tap ✓ / ✕) to swipe right/left.
 - Swiping right on a profile where `likesYou: true` triggers the match screen.
 - Demo profiles 1, 3, 5 will match; 2 and 4 will not.
 
 ## Match detection
 
 Currently client-side against hardcoded `likesYou` flags. In production this becomes:
-1. Swipe right â†’ POST to your backend.
+1. Swipe right → POST to your backend.
 2. Backend checks if the other user already swiped right on you.
-3. If yes â†’ create a match record, push-notify both users.
+3. If yes → create a match record, push-notify both users.
 
 ## Next steps
 

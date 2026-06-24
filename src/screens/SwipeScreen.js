@@ -32,7 +32,7 @@ export default function SwipeScreen() {
           <View style={styles.empty}>
             <Text style={styles.emptyTitle}>You're all caught up</Text>
             <Text style={styles.emptyText}>
-              Check back soon â€” new founders join every day.
+              Check back soon — new founders join every day.
             </Text>
           </View>
         ) : (
@@ -60,13 +60,13 @@ export default function SwipeScreen() {
             style={[styles.controlBtn, styles.passBtn]}
             onPress={() => handleSwipe('left', remaining[0])}
           >
-            <Text style={styles.passIcon}>âœ•</Text>
+            <Text style={styles.passIcon}>✕</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.controlBtn, styles.likeBtn]}
             onPress={() => handleSwipe('right', remaining[0])}
           >
-            <Text style={styles.likeIcon}>âœ“</Text>
+            <Text style={styles.likeIcon}>✓</Text>
           </TouchableOpacity>
         </View>
       )}
