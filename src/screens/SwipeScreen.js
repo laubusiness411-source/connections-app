@@ -3,11 +3,13 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SwipeCard from '../components/SwipeCard';
 import MatchScreen from '../components/MatchScreen';
+import SchedulingScreen from '../components/SchedulingScreen';
 import { PROFILES } from '../data/profiles';
 
 export default function SwipeScreen({ myProfile }) {
   const [index, setIndex] = useState(0);
   const [match, setMatch] = useState(null);
+  const [scheduling, setScheduling] = useState(null);
 
   const handleSwipe = useCallback((direction, profile) => {
     // Match = you swiped right AND they already liked you
@@ -75,9 +77,21 @@ export default function SwipeScreen({ myProfile }) {
         <MatchScreen
           profile={match}
           myProfile={myProfile}
-          onSchedule={() => setMatch(null)}
+          onSchedule={() => {
+            setScheduling(match);
+            setMatch(null);
+          }}
           onKeepSwiping={() => setMatch(null)}
         />
+      )}
+
+      {scheduling && (
+        <View style={styles.fullOverlay}>
+          <SchedulingScreen
+            profile={scheduling}
+            onClose={() => setScheduling(null)}
+          />
+        </View>
       )}
     </SafeAreaView>
   );
@@ -107,6 +121,11 @@ const styles = StyleSheet.create({
   likeBtn: { borderColor: '#2ECC71', backgroundColor: '#16161D' },
   passIcon: { color: '#FF4D6D', fontSize: 28, fontWeight: '700' },
   likeIcon: { color: '#2ECC71', fontSize: 28, fontWeight: '700' },
+  fullOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0B0B0F',
+    zIndex: 200,
+  },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
   emptyText: { color: '#8A8A99', fontSize: 14, marginTop: 8, textAlign: 'center' },
