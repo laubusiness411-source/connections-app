@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import GradientButton from './GradientButton';
 
 // Grid geometry (kept in sync with styles below) for drag hit-testing.
 const GUTTER_W = 58;
@@ -127,15 +128,17 @@ export default function SchedulingScreen({ profile, onClose }) {
           <View style={styles.checkCircle}>
             <Text style={styles.checkMark}>✓</Text>
           </View>
-          <Text style={styles.confirmTitle}>Availability sent!</Text>
+          <Text style={styles.confirmTitle}>you're locked in ✅</Text>
           <Text style={styles.confirmText}>
             {firstName} will get your {count} time
             {count === 1 ? ' option' : ' options'} for a {duration.toLowerCase()}{' '}
-            {callType.toLowerCase()} call. You'll be notified when they pick one.
+            {callType.toLowerCase()} call. we'll ping you when they pick one.
           </Text>
-          <TouchableOpacity style={styles.primaryBtn} onPress={onClose}>
-            <Text style={styles.primaryBtnText}>Back to swiping</Text>
-          </TouchableOpacity>
+          <GradientButton
+            title="back to swiping"
+            onPress={onClose}
+            style={styles.cta}
+          />
         </View>
       </SafeAreaView>
     );
@@ -152,7 +155,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           <TouchableOpacity onPress={onClose} hitSlop={12}>
             <Text style={styles.cancel}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Schedule a call</Text>
+          <Text style={styles.headerTitle}>lock in a call</Text>
           <View style={{ width: 52 }} />
         </View>
 
@@ -161,7 +164,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.lead}>
-            Pick the times you're free to meet {firstName}.
+            when are you free to meet {firstName}?
           </Text>
 
           {/* Availability grid */}
@@ -210,7 +213,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           </Text>
 
           {/* Call type */}
-          <Text style={styles.label}>Call type</Text>
+          <Text style={styles.label}>call type</Text>
           <View style={styles.chipWrap}>
             {CALL_TYPES.map((t) => (
               <TouchableOpacity
@@ -226,7 +229,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           </View>
 
           {/* Duration */}
-          <Text style={styles.label}>Duration</Text>
+          <Text style={styles.label}>duration</Text>
           <View style={styles.chipWrap}>
             {DURATIONS.map((d) => (
               <TouchableOpacity
@@ -242,7 +245,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           </View>
 
           {/* Note */}
-          <Text style={styles.label}>Add a note (optional)</Text>
+          <Text style={styles.label}>add a note (optional)</Text>
           <TextInput
             style={styles.input}
             placeholder={`Hey ${firstName}, excited to connect! Here's when I'm free.`}
@@ -256,18 +259,16 @@ export default function SchedulingScreen({ profile, onClose }) {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <TouchableOpacity
-            style={[styles.primaryBtn, count === 0 && styles.primaryBtnDisabled]}
+          <GradientButton
+            title={
+              count === 0
+                ? 'pick a time to continue'
+                : `send ${count} time${count === 1 ? '' : 's'} to ${firstName}`
+            }
             onPress={() => count > 0 && setSent(true)}
             disabled={count === 0}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.primaryBtnText}>
-              {count === 0
-                ? 'Select a time to continue'
-                : `Send ${count} option${count === 1 ? '' : 's'} to ${firstName}`}
-            </Text>
-          </TouchableOpacity>
+            style={styles.cta}
+          />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -356,14 +357,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#1A1A22',
   },
-  primaryBtn: {
-    backgroundColor: '#6C5CE7',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  primaryBtnDisabled: { backgroundColor: '#2A2A38' },
-  primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  cta: { width: '100%' },
   // Confirmation
   confirmWrap: {
     flex: 1,

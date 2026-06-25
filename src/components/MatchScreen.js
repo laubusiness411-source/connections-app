@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import { generateMatchReason } from '../data/matchReason';
+import GradientText from './GradientText';
+import GradientButton from './GradientButton';
+import Confetti from './Confetti';
 
 export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwiping }) {
   const myInitials = myProfile?.name
@@ -12,9 +15,10 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
   );
   return (
     <View style={styles.overlay}>
-      <Text style={styles.title}>It's a Match!</Text>
+      <Confetti />
+      <GradientText style={styles.title}>it's a match!</GradientText>
       <Text style={styles.subtitle}>
-        You and {profile.name.split(' ')[0]} both want to connect.
+        you & {profile.name.split(' ')[0]} are both down to build 🤝
       </Text>
 
       <View style={styles.avatars}>
@@ -50,12 +54,14 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
         <Text style={styles.reasonText}>{reason}</Text>
       </View>
 
-      <TouchableOpacity style={styles.primaryBtn} onPress={onSchedule}>
-        <Text style={styles.primaryBtnText}>Schedule a call</Text>
-      </TouchableOpacity>
+      <GradientButton
+        title="lock in a call"
+        onPress={onSchedule}
+        style={styles.primaryBtn}
+      />
 
       <TouchableOpacity style={styles.secondaryBtn} onPress={onKeepSwiping}>
-        <Text style={styles.secondaryBtnText}>Keep swiping</Text>
+        <Text style={styles.secondaryBtnText}>keep swiping</Text>
       </TouchableOpacity>
     </View>
   );
@@ -103,16 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   reasonText: { color: '#E4E4ED', fontSize: 15, lineHeight: 21 },
-  primaryBtn: {
-    backgroundColor: '#6C5CE7',
-    paddingVertical: 16,
-    paddingHorizontal: 48,
-    borderRadius: 30,
-    marginTop: 24,
-    width: '100%',
-    alignItems: 'center',
-  },
-  primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  primaryBtn: { width: '100%', marginTop: 24 },
   secondaryBtn: { paddingVertical: 16, marginTop: 8 },
   secondaryBtnText: { color: '#8A8A99', fontSize: 15, fontWeight: '600' },
 });

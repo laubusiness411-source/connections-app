@@ -6,6 +6,7 @@ import MatchScreen from '../components/MatchScreen';
 import SchedulingScreen from '../components/SchedulingScreen';
 import SettingsScreen from './SettingsScreen';
 import EditProfileScreen from './EditProfileScreen';
+import GradientText from '../components/GradientText';
 import { PROFILES } from '../data/profiles';
 
 export default function SwipeScreen({ myProfile, onUpdateProfile, onResetProfile }) {
@@ -82,8 +83,8 @@ export default function SwipeScreen({ myProfile, onUpdateProfile, onResetProfile
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.logo}>CoFounder</Text>
-          <Text style={styles.headerSub}>Find your match</Text>
+          <GradientText style={styles.logo}>CoFounder</GradientText>
+          <Text style={styles.headerSub}>find your person 👀</Text>
         </View>
         <TouchableOpacity
           style={styles.gearBtn}
@@ -97,9 +98,9 @@ export default function SwipeScreen({ myProfile, onUpdateProfile, onResetProfile
       <View style={styles.deck}>
         {reachedEnd ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>You're all caught up</Text>
+            <Text style={styles.emptyTitle}>that's everyone for now</Text>
             <Text style={styles.emptyText}>
-              Check back soon — new founders join every day.
+              new founders drop daily — pull up later 🔜
             </Text>
           </View>
         ) : (

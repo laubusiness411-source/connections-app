@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ChipSelect from '../components/ChipSelect';
 import AvatarPicker from '../components/AvatarPicker';
+import GradientButton from '../components/GradientButton';
 import {
   ROLES,
   COMMITMENTS,
@@ -98,11 +99,11 @@ export default function OnboardingScreen({ onComplete }) {
   };
 
   const STEP_TITLES = [
-    'Who are you?',
-    'Where & how much?',
-    'Your idea & your match',
-    'Your top skills',
-    'Tell your story',
+    'the basics 👋',
+    'where & how much?',
+    'your idea + who you want',
+    'your superpowers',
+    'your story',
   ];
 
   return (
@@ -277,16 +278,12 @@ export default function OnboardingScreen({ onComplete }) {
           ) : (
             <View style={styles.backBtnPlaceholder} />
           )}
-          <TouchableOpacity
-            style={[styles.nextBtn, !canContinue() && styles.nextBtnDisabled]}
+          <GradientButton
+            title={step === TOTAL_STEPS - 1 ? 'start swiping' : 'continue'}
             onPress={next}
             disabled={!canContinue()}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.nextBtnText}>
-              {step === TOTAL_STEPS - 1 ? 'Start swiping' : 'Continue'}
-            </Text>
-          </TouchableOpacity>
+            style={styles.nextBtn}
+          />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -361,13 +358,5 @@ const styles = StyleSheet.create({
   backBtn: { paddingVertical: 16, paddingHorizontal: 20 },
   backBtnPlaceholder: { width: 0 },
   backBtnText: { color: '#8A8A99', fontSize: 16, fontWeight: '600' },
-  nextBtn: {
-    flex: 1,
-    backgroundColor: '#6C5CE7',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  nextBtnDisabled: { backgroundColor: '#2A2A38' },
-  nextBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  nextBtn: { flex: 1 },
 });
