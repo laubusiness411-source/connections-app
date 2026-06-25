@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { generateMatchReason } from '../data/matchReason';
 
 export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwiping }) {
   const myInitials = myProfile?.name
     ? myProfile.name.split(' ').map((n) => n[0]).join('')
     : 'YOU';
+  const reason = useMemo(
+    () => generateMatchReason(myProfile, profile),
+    [myProfile, profile]
+  );
   return (
     <View style={styles.overlay}>
       <Text style={styles.title}>It's a Match!</Text>
@@ -40,6 +45,11 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
       <Text style={styles.matchName}>{profile.name}</Text>
       <Text style={styles.matchRole}>{profile.role}</Text>
 
+      <View style={styles.reasonCard}>
+        <Text style={styles.reasonLabel}>✨ Why you matched</Text>
+        <Text style={styles.reasonText}>{reason}</Text>
+      </View>
+
       <TouchableOpacity style={styles.primaryBtn} onPress={onSchedule}>
         <Text style={styles.primaryBtnText}>Schedule a call</Text>
       </TouchableOpacity>
@@ -62,7 +72,7 @@ const styles = StyleSheet.create({
   },
   title: { color: '#6C5CE7', fontSize: 40, fontWeight: '800' },
   subtitle: { color: '#C8C8D4', fontSize: 16, marginTop: 8, textAlign: 'center' },
-  avatars: { flexDirection: 'row', marginTop: 40, marginBottom: 16 },
+  avatars: { flexDirection: 'row', marginTop: 32, marginBottom: 16 },
   avatar: {
     width: 88,
     height: 88,
@@ -76,12 +86,29 @@ const styles = StyleSheet.create({
   avatarInitials: { color: '#fff', fontSize: 22, fontWeight: '700' },
   matchName: { color: '#fff', fontSize: 22, fontWeight: '700', marginTop: 12 },
   matchRole: { color: '#8A8A99', fontSize: 14, marginTop: 2 },
+  reasonCard: {
+    backgroundColor: '#16161D',
+    borderWidth: 1,
+    borderColor: '#2E2A45',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 24,
+    width: '100%',
+  },
+  reasonLabel: {
+    color: '#A99CF0',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  reasonText: { color: '#E4E4ED', fontSize: 15, lineHeight: 21 },
   primaryBtn: {
     backgroundColor: '#6C5CE7',
     paddingVertical: 16,
     paddingHorizontal: 48,
     borderRadius: 30,
-    marginTop: 40,
+    marginTop: 24,
     width: '100%',
     alignItems: 'center',
   },
