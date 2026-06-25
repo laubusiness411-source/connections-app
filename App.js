@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -62,16 +62,28 @@ export default function App() {
 
   const handleOnboardingComplete = useCallback(
     async (newProfile) => {
-      const saved = await saveMyProfile(userId, newProfile);
-      setProfile(saved);
+      try {
+        const saved = await saveMyProfile(userId, newProfile);
+        setProfile(saved);
+      } catch (e) {
+        Alert.alert(
+          "Couldn't save your profile",
+          (e.message || 'Please try again.') +
+            '\n\nIf this mentions a missing table, run supabase/schema.sql in the Supabase SQL editor.'
+        );
+      }
     },
     [userId]
   );
 
   const handleUpdateProfile = useCallback(
     async (updated) => {
-      const saved = await saveMyProfile(userId, updated);
-      setProfile(saved);
+      try {
+        const saved = await saveMyProfile(userId, updated);
+        setProfile(saved);
+      } catch (e) {
+        Alert.alert("Couldn't save changes", e.message || 'Please try again.');
+      }
     },
     [userId]
   );
