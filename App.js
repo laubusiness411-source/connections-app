@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MainTabs from './src/screens/MainTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
+import WelcomeScreen from './src/screens/WelcomeScreen';
 import { supabase } from './src/lib/supabase';
 import {
   fetchMyProfile,
@@ -27,6 +28,7 @@ export default function App() {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [enterAuth, setEnterAuth] = useState(false);
 
   // Restore any existing session and subscribe to auth changes.
   useEffect(() => {
@@ -101,7 +103,14 @@ export default function App() {
   if (booting) {
     content = <Loading />;
   } else if (!session) {
-    content = <AuthScreen />;
+    content = enterAuth ? (
+      <AuthScreen />
+    ) : (
+      <WelcomeScreen
+        onGetStarted={() => setEnterAuth(true)}
+        onLogin={() => setEnterAuth(true)}
+      />
+    );
   } else if (loadingProfile) {
     content = <Loading />;
   } else if (!isProfileComplete(profile)) {

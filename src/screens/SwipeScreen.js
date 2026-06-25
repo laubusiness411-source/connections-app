@@ -6,6 +6,15 @@ import GradientText from '../components/GradientText';
 import { useEngagement } from '../context/EngagementContext';
 import { PROFILES } from '../data/profiles';
 
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export default function SwipeScreen({
   blocked = [],
   onBlock,
@@ -13,14 +22,20 @@ export default function SwipeScreen({
   onMatch,
 }) {
   const [swiped, setSwiped] = useState([]);
+  const [order, setOrder] = useState(PROFILES);
   const engagement = useEngagement();
 
   const swipedIds = useMemo(() => new Set(swiped), [swiped]);
   const blockedIds = useMemo(() => new Set(blocked.map((b) => b.id)), [blocked]);
   const deck = useMemo(
-    () => PROFILES.filter((p) => !swipedIds.has(p.id) && !blockedIds.has(p.id)),
-    [swipedIds, blockedIds]
+    () => order.filter((p) => !swipedIds.has(p.id) && !blockedIds.has(p.id)),
+    [order, swipedIds, blockedIds]
   );
+
+  const reshuffle = useCallback(() => {
+    setSwiped([]);
+    setOrder(shuffle(PROFILES));
+  }, []);
 
   // Guards against a second swipe firing before the deck re-renders.
   const lockRef = useRef(false);
@@ -66,13 +81,22 @@ export default function SwipeScreen({
           <GradientText style={styles.logo}>CoFounder</GradientText>
           <Text style={styles.headerSub}>find your person 👀</Text>
         </View>
-        <TouchableOpacity
-          style={styles.gearBtn}
-          onPress={onOpenSettings}
-          hitSlop={10}
-        >
-          <Text style={styles.gear}>⚙</Text>
-        </TouchableOpacity>
+        <View style={styles.headerBtns}>
+          <TouchableOpacity
+            style={styles.gearBtn}
+            onPress={reshuffle}
+            hitSlop={10}
+          >
+            <Text style={styles.gear}>🔄</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.gearBtn}
+            onPress={onOpenSettings}
+            hitSlop={10}
+          >
+            <Text style={styles.gear}>⚙</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.deck}>
@@ -82,6 +106,9 @@ export default function SwipeScreen({
             <Text style={styles.emptyText}>
               new founders drop daily — pull up later 🔜
             </Text>
+            <TouchableOpacity style={styles.emptyBtn} onPress={reshuffle}>
+              <Text style={styles.emptyBtnText}>see everyone again 🔄</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           deck
@@ -145,6 +172,7 @@ const styles = StyleSheet.create({
     borderColor: '#26262F',
   },
   gear: { color: '#B8B8C7', fontSize: 20 },
+  headerBtns: { flexDirection: 'row', gap: 10 },
   deck: { flex: 1, marginHorizontal: 16, marginVertical: 8 },
   controls: {
     flexDirection: 'row',
@@ -167,4 +195,13 @@ const styles = StyleSheet.create({
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
   emptyText: { color: '#8A8A99', fontSize: 14, marginTop: 8, textAlign: 'center' },
+  emptyBtn: {
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: '#6C5CE7',
+    borderRadius: 24,
+    paddingHorizontal: 22,
+    paddingVertical: 12,
+  },
+  emptyBtnText: { color: '#A99CF0', fontSize: 15, fontWeight: '700' },
 });
