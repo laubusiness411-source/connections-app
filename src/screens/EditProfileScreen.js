@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ChipSelect from '../components/ChipSelect';
 import AvatarPicker from '../components/AvatarPicker';
 import CityAutocomplete from '../components/CityAutocomplete';
+import { useTheme } from '../theme/ThemeContext';
 import {
   ROLES,
   COMMITMENTS,
@@ -24,6 +25,8 @@ import {
 // Single-page form for editing an existing profile (vs the step wizard
 // used for first-time onboarding).
 export default function EditProfileScreen({ initialProfile, onSave, onCancel }) {
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [goal, setGoal] = useState(initialProfile.goal || '');
   const [photoUri, setPhotoUri] = useState(initialProfile.photoUri || null);
   const [name, setName] = useState(initialProfile.name || '');
@@ -108,7 +111,7 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
             value={goal}
             onChangeText={setGoal}
             placeholder="e.g. Start an AI agency for painters"
-            placeholderTextColor="#5A5A68"
+            placeholderTextColor={theme.colors.inputPlaceholder}
           />
 
           <Text style={styles.label}>Name</Text>
@@ -117,7 +120,7 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
             value={name}
             onChangeText={setName}
             placeholder="Your name"
-            placeholderTextColor="#5A5A68"
+            placeholderTextColor={theme.colors.inputPlaceholder}
           />
 
           <Text style={styles.label}>Role</Text>
@@ -162,7 +165,7 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
               onSubmitEditing={addSkill}
               returnKeyType="done"
               placeholder="e.g. Full-Stack"
-              placeholderTextColor="#5A5A68"
+              placeholderTextColor={theme.colors.inputPlaceholder}
               editable={skills.length < MAX_SKILLS}
             />
             <TouchableOpacity
@@ -198,7 +201,7 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
             multiline
             textAlignVertical="top"
             placeholder="What you're building toward and who you want next to you."
-            placeholderTextColor="#5A5A68"
+            placeholderTextColor={theme.colors.inputPlaceholder}
           />
           {bio.trim().length < 20 && (
             <Text style={styles.hint}>
@@ -211,56 +214,57 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  headerBtn: { color: '#8A8A99', fontSize: 16, fontWeight: '600' },
-  headerTitle: { color: '#fff', fontSize: 17, fontWeight: '700' },
-  save: { color: '#6C5CE7', fontWeight: '700' },
-  saveDisabled: { color: '#3A3A48' },
-  content: { paddingHorizontal: 24, paddingBottom: 32 },
-  avatarRow: { alignItems: 'center', marginTop: 8 },
-  label: {
-    color: '#B8B8C7',
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 22,
-    marginBottom: 10,
-  },
-  input: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    color: '#fff',
-    fontSize: 16,
-  },
-  textarea: { height: 130 },
-  skillRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
-  skillInput: { flex: 1 },
-  addBtn: {
-    backgroundColor: '#6C5CE7',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 12,
-  },
-  addBtnDisabled: { backgroundColor: '#2A2A38' },
-  addBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-  skillChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
-  skillChip: {
-    backgroundColor: '#6C5CE7',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 22,
-  },
-  skillChipText: { color: '#fff', fontSize: 14, fontWeight: '600' },
-  hint: { color: '#6A6A78', fontSize: 13, marginTop: 10 },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+    },
+    headerBtn: { color: t.colors.textMuted, fontSize: 16, fontWeight: '600' },
+    headerTitle: { color: t.colors.text, fontSize: 17, fontWeight: '700' },
+    save: { color: t.colors.accent, fontWeight: '700' },
+    saveDisabled: { color: t.colors.textFaint },
+    content: { paddingHorizontal: 24, paddingBottom: 32 },
+    avatarRow: { alignItems: 'center', marginTop: 8 },
+    label: {
+      color: t.colors.textSoft,
+      fontSize: 14,
+      fontWeight: '600',
+      marginTop: 22,
+      marginBottom: 10,
+    },
+    input: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      color: t.colors.text,
+      fontSize: 16,
+    },
+    textarea: { height: 130 },
+    skillRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+    skillInput: { flex: 1 },
+    addBtn: {
+      backgroundColor: t.colors.accent,
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      borderRadius: 12,
+    },
+    addBtnDisabled: { backgroundColor: t.colors.surface2 },
+    addBtnText: { color: t.colors.onAccent, fontSize: 15, fontWeight: '700' },
+    skillChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
+    skillChip: {
+      backgroundColor: t.colors.accent,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 22,
+    },
+    skillChipText: { color: t.colors.onAccent, fontSize: 14, fontWeight: '600' },
+    hint: { color: t.colors.textFaint, fontSize: 13, marginTop: 10 },
+  });

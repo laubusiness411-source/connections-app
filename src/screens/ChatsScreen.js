@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientText from '../components/GradientText';
 import ChatScreen from './ChatScreen';
+import { useTheme } from '../theme/ThemeContext';
 import { fetchMatches } from '../lib/db';
 
 function initialsOf(name) {
@@ -17,6 +18,8 @@ function initialsOf(name) {
 }
 
 export default function ChatsScreen({ myId, onOpenSettings }) {
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
@@ -57,7 +60,7 @@ export default function ChatsScreen({ myId, onOpenSettings }) {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color="#6C5CE7" size="large" />
+          <ActivityIndicator color={theme.colors.accent} size="large" />
         </View>
       ) : matches.length === 0 ? (
         <View style={styles.center}>
@@ -94,65 +97,66 @@ export default function ChatsScreen({ myId, onOpenSettings }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 8,
-  },
-  logo: { fontSize: 26, fontWeight: '800', color: '#6C5CE7' },
-  gearBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-  },
-  gear: { color: '#B8B8C7', fontSize: 20 },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 36,
-  },
-  emptyTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  emptyText: {
-    color: '#8A8A99',
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  list: { paddingHorizontal: 16, paddingTop: 8 },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#16161D',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#26262F',
-    padding: 12,
-    marginBottom: 10,
-  },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#6C5CE7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  avatarText: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  rowText: { flex: 1 },
-  name: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  role: { color: '#6C5CE7', fontSize: 13, fontWeight: '600', marginTop: 1 },
-  chevron: { color: '#6A6A78', fontSize: 22, fontWeight: '700' },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingTop: 8,
+      paddingBottom: 8,
+    },
+    logo: { fontSize: 26, fontWeight: '800', color: t.colors.accent },
+    gearBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+    },
+    gear: { color: t.colors.textSoft, fontSize: 20 },
+    center: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 36,
+    },
+    emptyTitle: { color: t.colors.text, fontSize: 20, fontWeight: '700' },
+    emptyText: {
+      color: t.colors.textMuted,
+      fontSize: 14,
+      marginTop: 8,
+      textAlign: 'center',
+      lineHeight: 20,
+    },
+    list: { paddingHorizontal: 16, paddingTop: 8 },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: t.colors.surface,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      padding: 12,
+      marginBottom: 10,
+    },
+    avatar: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: t.colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    avatarText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+    rowText: { flex: 1 },
+    name: { color: t.colors.text, fontSize: 16, fontWeight: '700' },
+    role: { color: t.colors.accent, fontSize: 13, fontWeight: '600', marginTop: 1 },
+    chevron: { color: t.colors.textFaint, fontSize: 22, fontWeight: '700' },
+  });

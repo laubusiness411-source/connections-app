@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -14,6 +14,7 @@ import ChipSelect from '../components/ChipSelect';
 import AvatarPicker from '../components/AvatarPicker';
 import GradientButton from '../components/GradientButton';
 import CityAutocomplete from '../components/CityAutocomplete';
+import { useTheme } from '../theme/ThemeContext';
 import { GOAL_EXAMPLES } from '../data/goalMatch';
 import {
   ROLES,
@@ -26,6 +27,8 @@ import {
 const TOTAL_STEPS = 6;
 
 export default function OnboardingScreen({ onComplete }) {
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [step, setStep] = useState(0);
 
   const [goal, setGoal] = useState('');
@@ -149,7 +152,7 @@ export default function OnboardingScreen({ onComplete }) {
               <TextInput
                 style={styles.input}
                 placeholder="e.g. Start an AI agency for painters"
-                placeholderTextColor="#5A5A68"
+                placeholderTextColor={theme.colors.inputPlaceholder}
                 value={goal}
                 onChangeText={setGoal}
                 autoFocus
@@ -190,7 +193,7 @@ export default function OnboardingScreen({ onComplete }) {
               <TextInput
                 style={styles.input}
                 placeholder="e.g. Alex Rivera"
-                placeholderTextColor="#5A5A68"
+                placeholderTextColor={theme.colors.inputPlaceholder}
                 value={name}
                 onChangeText={setName}
                 autoFocus
@@ -244,7 +247,7 @@ export default function OnboardingScreen({ onComplete }) {
                 <TextInput
                   style={[styles.input, styles.skillInput]}
                   placeholder="e.g. Full-Stack"
-                  placeholderTextColor="#5A5A68"
+                  placeholderTextColor={theme.colors.inputPlaceholder}
                   value={skillInput}
                   onChangeText={setSkillInput}
                   onSubmitEditing={addSkill}
@@ -294,7 +297,7 @@ export default function OnboardingScreen({ onComplete }) {
               <TextInput
                 style={[styles.input, styles.textarea]}
                 placeholder="A couple sentences. What drives you, what you've done, what you need in a co-founder."
-                placeholderTextColor="#5A5A68"
+                placeholderTextColor={theme.colors.inputPlaceholder}
                 value={bio}
                 onChangeText={setBio}
                 multiline
@@ -331,74 +334,75 @@ export default function OnboardingScreen({ onComplete }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  progressHeader: { paddingHorizontal: 24, paddingTop: 8, paddingBottom: 4 },
-  stepCount: { color: '#6A6A78', fontSize: 12, fontWeight: '600', marginBottom: 8 },
-  progressTrack: {
-    height: 4,
-    backgroundColor: '#232331',
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  progressFill: { height: 4, backgroundColor: '#6C5CE7', borderRadius: 2 },
-  scroll: { flex: 1 },
-  scrollContent: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 24 },
-  title: { color: '#fff', fontSize: 28, fontWeight: '800', marginBottom: 8 },
-  subtitle: { color: '#9A9AAB', fontSize: 15, lineHeight: 21, marginBottom: 18 },
-  avatarRow: { alignItems: 'center', marginTop: 12, marginBottom: 4 },
-  label: {
-    color: '#B8B8C7',
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 24,
-    marginBottom: 10,
-  },
-  input: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    color: '#fff',
-    fontSize: 16,
-  },
-  textarea: { height: 140 },
-  chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  chip: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 22,
-  },
-  chipSelected: { backgroundColor: '#6C5CE7', borderColor: '#6C5CE7' },
-  chipText: { color: '#B8B8C7', fontSize: 14, fontWeight: '600' },
-  chipTextSelected: { color: '#fff' },
-  skillRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
-  skillInput: { flex: 1 },
-  addBtn: {
-    backgroundColor: '#6C5CE7',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 12,
-  },
-  addBtnDisabled: { backgroundColor: '#2A2A38' },
-  addBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-  hint: { color: '#6A6A78', fontSize: 13, marginTop: 12 },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#1A1A22',
-  },
-  backBtn: { paddingVertical: 16, paddingHorizontal: 20 },
-  backBtnPlaceholder: { width: 0 },
-  backBtnText: { color: '#8A8A99', fontSize: 16, fontWeight: '600' },
-  nextBtn: { flex: 1 },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    progressHeader: { paddingHorizontal: 24, paddingTop: 8, paddingBottom: 4 },
+    stepCount: { color: t.colors.textFaint, fontSize: 12, fontWeight: '600', marginBottom: 8 },
+    progressTrack: {
+      height: 4,
+      backgroundColor: t.colors.surface2,
+      borderRadius: 2,
+      overflow: 'hidden',
+    },
+    progressFill: { height: 4, backgroundColor: t.colors.accent, borderRadius: 2 },
+    scroll: { flex: 1 },
+    scrollContent: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 24 },
+    title: { color: t.colors.text, fontSize: 28, fontWeight: '800', marginBottom: 8 },
+    subtitle: { color: t.colors.textMuted, fontSize: 15, lineHeight: 21, marginBottom: 18 },
+    avatarRow: { alignItems: 'center', marginTop: 12, marginBottom: 4 },
+    label: {
+      color: t.colors.textSoft,
+      fontSize: 14,
+      fontWeight: '600',
+      marginTop: 24,
+      marginBottom: 10,
+    },
+    input: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      color: t.colors.text,
+      fontSize: 16,
+    },
+    textarea: { height: 140 },
+    chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+    chip: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 22,
+    },
+    chipSelected: { backgroundColor: t.colors.accent, borderColor: t.colors.accent },
+    chipText: { color: t.colors.textMuted, fontSize: 14, fontWeight: '600' },
+    chipTextSelected: { color: t.colors.onAccent },
+    skillRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+    skillInput: { flex: 1 },
+    addBtn: {
+      backgroundColor: t.colors.accent,
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      borderRadius: 12,
+    },
+    addBtnDisabled: { backgroundColor: t.colors.surface2 },
+    addBtnText: { color: t.colors.onAccent, fontSize: 15, fontWeight: '700' },
+    hint: { color: t.colors.textFaint, fontSize: 13, marginTop: 12 },
+    footer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      paddingHorizontal: 24,
+      paddingVertical: 16,
+      borderTopWidth: 1,
+      borderTopColor: t.colors.border,
+    },
+    backBtn: { paddingVertical: 16, paddingHorizontal: 20 },
+    backBtnPlaceholder: { width: 0 },
+    backBtnText: { color: t.colors.textMuted, fontSize: 16, fontWeight: '600' },
+    nextBtn: { flex: 1 },
+  });

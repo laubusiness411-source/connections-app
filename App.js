@@ -8,6 +8,7 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import { supabase } from './src/lib/supabase';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import {
   fetchMyProfile,
   saveMyProfile,
@@ -16,11 +17,17 @@ import {
 } from './src/lib/db';
 
 function Loading() {
+  const { theme } = useTheme();
   return (
-    <View style={styles.loading}>
-      <ActivityIndicator color="#6C5CE7" size="large" />
+    <View style={[styles.loading, { backgroundColor: theme.colors.bg }]}>
+      <ActivityIndicator color={theme.colors.accent} size="large" />
     </View>
   );
+}
+
+function ThemedStatusBar() {
+  const { theme } = useTheme();
+  return <StatusBar style={theme.mode === 'light' ? 'dark' : 'light'} />;
 }
 
 export default function App() {
@@ -129,8 +136,10 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <StatusBar style="light" />
-        {content}
+        <ThemeProvider>
+          <ThemedStatusBar />
+          {content}
+        </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

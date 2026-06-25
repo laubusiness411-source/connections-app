@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import SwipeCard from '../components/SwipeCard';
 import GradientText from '../components/GradientText';
 import { useEngagement } from '../context/EngagementContext';
+import { useTheme } from '../theme/ThemeContext';
 import { fetchCandidates, recordSwipeRemote } from '../lib/db';
 
 export default function SwipeScreen({
@@ -29,6 +30,8 @@ export default function SwipeScreen({
   const [deck, setDeck] = useState([]);
   const [loading, setLoading] = useState(true);
   const engagement = useEngagement();
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
 
   const blockedIds = useMemo(() => new Set(blocked.map((b) => b.id)), [blocked]);
 
@@ -111,7 +114,7 @@ export default function SwipeScreen({
       <View style={styles.deck}>
         {loading ? (
           <View style={styles.empty}>
-            <ActivityIndicator color="#6C5CE7" size="large" />
+            <ActivityIndicator color={theme.colors.accent} size="large" />
           </View>
         ) : reachedEnd ? (
           <View style={styles.empty}>
@@ -163,65 +166,66 @@ export default function SwipeScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 12,
-  },
-  logo: { color: '#6C5CE7', fontSize: 26, fontWeight: '800' },
-  headerSub: { color: '#6A6A78', fontSize: 13, marginTop: 2 },
-  headerBtns: { flexDirection: 'row', gap: 10 },
-  gearBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-  },
-  gear: { color: '#B8B8C7', fontSize: 20 },
-  deck: { flex: 1, marginHorizontal: 16, marginVertical: 8 },
-  controls: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 28,
-    paddingVertical: 20,
-  },
-  controlBtn: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-  },
-  passBtn: { borderColor: '#FF4D6D', backgroundColor: '#16161D' },
-  likeBtn: { borderColor: '#2ECC71', backgroundColor: '#16161D' },
-  passIcon: { color: '#FF4D6D', fontSize: 28, fontWeight: '700' },
-  likeIcon: { color: '#2ECC71', fontSize: 28, fontWeight: '700' },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
-  emptyTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  emptyText: {
-    color: '#8A8A99',
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  emptyBtn: {
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: '#6C5CE7',
-    borderRadius: 24,
-    paddingHorizontal: 22,
-    paddingVertical: 12,
-  },
-  emptyBtnText: { color: '#A99CF0', fontSize: 15, fontWeight: '700' },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingTop: 8,
+      paddingBottom: 12,
+    },
+    logo: { color: t.colors.accent, fontSize: 26, fontWeight: '800' },
+    headerSub: { color: t.colors.textFaint, fontSize: 13, marginTop: 2 },
+    headerBtns: { flexDirection: 'row', gap: 10 },
+    gearBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+    },
+    gear: { color: t.colors.textSoft, fontSize: 20 },
+    deck: { flex: 1, marginHorizontal: 16, marginVertical: 8 },
+    controls: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: 28,
+      paddingVertical: 20,
+    },
+    controlBtn: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 2,
+    },
+    passBtn: { borderColor: t.colors.danger, backgroundColor: t.colors.surface },
+    likeBtn: { borderColor: t.colors.success, backgroundColor: t.colors.surface },
+    passIcon: { color: t.colors.danger, fontSize: 28, fontWeight: '700' },
+    likeIcon: { color: t.colors.success, fontSize: 28, fontWeight: '700' },
+    empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
+    emptyTitle: { color: t.colors.text, fontSize: 20, fontWeight: '700' },
+    emptyText: {
+      color: t.colors.textMuted,
+      fontSize: 14,
+      marginTop: 8,
+      textAlign: 'center',
+      lineHeight: 20,
+    },
+    emptyBtn: {
+      marginTop: 20,
+      borderWidth: 1,
+      borderColor: t.colors.accent,
+      borderRadius: 24,
+      paddingHorizontal: 22,
+      paddingVertical: 12,
+    },
+    emptyBtnText: { color: t.colors.accentSoft, fontSize: 15, fontWeight: '700' },
+  });

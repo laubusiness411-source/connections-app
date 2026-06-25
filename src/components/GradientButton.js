@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../theme/ThemeContext';
 
-// Primary CTA with a diagonal gradient fill. `style` controls layout
-// (e.g. flex/width); `gradStyle` overrides the inner padding/radius.
+// Primary CTA with a diagonal gradient fill (uses the active accent).
 export default function GradientButton({
   title,
   onPress,
@@ -11,8 +11,12 @@ export default function GradientButton({
   style,
   gradStyle,
   textStyle,
-  colors = ['#8E7BFF', '#6C5CE7'],
+  colors,
 }) {
+  const { theme } = useTheme();
+  const grad = colors || theme.gradient;
+  const off = theme.colors.surface2;
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -21,12 +25,18 @@ export default function GradientButton({
       style={style}
     >
       <LinearGradient
-        colors={disabled ? ['#2A2A38', '#2A2A38'] : colors}
+        colors={disabled ? [off, off] : grad}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.grad, gradStyle]}
       >
-        <Text style={[styles.text, disabled && styles.textDisabled, textStyle]}>
+        <Text
+          style={[
+            styles.text,
+            disabled && { color: theme.colors.textFaint },
+            textStyle,
+          ]}
+        >
           {title}
         </Text>
       </LinearGradient>
@@ -42,5 +52,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  textDisabled: { color: '#6A6A78' },
 });

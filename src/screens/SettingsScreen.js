@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,6 +9,8 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../theme/ThemeContext';
+import { ACCENT_LIST } from '../theme/themes';
 
 export default function SettingsScreen({
   profile,
@@ -19,6 +21,9 @@ export default function SettingsScreen({
   blocked = [],
   onUnblock,
 }) {
+  const { theme, mode, accentKey, setMode, setAccent } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+
   const initials = profile?.name
     ? profile.name.split(' ').map((n) => n[0]).join('')
     : '?';
@@ -67,6 +72,46 @@ export default function SettingsScreen({
           <Text style={styles.chevron}>›</Text>
         </TouchableOpacity>
 
+        {/* Appearance */}
+        <Text style={styles.sectionLabel}>APPEARANCE</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardLabel}>Theme</Text>
+          <View style={styles.modeRow}>
+            {['dark', 'light'].map((m) => {
+              const on = mode === m;
+              return (
+                <TouchableOpacity
+                  key={m}
+                  style={[styles.modeBtn, on && styles.modeBtnOn]}
+                  onPress={() => setMode?.(m)}
+                  activeOpacity={0.85}
+                >
+                  <Text style={[styles.modeText, on && styles.modeTextOn]}>
+                    {m === 'dark' ? '🌙 Dark' : '☀️ Light'}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <Text style={[styles.cardLabel, { marginTop: 18 }]}>Accent color</Text>
+          <View style={styles.swatchRow}>
+            {ACCENT_LIST.map((a) => {
+              const on = accentKey === a.key;
+              return (
+                <TouchableOpacity
+                  key={a.key}
+                  onPress={() => setAccent?.(a.key)}
+                  activeOpacity={0.85}
+                  style={[styles.swatchWrap, on && styles.swatchWrapOn]}
+                >
+                  <View style={[styles.swatch, { backgroundColor: a.color }]} />
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
         {/* Blocked users */}
         <Text style={styles.sectionLabel}>BLOCKED</Text>
         {blocked.length === 0 ? (
@@ -95,74 +140,108 @@ export default function SettingsScreen({
           <Text style={[styles.rowText, styles.danger]}>reset profile</Text>
         </TouchableOpacity>
 
-        <Text style={styles.version}>CoFounder · v1.0.0</Text>
+        <Text style={styles.version}>GoalMatch · v1.0.0</Text>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  headerTitle: { color: '#fff', fontSize: 22, fontWeight: '800' },
-  done: { color: '#6C5CE7', fontSize: 16, fontWeight: '700' },
-  content: { paddingHorizontal: 20, paddingBottom: 32 },
-  profileCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#16161D',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#26262F',
-    padding: 16,
-    marginTop: 8,
-    marginBottom: 20,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#6C5CE7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 14,
-  },
-  avatarText: { color: '#fff', fontSize: 22, fontWeight: '700' },
-  profileText: { flex: 1 },
-  name: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  role: { color: '#6C5CE7', fontSize: 14, fontWeight: '600', marginTop: 2 },
-  meta: { color: '#8A8A99', fontSize: 13, marginTop: 4 },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#16161D',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262F',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    marginBottom: 10,
-  },
-  rowText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  chevron: { color: '#6A6A78', fontSize: 22, fontWeight: '700' },
-  danger: { color: '#FF4D6D' },
-  sectionLabel: {
-    color: '#6A6A78',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
-    marginTop: 18,
-    marginBottom: 10,
-  },
-  emptyRow: { paddingHorizontal: 4, paddingVertical: 6 },
-  emptyText: { color: '#6A6A78', fontSize: 14 },
-  unblock: { color: '#6C5CE7', fontSize: 14, fontWeight: '700' },
-  version: { color: '#3A3A48', fontSize: 12, textAlign: 'center', marginTop: 28 },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+    },
+    headerTitle: { color: t.colors.text, fontSize: 22, fontWeight: '800' },
+    done: { color: t.colors.accent, fontSize: 16, fontWeight: '700' },
+    content: { paddingHorizontal: 20, paddingBottom: 32 },
+    profileCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: t.colors.surface,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      padding: 16,
+      marginTop: 8,
+      marginBottom: 20,
+    },
+    avatar: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      backgroundColor: t.colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 14,
+    },
+    avatarText: { color: '#fff', fontSize: 22, fontWeight: '700' },
+    profileText: { flex: 1 },
+    name: { color: t.colors.text, fontSize: 18, fontWeight: '700' },
+    role: { color: t.colors.accent, fontSize: 14, fontWeight: '600', marginTop: 2 },
+    meta: { color: t.colors.textMuted, fontSize: 13, marginTop: 4 },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: t.colors.surface,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      marginBottom: 10,
+    },
+    rowText: { color: t.colors.text, fontSize: 16, fontWeight: '600' },
+    chevron: { color: t.colors.textFaint, fontSize: 22, fontWeight: '700' },
+    danger: { color: t.colors.danger },
+    sectionLabel: {
+      color: t.colors.textFaint,
+      fontSize: 12,
+      fontWeight: '700',
+      letterSpacing: 1,
+      marginTop: 18,
+      marginBottom: 10,
+    },
+    card: {
+      backgroundColor: t.colors.surface,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      padding: 16,
+    },
+    cardLabel: { color: t.colors.textMuted, fontSize: 13, fontWeight: '700', marginBottom: 10 },
+    modeRow: { flexDirection: 'row', gap: 10 },
+    modeBtn: {
+      flex: 1,
+      backgroundColor: t.colors.surface2,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      borderRadius: 12,
+      paddingVertical: 12,
+      alignItems: 'center',
+    },
+    modeBtnOn: { backgroundColor: t.colors.accent, borderColor: t.colors.accent },
+    modeText: { color: t.colors.textMuted, fontSize: 15, fontWeight: '700' },
+    modeTextOn: { color: '#fff' },
+    swatchRow: { flexDirection: 'row', gap: 14 },
+    swatchWrap: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 2,
+      borderColor: 'transparent',
+    },
+    swatchWrapOn: { borderColor: t.colors.text },
+    swatch: { width: 28, height: 28, borderRadius: 14 },
+    emptyRow: { paddingHorizontal: 4, paddingVertical: 6 },
+    emptyText: { color: t.colors.textFaint, fontSize: 14 },
+    unblock: { color: t.colors.accent, fontSize: 14, fontWeight: '700' },
+    version: { color: t.colors.textFaint, fontSize: 12, textAlign: 'center', marginTop: 28 },
+  });

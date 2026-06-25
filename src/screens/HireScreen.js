@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientText from '../components/GradientText';
 import GradientButton from '../components/GradientButton';
+import { useTheme } from '../theme/ThemeContext';
 import { NEED_CATEGORIES, matchProviders } from '../data/needMatch';
 
 function initialsOf(name) {
@@ -20,6 +21,8 @@ function initialsOf(name) {
 }
 
 export default function HireScreen({ onOpenSettings }) {
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [category, setCategory] = useState(null);
   const [text, setText] = useState('');
   const [requested, setRequested] = useState({});
@@ -86,7 +89,7 @@ export default function HireScreen({ onOpenSettings }) {
             value={text}
             onChangeText={setText}
             placeholder="e.g. mow my lawn this weekend"
-            placeholderTextColor="#5A5A68"
+            placeholderTextColor={theme.colors.inputPlaceholder}
           />
 
           <Text style={styles.label}>category</Text>
@@ -164,116 +167,117 @@ export default function HireScreen({ onOpenSettings }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  flex: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 8,
-  },
-  logo: { fontSize: 26, fontWeight: '800', color: '#6C5CE7' },
-  gearBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-  },
-  gear: { color: '#B8B8C7', fontSize: 20 },
-  content: { paddingHorizontal: 16, paddingBottom: 32 },
-  lead: {
-    color: '#C8C8D4',
-    fontSize: 15,
-    lineHeight: 21,
-    paddingHorizontal: 4,
-    marginTop: 4,
-  },
-  label: {
-    color: '#B8B8C7',
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 20,
-    marginBottom: 10,
-    paddingHorizontal: 4,
-  },
-  input: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    color: '#fff',
-    fontSize: 16,
-  },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 4 },
-  chip: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 20,
-  },
-  chipOn: { backgroundColor: '#6C5CE7', borderColor: '#6C5CE7' },
-  chipText: { color: '#B8B8C7', fontSize: 13, fontWeight: '600' },
-  chipTextOn: { color: '#fff' },
-  resultsHead: {
-    color: '#8A8A99',
-    fontSize: 13,
-    fontWeight: '700',
-    marginTop: 22,
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  card: {
-    backgroundColor: '#16161D',
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: '#26262F',
-    padding: 16,
-    marginBottom: 14,
-  },
-  cardTop: { flexDirection: 'row', alignItems: 'center' },
-  avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#6C5CE7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  avatarText: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  cardHead: { flex: 1 },
-  name: { color: '#fff', fontSize: 17, fontWeight: '700' },
-  title: { color: '#6C5CE7', fontSize: 13, fontWeight: '600', marginTop: 1 },
-  meta: { color: '#8A8A99', fontSize: 12, marginTop: 3 },
-  rate: { color: '#2ECC71', fontSize: 14, fontWeight: '700' },
-  bio: { color: '#C8C8D4', fontSize: 14, lineHeight: 20, marginTop: 12 },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12, marginBottom: 14 },
-  tag: {
-    backgroundColor: '#232331',
-    paddingHorizontal: 11,
-    paddingVertical: 6,
-    borderRadius: 14,
-  },
-  tagText: { color: '#A8A8B8', fontSize: 12, fontWeight: '600' },
-  quoteGrad: { paddingVertical: 13, borderRadius: 22 },
-  requestedPill: {
-    backgroundColor: '#16321F',
-    borderWidth: 1,
-    borderColor: '#2ECC71',
-    borderRadius: 22,
-    paddingVertical: 13,
-    alignItems: 'center',
-  },
-  requestedText: { color: '#2ECC71', fontSize: 15, fontWeight: '700' },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    flex: { flex: 1 },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingTop: 8,
+      paddingBottom: 8,
+    },
+    logo: { fontSize: 26, fontWeight: '800', color: t.colors.accent },
+    gearBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+    },
+    gear: { color: t.colors.textSoft, fontSize: 20 },
+    content: { paddingHorizontal: 16, paddingBottom: 32 },
+    lead: {
+      color: t.colors.textSoft,
+      fontSize: 15,
+      lineHeight: 21,
+      paddingHorizontal: 4,
+      marginTop: 4,
+    },
+    label: {
+      color: t.colors.textSoft,
+      fontSize: 14,
+      fontWeight: '600',
+      marginTop: 20,
+      marginBottom: 10,
+      paddingHorizontal: 4,
+    },
+    input: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      color: t.colors.text,
+      fontSize: 16,
+    },
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 4 },
+    chip: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      paddingHorizontal: 14,
+      paddingVertical: 9,
+      borderRadius: 20,
+    },
+    chipOn: { backgroundColor: t.colors.accent, borderColor: t.colors.accent },
+    chipText: { color: t.colors.textSoft, fontSize: 13, fontWeight: '600' },
+    chipTextOn: { color: t.colors.onAccent },
+    resultsHead: {
+      color: t.colors.textMuted,
+      fontSize: 13,
+      fontWeight: '700',
+      marginTop: 22,
+      marginBottom: 12,
+      paddingHorizontal: 4,
+    },
+    card: {
+      backgroundColor: t.colors.surface,
+      borderRadius: 18,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      padding: 16,
+      marginBottom: 14,
+    },
+    cardTop: { flexDirection: 'row', alignItems: 'center' },
+    avatar: {
+      width: 52,
+      height: 52,
+      borderRadius: 26,
+      backgroundColor: t.colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    avatarText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+    cardHead: { flex: 1 },
+    name: { color: t.colors.text, fontSize: 17, fontWeight: '700' },
+    title: { color: t.colors.accent, fontSize: 13, fontWeight: '600', marginTop: 1 },
+    meta: { color: t.colors.textMuted, fontSize: 12, marginTop: 3 },
+    rate: { color: t.colors.success, fontSize: 14, fontWeight: '700' },
+    bio: { color: t.colors.textSoft, fontSize: 14, lineHeight: 20, marginTop: 12 },
+    tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12, marginBottom: 14 },
+    tag: {
+      backgroundColor: t.colors.surface2,
+      paddingHorizontal: 11,
+      paddingVertical: 6,
+      borderRadius: 14,
+    },
+    tagText: { color: t.colors.textMuted, fontSize: 12, fontWeight: '600' },
+    quoteGrad: { paddingVertical: 13, borderRadius: 22 },
+    requestedPill: {
+      backgroundColor: t.colors.surface2,
+      borderWidth: 1,
+      borderColor: t.colors.success,
+      borderRadius: 22,
+      paddingVertical: 13,
+      alignItems: 'center',
+    },
+    requestedText: { color: t.colors.success, fontSize: 15, fontWeight: '700' },
+  });

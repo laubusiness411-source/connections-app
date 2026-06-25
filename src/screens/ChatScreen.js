@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,9 +15,12 @@ import {
   sendMessage,
   subscribeToMessages,
 } from '../lib/db';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function ChatScreen({ match, myId, onBack }) {
   const { matchId, profile } = match;
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const scrollRef = useRef(null);
@@ -101,7 +104,7 @@ export default function ChatScreen({ match, myId, onBack }) {
             value={text}
             onChangeText={setText}
             placeholder="message…"
-            placeholderTextColor="#5A5A68"
+            placeholderTextColor={theme.colors.inputPlaceholder}
             multiline
           />
           <TouchableOpacity
@@ -117,68 +120,69 @@ export default function ChatScreen({ match, myId, onBack }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  flex: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1A1A22',
-  },
-  back: { color: '#6C5CE7', fontSize: 16, fontWeight: '700', width: 50 },
-  name: { color: '#fff', fontSize: 17, fontWeight: '700' },
-  messages: { padding: 16, paddingBottom: 8 },
-  matchedNote: {
-    color: '#6A6A78',
-    fontSize: 13,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  bubbleRow: { flexDirection: 'row', marginBottom: 8 },
-  rowMine: { justifyContent: 'flex-end' },
-  rowTheirs: { justifyContent: 'flex-start' },
-  bubble: {
-    maxWidth: '78%',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 18,
-  },
-  mine: { backgroundColor: '#6C5CE7', borderBottomRightRadius: 4 },
-  theirs: { backgroundColor: '#1E1E28', borderBottomLeftRadius: 4 },
-  bubbleText: { color: '#E4E4ED', fontSize: 15, lineHeight: 20 },
-  bubbleTextMine: { color: '#fff' },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#1A1A22',
-  },
-  input: {
-    flex: 1,
-    maxHeight: 110,
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
-    color: '#fff',
-    fontSize: 15,
-  },
-  sendBtn: {
-    backgroundColor: '#6C5CE7',
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 11,
-  },
-  sendBtnOff: { backgroundColor: '#2A2A38' },
-  sendText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    flex: { flex: 1 },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: t.colors.border,
+    },
+    back: { color: t.colors.accent, fontSize: 16, fontWeight: '700', width: 50 },
+    name: { color: t.colors.text, fontSize: 17, fontWeight: '700' },
+    messages: { padding: 16, paddingBottom: 8 },
+    matchedNote: {
+      color: t.colors.textFaint,
+      fontSize: 13,
+      textAlign: 'center',
+      marginBottom: 16,
+    },
+    bubbleRow: { flexDirection: 'row', marginBottom: 8 },
+    rowMine: { justifyContent: 'flex-end' },
+    rowTheirs: { justifyContent: 'flex-start' },
+    bubble: {
+      maxWidth: '78%',
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderRadius: 18,
+    },
+    mine: { backgroundColor: t.colors.accent, borderBottomRightRadius: 4 },
+    theirs: { backgroundColor: t.colors.surface, borderBottomLeftRadius: 4 },
+    bubbleText: { color: t.colors.textSoft, fontSize: 15, lineHeight: 20 },
+    bubbleTextMine: { color: '#fff' },
+    inputRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      gap: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderTopWidth: 1,
+      borderTopColor: t.colors.border,
+    },
+    input: {
+      flex: 1,
+      maxHeight: 110,
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      borderRadius: 20,
+      paddingHorizontal: 16,
+      paddingTop: 10,
+      paddingBottom: 10,
+      color: t.colors.text,
+      fontSize: 15,
+    },
+    sendBtn: {
+      backgroundColor: t.colors.accent,
+      borderRadius: 20,
+      paddingHorizontal: 18,
+      paddingVertical: 11,
+    },
+    sendBtnOff: { backgroundColor: t.colors.surface2 },
+    sendText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  });

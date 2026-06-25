@@ -4,8 +4,11 @@ import { generateMatchReason } from '../data/matchReason';
 import GradientText from './GradientText';
 import GradientButton from './GradientButton';
 import Confetti from './Confetti';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwiping }) {
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const myInitials = myProfile?.name
     ? myProfile.name.split(' ').map((n) => n[0]).join('')
     : 'YOU';
@@ -23,22 +26,16 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
 
       <View style={styles.avatars}>
         {myProfile?.photoUri ? (
-          <Image
-            source={{ uri: myProfile.photoUri }}
-            style={[styles.avatar, { borderColor: '#0B0B0F' }]}
-          />
+          <Image source={{ uri: myProfile.photoUri }} style={[styles.avatar, styles.avBorder]} />
         ) : (
-          <View style={[styles.avatar, { backgroundColor: '#6C5CE7' }]}>
+          <View style={[styles.avatar, styles.avMe]}>
             <Text style={styles.avatarInitials}>{myInitials}</Text>
           </View>
         )}
         {profile?.photoUri ? (
-          <Image
-            source={{ uri: profile.photoUri }}
-            style={[styles.avatar, styles.avatarOverlap, { borderColor: '#0B0B0F' }]}
-          />
+          <Image source={{ uri: profile.photoUri }} style={[styles.avatar, styles.avatarOverlap, styles.avBorder]} />
         ) : (
-          <View style={[styles.avatar, styles.avatarOverlap, { backgroundColor: '#00B894' }]}>
+          <View style={[styles.avatar, styles.avatarOverlap, styles.avThem]}>
             <Text style={styles.avatarInitials}>
               {profile.name.split(' ').map((n) => n[0]).join('')}
             </Text>
@@ -54,11 +51,7 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
         <Text style={styles.reasonText}>{reason}</Text>
       </View>
 
-      <GradientButton
-        title="lock in a call"
-        onPress={onSchedule}
-        style={styles.primaryBtn}
-      />
+      <GradientButton title="lock in a call" onPress={onSchedule} style={styles.primaryBtn} />
 
       <TouchableOpacity style={styles.secondaryBtn} onPress={onKeepSwiping}>
         <Text style={styles.secondaryBtnText}>keep swiping</Text>
@@ -67,49 +60,53 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(11,11,15,0.97)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-    zIndex: 100,
-  },
-  title: { color: '#6C5CE7', fontSize: 40, fontWeight: '800' },
-  subtitle: { color: '#C8C8D4', fontSize: 16, marginTop: 8, textAlign: 'center' },
-  avatars: { flexDirection: 'row', marginTop: 32, marginBottom: 16 },
-  avatar: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: '#0B0B0F',
-  },
-  avatarOverlap: { marginLeft: -20 },
-  avatarInitials: { color: '#fff', fontSize: 22, fontWeight: '700' },
-  matchName: { color: '#fff', fontSize: 22, fontWeight: '700', marginTop: 12 },
-  matchRole: { color: '#8A8A99', fontSize: 14, marginTop: 2 },
-  reasonCard: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#2E2A45',
-    borderRadius: 16,
-    padding: 16,
-    marginTop: 24,
-    width: '100%',
-  },
-  reasonLabel: {
-    color: '#A99CF0',
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-    marginBottom: 6,
-  },
-  reasonText: { color: '#E4E4ED', fontSize: 15, lineHeight: 21 },
-  primaryBtn: { width: '100%', marginTop: 24 },
-  secondaryBtn: { paddingVertical: 16, marginTop: 8 },
-  secondaryBtnText: { color: '#8A8A99', fontSize: 15, fontWeight: '600' },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: t.colors.overlay,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 32,
+      zIndex: 100,
+    },
+    title: { color: t.colors.accent, fontSize: 40, fontWeight: '800' },
+    subtitle: { color: t.colors.textSoft, fontSize: 16, marginTop: 8, textAlign: 'center' },
+    avatars: { flexDirection: 'row', marginTop: 32, marginBottom: 16 },
+    avatar: {
+      width: 88,
+      height: 88,
+      borderRadius: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 3,
+      borderColor: t.colors.bg,
+    },
+    avBorder: { borderColor: t.colors.bg },
+    avMe: { backgroundColor: t.colors.accent },
+    avThem: { backgroundColor: '#00B894' },
+    avatarOverlap: { marginLeft: -20 },
+    avatarInitials: { color: '#fff', fontSize: 22, fontWeight: '700' },
+    matchName: { color: t.colors.text, fontSize: 22, fontWeight: '700', marginTop: 12 },
+    matchRole: { color: t.colors.textMuted, fontSize: 14, marginTop: 2 },
+    reasonCard: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.borderAccent,
+      borderRadius: 16,
+      padding: 16,
+      marginTop: 24,
+      width: '100%',
+    },
+    reasonLabel: {
+      color: t.colors.accentSoft,
+      fontSize: 12,
+      fontWeight: '800',
+      letterSpacing: 0.5,
+      marginBottom: 6,
+    },
+    reasonText: { color: t.colors.textSoft, fontSize: 15, lineHeight: 21 },
+    primaryBtn: { width: '100%', marginTop: 24 },
+    secondaryBtn: { paddingVertical: 16, marginTop: 8 },
+    secondaryBtnText: { color: t.colors.textMuted, fontSize: 15, fontWeight: '600' },
+  });

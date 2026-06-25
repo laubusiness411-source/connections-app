@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import GradientButton from './GradientButton';
+import { useTheme } from '../theme/ThemeContext';
 
 // Grid geometry (kept in sync with styles below) for drag hit-testing.
 const GUTTER_W = 58;
@@ -56,6 +57,8 @@ function buildDays() {
 export default function SchedulingScreen({ profile, onClose }) {
   const firstName = profile.name.split(' ')[0];
   const days = useMemo(buildDays, []);
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
 
   const [selected, setSelected] = useState({}); // { "dayKey|blockIdx": true }
   const [callType, setCallType] = useState('Video');
@@ -249,7 +252,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           <TextInput
             style={styles.input}
             placeholder={`Hey ${firstName}, excited to connect! Here's when I'm free.`}
-            placeholderTextColor="#5A5A68"
+            placeholderTextColor={theme.colors.inputPlaceholder}
             value={note}
             onChangeText={setNote}
             multiline
@@ -275,113 +278,113 @@ export default function SchedulingScreen({ profile, onClose }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  cancel: { color: '#8A8A99', fontSize: 16, fontWeight: '600', width: 52 },
-  headerTitle: { color: '#fff', fontSize: 17, fontWeight: '700' },
-  scrollContent: { paddingHorizontal: 16, paddingBottom: 24 },
-  lead: {
-    color: '#C8C8D4',
-    fontSize: 15,
-    lineHeight: 21,
-    marginBottom: 18,
-    paddingHorizontal: 4,
-  },
-  gridHeaderRow: { flexDirection: 'row', marginBottom: 6 },
-  dayGutter: { width: 58, justifyContent: 'center' },
-  blockHead: { flex: 1, alignItems: 'center' },
-  blockHeadLabel: { color: '#B8B8C7', fontSize: 11, fontWeight: '700' },
-  blockHeadSub: { color: '#6A6A78', fontSize: 10, marginTop: 1 },
-  gridRow: { flexDirection: 'row', marginBottom: 6, alignItems: 'stretch' },
-  dayWeekday: { color: '#fff', fontSize: 13, fontWeight: '700' },
-  dayLabel: { color: '#6A6A78', fontSize: 11, marginTop: 1 },
-  cell: {
-    flex: 1,
-    height: 44,
-    marginHorizontal: 3,
-    borderRadius: 8,
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-  },
-  cellOn: { backgroundColor: '#6C5CE7', borderColor: '#6C5CE7' },
-  count: {
-    color: '#8A8A99',
-    fontSize: 13,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginTop: 12,
-  },
-  label: {
-    color: '#B8B8C7',
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 24,
-    marginBottom: 10,
-    paddingHorizontal: 4,
-  },
-  chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 4 },
-  chip: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 22,
-  },
-  chipOn: { backgroundColor: '#6C5CE7', borderColor: '#6C5CE7' },
-  chipText: { color: '#B8B8C7', fontSize: 14, fontWeight: '600' },
-  chipTextOn: { color: '#fff' },
-  input: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    color: '#fff',
-    fontSize: 15,
-    height: 96,
-    marginHorizontal: 4,
-  },
-  footer: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#1A1A22',
-  },
-  cta: { width: '100%' },
-  // Confirmation
-  confirmWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 36,
-  },
-  checkCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: '#6C5CE7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-  },
-  checkMark: { color: '#fff', fontSize: 46, fontWeight: '800' },
-  confirmTitle: { color: '#fff', fontSize: 26, fontWeight: '800' },
-  confirmText: {
-    color: '#C8C8D4',
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: 'center',
-    marginTop: 12,
-    marginBottom: 36,
-  },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+    },
+    cancel: { color: t.colors.textMuted, fontSize: 16, fontWeight: '600', width: 52 },
+    headerTitle: { color: t.colors.text, fontSize: 17, fontWeight: '700' },
+    scrollContent: { paddingHorizontal: 16, paddingBottom: 24 },
+    lead: {
+      color: t.colors.textSoft,
+      fontSize: 15,
+      lineHeight: 21,
+      marginBottom: 18,
+      paddingHorizontal: 4,
+    },
+    gridHeaderRow: { flexDirection: 'row', marginBottom: 6 },
+    dayGutter: { width: 58, justifyContent: 'center' },
+    blockHead: { flex: 1, alignItems: 'center' },
+    blockHeadLabel: { color: t.colors.textSoft, fontSize: 11, fontWeight: '700' },
+    blockHeadSub: { color: t.colors.textFaint, fontSize: 10, marginTop: 1 },
+    gridRow: { flexDirection: 'row', marginBottom: 6, alignItems: 'stretch' },
+    dayWeekday: { color: t.colors.text, fontSize: 13, fontWeight: '700' },
+    dayLabel: { color: t.colors.textFaint, fontSize: 11, marginTop: 1 },
+    cell: {
+      flex: 1,
+      height: 44,
+      marginHorizontal: 3,
+      borderRadius: 8,
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+    },
+    cellOn: { backgroundColor: t.colors.accent, borderColor: t.colors.accent },
+    count: {
+      color: t.colors.textMuted,
+      fontSize: 13,
+      fontWeight: '600',
+      textAlign: 'center',
+      marginTop: 12,
+    },
+    label: {
+      color: t.colors.textSoft,
+      fontSize: 14,
+      fontWeight: '600',
+      marginTop: 24,
+      marginBottom: 10,
+      paddingHorizontal: 4,
+    },
+    chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 4 },
+    chip: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      paddingHorizontal: 18,
+      paddingVertical: 10,
+      borderRadius: 22,
+    },
+    chipOn: { backgroundColor: t.colors.accent, borderColor: t.colors.accent },
+    chipText: { color: t.colors.textSoft, fontSize: 14, fontWeight: '600' },
+    chipTextOn: { color: t.colors.onAccent },
+    input: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      color: t.colors.text,
+      fontSize: 15,
+      height: 96,
+      marginHorizontal: 4,
+    },
+    footer: {
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderTopWidth: 1,
+      borderTopColor: t.colors.border,
+    },
+    cta: { width: '100%' },
+    confirmWrap: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 36,
+    },
+    checkCircle: {
+      width: 88,
+      height: 88,
+      borderRadius: 44,
+      backgroundColor: t.colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 24,
+    },
+    checkMark: { color: '#fff', fontSize: 46, fontWeight: '800' },
+    confirmTitle: { color: t.colors.text, fontSize: 26, fontWeight: '800' },
+    confirmText: {
+      color: t.colors.textSoft,
+      fontSize: 15,
+      lineHeight: 22,
+      textAlign: 'center',
+      marginTop: 12,
+      marginBottom: 36,
+    },
+  });

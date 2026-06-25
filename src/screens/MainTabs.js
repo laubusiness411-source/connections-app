@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThisWeekScreen from './ThisWeekScreen';
@@ -10,6 +10,7 @@ import EditProfileScreen from './EditProfileScreen';
 import MatchScreen from '../components/MatchScreen';
 import SchedulingScreen from '../components/SchedulingScreen';
 import { EngagementProvider } from '../context/EngagementContext';
+import { useTheme } from '../theme/ThemeContext';
 
 const TABS = [
   { key: 'week', label: 'This Week', icon: '🎯' },
@@ -25,6 +26,8 @@ export default function MainTabs({
   onLogout,
 }) {
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [tab, setTab] = useState('week');
   const [blocked, setBlocked] = useState([]);
   const [match, setMatch] = useState(null);
@@ -69,7 +72,9 @@ export default function MainTabs({
             onMatch={setMatch}
           />
         )}
-        {tab === 'chats' && <ChatsScreen myId={myProfile?.id} />}
+        {tab === 'chats' && (
+          <ChatsScreen myId={myProfile?.id} onOpenSettings={openSettings} />
+        )}
       </View>
 
       {/* Bottom tab bar */}
@@ -147,23 +152,24 @@ export default function MainTabs({
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  content: { flex: 1 },
-  tabBar: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#1A1A22',
-    backgroundColor: '#0B0B0F',
-    paddingTop: 10,
-  },
-  tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  tabIcon: { fontSize: 20 },
-  tabInactive: { opacity: 0.45 },
-  tabLabel: { color: '#6A6A78', fontSize: 11, fontWeight: '700', marginTop: 3 },
-  tabLabelActive: { color: '#6C5CE7' },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0B0B0F',
-  },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    content: { flex: 1 },
+    tabBar: {
+      flexDirection: 'row',
+      borderTopWidth: 1,
+      borderTopColor: t.colors.border,
+      backgroundColor: t.colors.bg,
+      paddingTop: 10,
+    },
+    tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    tabIcon: { fontSize: 20 },
+    tabInactive: { opacity: 0.45 },
+    tabLabel: { color: t.colors.textFaint, fontSize: 11, fontWeight: '700', marginTop: 3 },
+    tabLabelActive: { color: t.colors.accent },
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: t.colors.bg,
+    },
+  });

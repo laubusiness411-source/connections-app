@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,10 +8,13 @@ import {
   Alert,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useTheme } from '../theme/ThemeContext';
 
-// Tappable circular avatar: shows the chosen photo, or initials as a
-// fallback. Tapping opens the photo library to pick/replace the image.
+// Tappable circular avatar: shows the chosen photo, or initials as fallback.
 export default function AvatarPicker({ name, photoUri, onChange, size = 96 }) {
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+
   const initials = name
     ? name.split(' ').map((n) => n[0]).join('').slice(0, 2)
     : '?';
@@ -61,28 +64,29 @@ export default function AvatarPicker({ name, photoUri, onChange, size = 96 }) {
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: { alignItems: 'center' },
-  img: { backgroundColor: '#1E1E28' },
-  fallback: {
-    backgroundColor: '#6C5CE7',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  initials: { color: '#fff', fontWeight: '700' },
-  editBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#16161D',
-    borderWidth: 2,
-    borderColor: '#0B0B0F',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  editIcon: { color: '#fff', fontSize: 14 },
-  hint: { color: '#6A6A78', fontSize: 12, marginTop: 8 },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    wrap: { alignItems: 'center' },
+    img: { backgroundColor: t.colors.surface3 },
+    fallback: {
+      backgroundColor: t.colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    initials: { color: '#fff', fontWeight: '700' },
+    editBadge: {
+      position: 'absolute',
+      bottom: 0,
+      right: 0,
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      backgroundColor: t.colors.surface,
+      borderWidth: 2,
+      borderColor: t.colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    editIcon: { color: t.colors.text, fontSize: 14 },
+    hint: { color: t.colors.textFaint, fontSize: 12, marginTop: 8 },
+  });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -14,9 +14,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientText from '../components/GradientText';
 import GradientButton from '../components/GradientButton';
 import { supabase } from '../lib/supabase';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function AuthScreen() {
-  const [mode, setMode] = useState('signup'); // 'signup' | 'login'
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+  const [mode, setMode] = useState('signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -34,14 +37,12 @@ export default function AuthScreen() {
           password,
         });
         if (error) throw error;
-        // App's auth listener handles routing on success.
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
         });
         if (error) throw error;
-        // If email confirmation is on, there's no session yet.
         if (!data.session) {
           Alert.alert(
             'Check your email',
@@ -76,7 +77,7 @@ export default function AuthScreen() {
               value={email}
               onChangeText={setEmail}
               placeholder="you@email.com"
-              placeholderTextColor="#5A5A68"
+              placeholderTextColor={theme.colors.inputPlaceholder}
               autoCapitalize="none"
               keyboardType="email-address"
               autoComplete="email"
@@ -88,7 +89,7 @@ export default function AuthScreen() {
               value={password}
               onChangeText={setPassword}
               placeholder="at least 6 characters"
-              placeholderTextColor="#5A5A68"
+              placeholderTextColor={theme.colors.inputPlaceholder}
               secureTextEntry
               autoCapitalize="none"
             />
@@ -100,7 +101,7 @@ export default function AuthScreen() {
               style={styles.submit}
             />
             {busy && (
-              <ActivityIndicator color="#6C5CE7" style={styles.spinner} />
+              <ActivityIndicator color={theme.colors.accent} style={styles.spinner} />
             )}
           </View>
 
@@ -111,7 +112,7 @@ export default function AuthScreen() {
           >
             <Text style={styles.toggleText}>
               {isLogin
-                ? "new here? create an account"
+                ? 'new here? create an account'
                 : 'already have an account? log in'}
             </Text>
           </TouchableOpacity>
@@ -121,38 +122,39 @@ export default function AuthScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B0B0F' },
-  flex: { flex: 1 },
-  body: { flex: 1, justifyContent: 'center', paddingHorizontal: 28 },
-  logo: { fontSize: 44, fontWeight: '800', color: '#6C5CE7', textAlign: 'center' },
-  tagline: {
-    color: '#9A9AAB',
-    fontSize: 15,
-    textAlign: 'center',
-    marginTop: 10,
-    marginBottom: 36,
-  },
-  form: {},
-  label: {
-    color: '#B8B8C7',
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#16161D',
-    borderWidth: 1,
-    borderColor: '#26262F',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    color: '#fff',
-    fontSize: 16,
-  },
-  submit: { marginTop: 28 },
-  spinner: { marginTop: 16 },
-  toggle: { marginTop: 24, alignItems: 'center' },
-  toggleText: { color: '#8A8A99', fontSize: 14, fontWeight: '600' },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: t.colors.bg },
+    flex: { flex: 1 },
+    body: { flex: 1, justifyContent: 'center', paddingHorizontal: 28 },
+    logo: { fontSize: 44, fontWeight: '800', color: t.colors.accent, textAlign: 'center' },
+    tagline: {
+      color: t.colors.textMuted,
+      fontSize: 16,
+      textAlign: 'center',
+      marginTop: 12,
+      marginBottom: 36,
+    },
+    form: {},
+    label: {
+      color: t.colors.textSoft,
+      fontSize: 14,
+      fontWeight: '600',
+      marginTop: 16,
+      marginBottom: 8,
+    },
+    input: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      color: t.colors.text,
+      fontSize: 16,
+    },
+    submit: { marginTop: 28 },
+    spinner: { marginTop: 16 },
+    toggle: { marginTop: 24, alignItems: 'center' },
+    toggleText: { color: t.colors.textMuted, fontSize: 14, fontWeight: '600' },
+  });

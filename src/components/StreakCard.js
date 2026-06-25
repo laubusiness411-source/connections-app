@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import {
   useEngagement,
   SWIPE_GOAL,
   INTRO_GOAL,
 } from '../context/EngagementContext';
+import { useTheme } from '../theme/ThemeContext';
 
-function Quest({ done, label, progress }) {
+function Quest({ done, label, progress, styles }) {
   return (
     <View style={styles.quest}>
       <View style={[styles.check, done && styles.checkDone]}>
@@ -22,6 +23,8 @@ function Quest({ done, label, progress }) {
 
 export default function StreakCard() {
   const engagement = useEngagement();
+  const { theme } = useTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const state = engagement?.state;
   if (!state) return null;
 
@@ -31,7 +34,7 @@ export default function StreakCard() {
 
   const swipeDone = swipes >= SWIPE_GOAL;
   const introDone = intros >= INTRO_GOAL;
-  const allDone = swipeDone && introDone; // check-in is implicit (you're here)
+  const allDone = swipeDone && introDone;
 
   return (
     <View style={styles.card}>
@@ -56,59 +59,70 @@ export default function StreakCard() {
       </View>
 
       <View style={styles.quests}>
-        <Quest done label="opened the app" />
+        <Quest done label="opened the app" styles={styles} />
         <Quest
           done={swipeDone}
           label="swipe on 5 people"
           progress={`(${Math.min(swipes, SWIPE_GOAL)}/${SWIPE_GOAL})`}
+          styles={styles}
         />
         <Quest
           done={introDone}
           label="request an intro"
           progress={`(${Math.min(intros, INTRO_GOAL)}/${INTRO_GOAL})`}
+          styles={styles}
         />
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#1A140F',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#4A3320',
-    padding: 16,
-    marginTop: 12,
-  },
-  header: { flexDirection: 'row', alignItems: 'center' },
-  flame: { fontSize: 32, marginRight: 12 },
-  headText: { flex: 1 },
-  streakNum: { color: '#fff', fontSize: 22, fontWeight: '800' },
-  streakSub: { color: '#C9A98A', fontSize: 13, marginTop: 2 },
-  best: { alignItems: 'center', paddingHorizontal: 8 },
-  bestNum: { color: '#FDCB6E', fontSize: 18, fontWeight: '800' },
-  bestLabel: { color: '#8A7A60', fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
-  quests: {
-    marginTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: '#2E2418',
-    paddingTop: 12,
-    gap: 10,
-  },
-  quest: { flexDirection: 'row', alignItems: 'center' },
-  check: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#4A3320',
-    marginRight: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkDone: { backgroundColor: '#2ECC71', borderColor: '#2ECC71' },
-  checkMark: { color: '#0B0B0F', fontSize: 12, fontWeight: '900' },
-  questLabel: { color: '#C8C8D4', fontSize: 14, fontWeight: '600' },
-  questLabelDone: { color: '#6A6A78', textDecorationLine: 'line-through' },
-});
+const makeStyles = (t) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: t.colors.surface,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: t.colors.borderAccent,
+      padding: 16,
+      marginTop: 12,
+    },
+    header: { flexDirection: 'row', alignItems: 'center' },
+    flame: { fontSize: 32, marginRight: 12 },
+    headText: { flex: 1 },
+    streakNum: { color: t.colors.text, fontSize: 22, fontWeight: '800' },
+    streakSub: { color: t.colors.textMuted, fontSize: 13, marginTop: 2 },
+    best: { alignItems: 'center', paddingHorizontal: 8 },
+    bestNum: { color: t.colors.warn, fontSize: 18, fontWeight: '800' },
+    bestLabel: {
+      color: t.colors.textFaint,
+      fontSize: 10,
+      fontWeight: '700',
+      letterSpacing: 0.5,
+    },
+    quests: {
+      marginTop: 14,
+      borderTopWidth: 1,
+      borderTopColor: t.colors.border,
+      paddingTop: 12,
+      gap: 10,
+    },
+    quest: { flexDirection: 'row', alignItems: 'center' },
+    check: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      borderWidth: 2,
+      borderColor: t.colors.border,
+      marginRight: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    checkDone: { backgroundColor: t.colors.success, borderColor: t.colors.success },
+    checkMark: { color: '#0B0B0F', fontSize: 12, fontWeight: '900' },
+    questLabel: { color: t.colors.textSoft, fontSize: 14, fontWeight: '600' },
+    questLabelDone: {
+      color: t.colors.textFaint,
+      textDecorationLine: 'line-through',
+    },
+  });
