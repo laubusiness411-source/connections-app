@@ -5,3 +5,8 @@
 
 export const SUPABASE_URL = 'https://dwsmfvtbltzhmzthwjuk.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_275bDRTTQ7vy9n45CNOG0g_JGbjIkRo';
+
+// DEV TOGGLE: keep the user logged in across app reloads/restarts.
+// false = always start on the login screen (handy while testing).
+// true  = remember the session (what you want for the real app).
+export const PERSIST_SESSION = false;
