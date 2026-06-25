@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ChipSelect from '../components/ChipSelect';
 import AvatarPicker from '../components/AvatarPicker';
+import CityAutocomplete from '../components/CityAutocomplete';
 import {
   ROLES,
   COMMITMENTS,
@@ -123,12 +124,10 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
           <ChipSelect options={ROLES} value={role} onChange={setRole} />
 
           <Text style={styles.label}>Location</Text>
-          <TextInput
-            style={styles.input}
+          <CityAutocomplete
             value={location}
-            onChangeText={setLocation}
-            placeholder="City or Remote"
-            placeholderTextColor="#5A5A68"
+            onChange={setLocation}
+            placeholder="start typing a city… or Remote"
           />
 
           <Text style={styles.label}>Commitment</Text>

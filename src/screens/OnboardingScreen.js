@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ChipSelect from '../components/ChipSelect';
 import AvatarPicker from '../components/AvatarPicker';
 import GradientButton from '../components/GradientButton';
+import CityAutocomplete from '../components/CityAutocomplete';
 import { GOAL_EXAMPLES } from '../data/goalMatch';
 import {
   ROLES,
@@ -202,12 +203,10 @@ export default function OnboardingScreen({ onComplete }) {
           {step === 2 && (
             <>
               <Text style={styles.label}>Location</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. San Francisco, CA or Remote"
-                placeholderTextColor="#5A5A68"
+              <CityAutocomplete
                 value={location}
-                onChangeText={setLocation}
+                onChange={setLocation}
+                placeholder="start typing a city… or Remote"
                 autoFocus
               />
               <Text style={styles.label}>Commitment level</Text>
