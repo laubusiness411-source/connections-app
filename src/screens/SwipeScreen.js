@@ -1,86 +1,63 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SwipeCard from '../components/SwipeCard';
-import MatchScreen from '../components/MatchScreen';
-import SchedulingScreen from '../components/SchedulingScreen';
-import SettingsScreen from './SettingsScreen';
-import EditProfileScreen from './EditProfileScreen';
 import GradientText from '../components/GradientText';
 import { PROFILES } from '../data/profiles';
 
-export default function SwipeScreen({ myProfile, onUpdateProfile, onResetProfile }) {
-  // Deck holds profiles not yet acted on; acting removes from the front.
-  const [deck, setDeck] = useState(PROFILES);
-  const [match, setMatch] = useState(null);
-  const [scheduling, setScheduling] = useState(null);
-  const [blocked, setBlocked] = useState([]);
-  const [showSettings, setShowSettings] = useState(false);
-  const [editing, setEditing] = useState(false);
+export default function SwipeScreen({
+  blocked = [],
+  onBlock,
+  onOpenSettings,
+  onMatch,
+}) {
+  const [swiped, setSwiped] = useState([]);
 
-  // Guards against a second swipe firing before the deck re-renders, which
-  // could skip a profile or act on a stale card (e.g. rapid button taps).
+  const swipedIds = useMemo(() => new Set(swiped), [swiped]);
+  const blockedIds = useMemo(() => new Set(blocked.map((b) => b.id)), [blocked]);
+  const deck = useMemo(
+    () => PROFILES.filter((p) => !swipedIds.has(p.id) && !blockedIds.has(p.id)),
+    [swipedIds, blockedIds]
+  );
+
+  // Guards against a second swipe firing before the deck re-renders.
   const lockRef = useRef(false);
   useEffect(() => {
     lockRef.current = false;
   }, [deck]);
 
-  const handleSwipe = useCallback((direction, profile) => {
-    if (lockRef.current || !profile) return;
-    lockRef.current = true;
-    // Match = you swiped right AND they already liked you
-    if (direction === 'right' && profile.likesYou) {
-      setMatch(profile);
-    }
-    setDeck((d) => d.slice(1));
-  }, []);
-
-  const blockProfile = useCallback((profile, { reported } = {}) => {
-    setDeck((d) => d.filter((p) => p.id !== profile.id));
-    setBlocked((b) => (b.some((x) => x.id === profile.id) ? b : [...b, profile]));
-    if (reported) {
-      Alert.alert(
-        'Report received',
-        `Thanks — we'll review ${profile.name.split(' ')[0]}'s profile. They won't appear again.`
-      );
-    }
-  }, []);
+  const handleSwipe = useCallback(
+    (direction, profile) => {
+      if (lockRef.current || !profile) return;
+      lockRef.current = true;
+      if (direction === 'right' && profile.likesYou) {
+        onMatch?.(profile);
+      }
+      setSwiped((s) => [...s, profile.id]);
+    },
+    [onMatch]
+  );
 
   const handleReport = useCallback(
     (profile) => {
       Alert.alert(profile.name, 'What would you like to do?', [
-        {
-          text: 'Block',
-          style: 'destructive',
-          onPress: () => blockProfile(profile),
-        },
+        { text: 'Block', style: 'destructive', onPress: () => onBlock?.(profile) },
         {
           text: 'Report',
           style: 'destructive',
-          onPress: () => blockProfile(profile, { reported: true }),
+          onPress: () => onBlock?.(profile, { reported: true }),
         },
         { text: 'Cancel', style: 'cancel' },
       ]);
     },
-    [blockProfile]
-  );
-
-  const unblock = useCallback(
-    (id) => {
-      setBlocked((b) => {
-        const p = b.find((x) => x.id === id);
-        if (p) setDeck((d) => (d.some((x) => x.id === id) ? d : [...d, p]));
-        return b.filter((x) => x.id !== id);
-      });
-    },
-    []
+    [onBlock]
   );
 
   const reachedEnd = deck.length === 0;
   const top = deck[0];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <View>
           <GradientText style={styles.logo}>CoFounder</GradientText>
@@ -88,7 +65,7 @@ export default function SwipeScreen({ myProfile, onUpdateProfile, onResetProfile
         </View>
         <TouchableOpacity
           style={styles.gearBtn}
-          onPress={() => setShowSettings(true)}
+          onPress={onOpenSettings}
           hitSlop={10}
         >
           <Text style={styles.gear}>⚙</Text>
@@ -104,7 +81,6 @@ export default function SwipeScreen({ myProfile, onUpdateProfile, onResetProfile
             </Text>
           </View>
         ) : (
-          // Render up to 2 cards: render back card first so top sits above it
           deck
             .slice(0, 2)
             .reverse()
@@ -137,53 +113,6 @@ export default function SwipeScreen({ myProfile, onUpdateProfile, onResetProfile
           >
             <Text style={styles.likeIcon}>✓</Text>
           </TouchableOpacity>
-        </View>
-      )}
-
-      {match && (
-        <MatchScreen
-          profile={match}
-          myProfile={myProfile}
-          onSchedule={() => {
-            setScheduling(match);
-            setMatch(null);
-          }}
-          onKeepSwiping={() => setMatch(null)}
-        />
-      )}
-
-      {scheduling && (
-        <View style={[styles.fullOverlay, { zIndex: 200 }]}>
-          <SchedulingScreen
-            profile={scheduling}
-            onClose={() => setScheduling(null)}
-          />
-        </View>
-      )}
-
-      {showSettings && (
-        <View style={[styles.fullOverlay, { zIndex: 300 }]}>
-          <SettingsScreen
-            profile={myProfile}
-            blocked={blocked}
-            onUnblock={unblock}
-            onEditProfile={() => setEditing(true)}
-            onResetProfile={onResetProfile}
-            onClose={() => setShowSettings(false)}
-          />
-        </View>
-      )}
-
-      {editing && (
-        <View style={[styles.fullOverlay, { zIndex: 400 }]}>
-          <EditProfileScreen
-            initialProfile={myProfile}
-            onSave={(updated) => {
-              onUpdateProfile(updated);
-              setEditing(false);
-            }}
-            onCancel={() => setEditing(false)}
-          />
         </View>
       )}
     </SafeAreaView>
@@ -232,10 +161,6 @@ const styles = StyleSheet.create({
   likeBtn: { borderColor: '#2ECC71', backgroundColor: '#16161D' },
   passIcon: { color: '#FF4D6D', fontSize: 28, fontWeight: '700' },
   likeIcon: { color: '#2ECC71', fontSize: 28, fontWeight: '700' },
-  fullOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0B0B0F',
-  },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
   emptyText: { color: '#8A8A99', fontSize: 14, marginTop: 8, textAlign: 'center' },

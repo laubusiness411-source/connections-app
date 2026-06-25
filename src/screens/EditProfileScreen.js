@@ -23,6 +23,7 @@ import {
 // Single-page form for editing an existing profile (vs the step wizard
 // used for first-time onboarding).
 export default function EditProfileScreen({ initialProfile, onSave, onCancel }) {
+  const [goal, setGoal] = useState(initialProfile.goal || '');
   const [photoUri, setPhotoUri] = useState(initialProfile.photoUri || null);
   const [name, setName] = useState(initialProfile.name || '');
   const [role, setRole] = useState(initialProfile.role || '');
@@ -47,6 +48,7 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
   const removeSkill = (s) => setSkills(skills.filter((x) => x !== s));
 
   const valid =
+    goal.trim().length >= 3 &&
     name.trim() &&
     role &&
     location.trim() &&
@@ -60,6 +62,7 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
     if (!valid) return;
     onSave({
       ...initialProfile,
+      goal: goal.trim(),
       photoUri,
       name: name.trim(),
       role,
@@ -97,6 +100,15 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
           <View style={styles.avatarRow}>
             <AvatarPicker name={name} photoUri={photoUri} onChange={setPhotoUri} />
           </View>
+
+          <Text style={styles.label}>Your 90-day goal 🎯</Text>
+          <TextInput
+            style={styles.input}
+            value={goal}
+            onChangeText={setGoal}
+            placeholder="e.g. Start an AI agency for painters"
+            placeholderTextColor="#5A5A68"
+          />
 
           <Text style={styles.label}>Name</Text>
           <TextInput

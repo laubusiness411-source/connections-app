@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ChipSelect from '../components/ChipSelect';
 import AvatarPicker from '../components/AvatarPicker';
 import GradientButton from '../components/GradientButton';
+import { GOAL_EXAMPLES } from '../data/goalMatch';
 import {
   ROLES,
   COMMITMENTS,
@@ -21,11 +22,12 @@ import {
   MAX_SKILLS,
 } from '../data/profileFields';
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 export default function OnboardingScreen({ onComplete }) {
   const [step, setStep] = useState(0);
 
+  const [goal, setGoal] = useState('');
   const [photoUri, setPhotoUri] = useState(null);
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
@@ -55,14 +57,16 @@ export default function OnboardingScreen({ onComplete }) {
   const canContinue = () => {
     switch (step) {
       case 0:
-        return name.trim().length > 0 && role.length > 0;
+        return goal.trim().length >= 3;
       case 1:
-        return location.trim().length > 0 && commitment.length > 0;
+        return name.trim().length > 0 && role.length > 0;
       case 2:
-        return ideaStatus.length > 0 && lookingFor.length > 0;
+        return location.trim().length > 0 && commitment.length > 0;
       case 3:
-        return skills.length > 0;
+        return ideaStatus.length > 0 && lookingFor.length > 0;
       case 4:
+        return skills.length > 0;
+      case 5:
         return bio.trim().length >= 20;
       default:
         return false;
@@ -72,6 +76,7 @@ export default function OnboardingScreen({ onComplete }) {
   const finish = () => {
     const profile = {
       id: 'me',
+      goal: goal.trim(),
       photoUri,
       name: name.trim(),
       role,
@@ -99,6 +104,7 @@ export default function OnboardingScreen({ onComplete }) {
   };
 
   const STEP_TITLES = [
+    'your 90-day goal 🎯',
     'the basics 👋',
     'where & how much?',
     'your idea + who you want',
@@ -136,6 +142,42 @@ export default function OnboardingScreen({ onComplete }) {
 
           {step === 0 && (
             <>
+              <Text style={styles.subtitle}>
+                we'll find the people who can actually help you get there.
+              </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. Start an AI agency for painters"
+                placeholderTextColor="#5A5A68"
+                value={goal}
+                onChangeText={setGoal}
+                autoFocus
+              />
+              <Text style={styles.hint}>pick one or write your own:</Text>
+              <View style={styles.chipWrap}>
+                {GOAL_EXAMPLES.map((g) => (
+                  <TouchableOpacity
+                    key={g}
+                    style={[styles.chip, goal === g && styles.chipSelected]}
+                    onPress={() => setGoal(g)}
+                    activeOpacity={0.8}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        goal === g && styles.chipTextSelected,
+                      ]}
+                    >
+                      {g}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </>
+          )}
+
+          {step === 1 && (
+            <>
               <View style={styles.avatarRow}>
                 <AvatarPicker
                   name={name}
@@ -157,7 +199,7 @@ export default function OnboardingScreen({ onComplete }) {
             </>
           )}
 
-          {step === 1 && (
+          {step === 2 && (
             <>
               <Text style={styles.label}>Location</Text>
               <TextInput
@@ -177,7 +219,7 @@ export default function OnboardingScreen({ onComplete }) {
             </>
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <>
               <Text style={styles.label}>Where's your idea at?</Text>
               <ChipSelect
@@ -194,7 +236,7 @@ export default function OnboardingScreen({ onComplete }) {
             </>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <>
               <Text style={styles.label}>
                 Add up to {MAX_SKILLS} skills ({skills.length}/{MAX_SKILLS})
@@ -244,7 +286,7 @@ export default function OnboardingScreen({ onComplete }) {
             </>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <>
               <Text style={styles.label}>
                 Your pitch — what are you building toward and who do you want
@@ -279,7 +321,7 @@ export default function OnboardingScreen({ onComplete }) {
             <View style={styles.backBtnPlaceholder} />
           )}
           <GradientButton
-            title={step === TOTAL_STEPS - 1 ? 'start swiping' : 'continue'}
+            title={step === TOTAL_STEPS - 1 ? 'find my people' : 'continue'}
             onPress={next}
             disabled={!canContinue()}
             style={styles.nextBtn}
@@ -304,6 +346,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 24 },
   title: { color: '#fff', fontSize: 28, fontWeight: '800', marginBottom: 8 },
+  subtitle: { color: '#9A9AAB', fontSize: 15, lineHeight: 21, marginBottom: 18 },
   avatarRow: { alignItems: 'center', marginTop: 12, marginBottom: 4 },
   label: {
     color: '#B8B8C7',

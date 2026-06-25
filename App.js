@@ -3,7 +3,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import SwipeScreen from './src/screens/SwipeScreen';
+import MainTabs from './src/screens/MainTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import { loadProfile, saveProfile, clearProfile } from './src/data/profileStorage';
 
@@ -44,7 +44,7 @@ export default function App() {
             <ActivityIndicator color="#6C5CE7" size="large" />
           </View>
         ) : profile ? (
-          <SwipeScreen
+          <MainTabs
             myProfile={profile}
             onUpdateProfile={handleUpdateProfile}
             onResetProfile={handleResetProfile}
