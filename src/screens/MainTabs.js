@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThisWeekScreen from './ThisWeekScreen';
 import HireScreen from './HireScreen';
 import SwipeScreen from './SwipeScreen';
+import ChatsScreen from './ChatsScreen';
 import SettingsScreen from './SettingsScreen';
 import EditProfileScreen from './EditProfileScreen';
 import MatchScreen from '../components/MatchScreen';
@@ -14,6 +15,7 @@ const TABS = [
   { key: 'week', label: 'This Week', icon: '🎯' },
   { key: 'hire', label: 'Hire', icon: '🛠️' },
   { key: 'swipe', label: 'Swipe', icon: '🔥' },
+  { key: 'chats', label: 'Chats', icon: '💬' },
 ];
 
 export default function MainTabs({
@@ -60,12 +62,14 @@ export default function MainTabs({
         {tab === 'hire' && <HireScreen onOpenSettings={openSettings} />}
         {tab === 'swipe' && (
           <SwipeScreen
+            myId={myProfile?.id}
             blocked={blocked}
             onBlock={handleBlock}
             onOpenSettings={openSettings}
             onMatch={setMatch}
           />
         )}
+        {tab === 'chats' && <ChatsScreen myId={myProfile?.id} />}
       </View>
 
       {/* Bottom tab bar */}

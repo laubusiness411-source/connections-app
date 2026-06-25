@@ -72,3 +72,138 @@ export async function clearMyProfile(userId) {
 export function isProfileComplete(p) {
   return !!(p && p.name && p.goal);
 }
+
+// ---------------------------------------------------------------------------
+// Swipe deck: real users you haven't swiped on yet.
+// ---------------------------------------------------------------------------
+export async function fetchCandidates(userId, excludeIds = []) {
+  const { data: swipeRows } = await supabase
+    .from('swipes')
+    .select('swipee')
+    .eq('swiper', userId);
+  const swiped = new Set((swipeRows || []).map((s) => s.swipee));
+  const excl = new Set(excludeIds);
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .neq('id', userId)
+    .not('name', 'is', null);
+  if (error) {
+    console.warn('fetchCandidates failed:', error.message);
+    return [];
+  }
+  return (data || [])
+    .filter((r) => !swiped.has(r.id) && !excl.has(r.id))
+    .map(toApp);
+}
+
+// Record a swipe. On a reciprocated right-swipe a match row already exists
+// (created by the DB trigger) — return it so we can celebrate + open chat.
+export async function recordSwipeRemote(swiperId, swipeeId, direction) {
+  const { error } = await supabase
+    .from('swipes')
+    .upsert(
+      { swiper: swiperId, swipee: swipeeId, direction },
+      { onConflict: 'swiper,swipee' }
+    );
+  if (error) {
+    console.warn('recordSwipe failed:', error.message);
+    return null;
+  }
+  if (direction !== 'right') return null;
+
+  const { data: m } = await supabase
+    .from('matches')
+    .select('id')
+    .or(
+      `and(user_a.eq.${swiperId},user_b.eq.${swipeeId}),and(user_a.eq.${swipeeId},user_b.eq.${swiperId})`
+    )
+    .maybeSingle();
+  if (!m) return null;
+
+  const { data: prof } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', swipeeId)
+    .maybeSingle();
+  return prof ? { matchId: m.id, profile: toApp(prof) } : null;
+}
+
+// ---------------------------------------------------------------------------
+// Matches + chat.
+// ---------------------------------------------------------------------------
+export async function fetchMatches(userId) {
+  const { data, error } = await supabase
+    .from('matches')
+    .select('*')
+    .or(`user_a.eq.${userId},user_b.eq.${userId}`)
+    .order('created_at', { ascending: false });
+  if (error) {
+    console.warn('fetchMatches failed:', error.message);
+    return [];
+  }
+  const rows = data || [];
+  const otherIds = rows.map((r) => (r.user_a === userId ? r.user_b : r.user_a));
+  if (!otherIds.length) return [];
+
+  const { data: profs } = await supabase
+    .from('profiles')
+    .select('*')
+    .in('id', otherIds);
+  const byId = {};
+  (profs || []).forEach((p) => {
+    byId[p.id] = toApp(p);
+  });
+
+  return rows
+    .map((r) => {
+      const otherId = r.user_a === userId ? r.user_b : r.user_a;
+      return { matchId: r.id, profile: byId[otherId], createdAt: r.created_at };
+    })
+    .filter((x) => x.profile);
+}
+
+export async function fetchMessages(matchId) {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('match_id', matchId)
+    .order('created_at', { ascending: true });
+  if (error) {
+    console.warn('fetchMessages failed:', error.message);
+    return [];
+  }
+  return data || [];
+}
+
+export async function sendMessage(matchId, senderId, body) {
+  const { data, error } = await supabase
+    .from('messages')
+    .insert({ match_id: matchId, sender: senderId, body })
+    .select()
+    .maybeSingle();
+  if (error) {
+    console.warn('sendMessage failed:', error.message);
+    throw error;
+  }
+  return data;
+}
+
+// Realtime: invoke onInsert(messageRow) when a new message lands for a match.
+export function subscribeToMessages(matchId, onInsert) {
+  const channel = supabase
+    .channel(`messages:${matchId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `match_id=eq.${matchId}`,
+      },
+      (payload) => onInsert(payload.new)
+    )
+    .subscribe();
+  return channel;
+}

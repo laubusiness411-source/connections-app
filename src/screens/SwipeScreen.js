@@ -1,59 +1,72 @@
-import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SwipeCard from '../components/SwipeCard';
 import GradientText from '../components/GradientText';
 import { useEngagement } from '../context/EngagementContext';
-import { PROFILES } from '../data/profiles';
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+import { fetchCandidates, recordSwipeRemote } from '../lib/db';
 
 export default function SwipeScreen({
+  myId,
   blocked = [],
   onBlock,
   onOpenSettings,
   onMatch,
 }) {
-  const [swiped, setSwiped] = useState([]);
-  const [order, setOrder] = useState(PROFILES);
+  const [deck, setDeck] = useState([]);
+  const [loading, setLoading] = useState(true);
   const engagement = useEngagement();
 
-  const swipedIds = useMemo(() => new Set(swiped), [swiped]);
   const blockedIds = useMemo(() => new Set(blocked.map((b) => b.id)), [blocked]);
-  const deck = useMemo(
-    () => order.filter((p) => !swipedIds.has(p.id) && !blockedIds.has(p.id)),
-    [order, swipedIds, blockedIds]
-  );
 
-  const reshuffle = useCallback(() => {
-    setSwiped([]);
-    setOrder(shuffle(PROFILES));
-  }, []);
+  const load = useCallback(async () => {
+    if (!myId) return;
+    setLoading(true);
+    const list = await fetchCandidates(myId, [...blockedIds]);
+    setDeck(list);
+    setLoading(false);
+  }, [myId, blockedIds]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const visible = useMemo(
+    () => deck.filter((p) => !blockedIds.has(p.id)),
+    [deck, blockedIds]
+  );
 
   // Guards against a second swipe firing before the deck re-renders.
   const lockRef = useRef(false);
   useEffect(() => {
     lockRef.current = false;
-  }, [deck]);
+  }, [visible]);
 
   const handleSwipe = useCallback(
-    (direction, profile) => {
+    async (direction, profile) => {
       if (lockRef.current || !profile) return;
       lockRef.current = true;
-      if (direction === 'right' && profile.likesYou) {
-        onMatch?.(profile);
-      }
       engagement?.recordSwipe();
-      setSwiped((s) => [...s, profile.id]);
+      setDeck((d) => d.filter((p) => p.id !== profile.id));
+      const res = await recordSwipeRemote(myId, profile.id, direction);
+      if (res && direction === 'right') {
+        onMatch?.(res.profile);
+      }
     },
-    [onMatch, engagement]
+    [myId, engagement, onMatch]
   );
 
   const handleReport = useCallback(
@@ -71,8 +84,8 @@ export default function SwipeScreen({
     [onBlock]
   );
 
-  const reachedEnd = deck.length === 0;
-  const top = deck[0];
+  const reachedEnd = visible.length === 0;
+  const top = visible[0];
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -82,11 +95,7 @@ export default function SwipeScreen({
           <Text style={styles.headerSub}>find your person 👀</Text>
         </View>
         <View style={styles.headerBtns}>
-          <TouchableOpacity
-            style={styles.gearBtn}
-            onPress={reshuffle}
-            hitSlop={10}
-          >
+          <TouchableOpacity style={styles.gearBtn} onPress={load} hitSlop={10}>
             <Text style={styles.gear}>🔄</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -100,18 +109,23 @@ export default function SwipeScreen({
       </View>
 
       <View style={styles.deck}>
-        {reachedEnd ? (
+        {loading ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>that's everyone for now</Text>
+            <ActivityIndicator color="#6C5CE7" size="large" />
+          </View>
+        ) : reachedEnd ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>no one new right now</Text>
             <Text style={styles.emptyText}>
-              new founders drop daily — pull up later 🔜
+              your deck fills up as real people join. invite a friend to sign up —
+              or make a second account to test matching 😉
             </Text>
-            <TouchableOpacity style={styles.emptyBtn} onPress={reshuffle}>
-              <Text style={styles.emptyBtnText}>see everyone again 🔄</Text>
+            <TouchableOpacity style={styles.emptyBtn} onPress={load}>
+              <Text style={styles.emptyBtnText}>refresh 🔄</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          deck
+          visible
             .slice(0, 2)
             .reverse()
             .map((profile, i, arr) => {
@@ -129,7 +143,7 @@ export default function SwipeScreen({
         )}
       </View>
 
-      {!reachedEnd && (
+      {!loading && !reachedEnd && (
         <View style={styles.controls}>
           <TouchableOpacity
             style={[styles.controlBtn, styles.passBtn]}
@@ -161,6 +175,7 @@ const styles = StyleSheet.create({
   },
   logo: { color: '#6C5CE7', fontSize: 26, fontWeight: '800' },
   headerSub: { color: '#6A6A78', fontSize: 13, marginTop: 2 },
+  headerBtns: { flexDirection: 'row', gap: 10 },
   gearBtn: {
     width: 44,
     height: 44,
@@ -172,7 +187,6 @@ const styles = StyleSheet.create({
     borderColor: '#26262F',
   },
   gear: { color: '#B8B8C7', fontSize: 20 },
-  headerBtns: { flexDirection: 'row', gap: 10 },
   deck: { flex: 1, marginHorizontal: 16, marginVertical: 8 },
   controls: {
     flexDirection: 'row',
@@ -192,9 +206,15 @@ const styles = StyleSheet.create({
   likeBtn: { borderColor: '#2ECC71', backgroundColor: '#16161D' },
   passIcon: { color: '#FF4D6D', fontSize: 28, fontWeight: '700' },
   likeIcon: { color: '#2ECC71', fontSize: 28, fontWeight: '700' },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
   emptyTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  emptyText: { color: '#8A8A99', fontSize: 14, marginTop: 8, textAlign: 'center' },
+  emptyText: {
+    color: '#8A8A99',
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
   emptyBtn: {
     marginTop: 20,
     borderWidth: 1,
