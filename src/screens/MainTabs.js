@@ -13,7 +13,12 @@ const TABS = [
   { key: 'swipe', label: 'Swipe', icon: '🔥' },
 ];
 
-export default function MainTabs({ myProfile, onUpdateProfile, onResetProfile }) {
+export default function MainTabs({
+  myProfile,
+  onUpdateProfile,
+  onResetProfile,
+  onLogout,
+}) {
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState('week');
   const [blocked, setBlocked] = useState([]);
@@ -109,6 +114,7 @@ export default function MainTabs({ myProfile, onUpdateProfile, onResetProfile })
             onUnblock={unblock}
             onEditProfile={() => setEditing(true)}
             onResetProfile={onResetProfile}
+            onLogout={onLogout}
             onClose={() => setShowSettings(false)}
           />
         </View>

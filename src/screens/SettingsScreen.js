@@ -14,6 +14,7 @@ export default function SettingsScreen({
   profile,
   onEditProfile,
   onResetProfile,
+  onLogout,
   onClose,
   blocked = [],
   onUnblock,
@@ -83,8 +84,13 @@ export default function SettingsScreen({
           ))
         )}
 
-        {/* Danger zone */}
+        {/* Account */}
         <Text style={styles.sectionLabel}>ACCOUNT</Text>
+        {onLogout && (
+          <TouchableOpacity style={styles.row} onPress={onLogout}>
+            <Text style={styles.rowText}>log out</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={styles.row} onPress={confirmReset}>
           <Text style={[styles.rowText, styles.danger]}>reset profile</Text>
         </TouchableOpacity>

@@ -10,7 +10,8 @@
       "Bash(gh --version)",
       "Bash(gh auth *)",
       "PowerShell($gh = Get-Command gh -ErrorAction SilentlyContinue; if \\($gh\\) { \"gh found: $\\($gh.Source\\)\"; gh auth status } else { \"gh NOT installed\" })",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(node -e \"const d=require\\('./package.json'\\).dependencies; console.log\\('supabase-js', d['@supabase/supabase-js']\\); console.log\\('url-polyfill', d['react-native-url-polyfill']\\)\")"
     ]
   }
 }

@@ -5,53 +5,111 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MainTabs from './src/screens/MainTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
-import { loadProfile, saveProfile, clearProfile } from './src/data/profileStorage';
+import AuthScreen from './src/screens/AuthScreen';
+import { supabase } from './src/lib/supabase';
+import {
+  fetchMyProfile,
+  saveMyProfile,
+  clearMyProfile,
+  isProfileComplete,
+} from './src/lib/db';
+
+function Loading() {
+  return (
+    <View style={styles.loading}>
+      <ActivityIndicator color="#6C5CE7" size="large" />
+    </View>
+  );
+}
 
 export default function App() {
-  // null = still loading from storage; undefined = loaded, no profile yet
-  const [ready, setReady] = useState(false);
+  const [booting, setBooting] = useState(true);
+  const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
+  // Restore any existing session and subscribe to auth changes.
   useEffect(() => {
-    (async () => {
-      const saved = await loadProfile();
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setBooting(false);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // Whenever the signed-in user changes, load their profile from the cloud.
+  const userId = session?.user?.id;
+  useEffect(() => {
+    let cancelled = false;
+    if (!userId) {
+      setProfile(null);
+      return;
+    }
+    setLoadingProfile(true);
+    fetchMyProfile(userId).then((p) => {
+      if (!cancelled) {
+        setProfile(p);
+        setLoadingProfile(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  const handleOnboardingComplete = useCallback(
+    async (newProfile) => {
+      const saved = await saveMyProfile(userId, newProfile);
       setProfile(saved);
-      setReady(true);
-    })();
-  }, []);
+    },
+    [userId]
+  );
 
-  const handleOnboardingComplete = useCallback(async (newProfile) => {
-    await saveProfile(newProfile);
-    setProfile(newProfile);
-  }, []);
-
-  const handleUpdateProfile = useCallback(async (updated) => {
-    await saveProfile(updated);
-    setProfile(updated);
-  }, []);
+  const handleUpdateProfile = useCallback(
+    async (updated) => {
+      const saved = await saveMyProfile(userId, updated);
+      setProfile(saved);
+    },
+    [userId]
+  );
 
   const handleResetProfile = useCallback(async () => {
-    await clearProfile();
-    setProfile(null);
+    const cleared = await clearMyProfile(userId);
+    setProfile(cleared);
+  }, [userId]);
+
+  const handleLogout = useCallback(async () => {
+    await supabase.auth.signOut();
   }, []);
+
+  let content;
+  if (booting) {
+    content = <Loading />;
+  } else if (!session) {
+    content = <AuthScreen />;
+  } else if (loadingProfile) {
+    content = <Loading />;
+  } else if (!isProfileComplete(profile)) {
+    content = <OnboardingScreen onComplete={handleOnboardingComplete} />;
+  } else {
+    content = (
+      <MainTabs
+        myProfile={profile}
+        onUpdateProfile={handleUpdateProfile}
+        onResetProfile={handleResetProfile}
+        onLogout={handleLogout}
+      />
+    );
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar style="light" />
-        {!ready ? (
-          <View style={styles.loading}>
-            <ActivityIndicator color="#6C5CE7" size="large" />
-          </View>
-        ) : profile ? (
-          <MainTabs
-            myProfile={profile}
-            onUpdateProfile={handleUpdateProfile}
-            onResetProfile={handleResetProfile}
-          />
-        ) : (
-          <OnboardingScreen onComplete={handleOnboardingComplete} />
-        )}
+        {content}
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
