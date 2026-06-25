@@ -7,6 +7,7 @@ import SettingsScreen from './SettingsScreen';
 import EditProfileScreen from './EditProfileScreen';
 import MatchScreen from '../components/MatchScreen';
 import SchedulingScreen from '../components/SchedulingScreen';
+import { EngagementProvider } from '../context/EngagementContext';
 
 const TABS = [
   { key: 'week', label: 'This Week', icon: '🎯' },
@@ -44,6 +45,7 @@ export default function MainTabs({
   const openSettings = useCallback(() => setShowSettings(true), []);
 
   return (
+    <EngagementProvider>
     <View style={styles.container}>
       <View style={styles.content}>
         {tab === 'week' ? (
@@ -133,6 +135,7 @@ export default function MainTabs({
         </View>
       )}
     </View>
+    </EngagementProvider>
   );
 }
 

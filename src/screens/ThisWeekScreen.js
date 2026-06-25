@@ -11,6 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientText from '../components/GradientText';
 import GradientButton from '../components/GradientButton';
+import StreakCard from '../components/StreakCard';
+import { useEngagement } from '../context/EngagementContext';
 import { generateGoalMatches } from '../data/goalMatch';
 import { PROFILES } from '../data/profiles';
 
@@ -20,6 +22,7 @@ function initialsOf(name) {
 
 export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings }) {
   const [requested, setRequested] = useState({});
+  const engagement = useEngagement();
 
   const blockedIds = useMemo(
     () => new Set(blocked.map((b) => b.id)),
@@ -47,6 +50,7 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
           text: 'request',
           onPress: () => {
             setRequested((r) => ({ ...r, [p.id]: true }));
+            engagement?.recordIntro();
             Alert.alert(
               "🎉 you're in the queue",
               `we'll introduce you to ${fn} within the week. keep an eye out.`
@@ -82,6 +86,9 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
             {myProfile?.goal || 'Set a goal to get matched — tap here.'}
           </Text>
         </TouchableOpacity>
+
+        {/* Streak + daily quests */}
+        <StreakCard />
 
         {/* Weekly guarantee */}
         <View style={styles.guarantee}>

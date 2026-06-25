@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SwipeCard from '../components/SwipeCard';
 import GradientText from '../components/GradientText';
+import { useEngagement } from '../context/EngagementContext';
 import { PROFILES } from '../data/profiles';
 
 export default function SwipeScreen({
@@ -12,6 +13,7 @@ export default function SwipeScreen({
   onMatch,
 }) {
   const [swiped, setSwiped] = useState([]);
+  const engagement = useEngagement();
 
   const swipedIds = useMemo(() => new Set(swiped), [swiped]);
   const blockedIds = useMemo(() => new Set(blocked.map((b) => b.id)), [blocked]);
@@ -33,9 +35,10 @@ export default function SwipeScreen({
       if (direction === 'right' && profile.likesYou) {
         onMatch?.(profile);
       }
+      engagement?.recordSwipe();
       setSwiped((s) => [...s, profile.id]);
     },
-    [onMatch]
+    [onMatch, engagement]
   );
 
   const handleReport = useCallback(
