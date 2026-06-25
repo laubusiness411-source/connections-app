@@ -105,7 +105,11 @@ export default function SwipeCard({ profile, isTop, onSwipe, onReport }) {
             <Text style={styles.pillText}>{profile.ideaStatus}</Text>
           </View>
 
-          <Text style={styles.bio}>{profile.bio}</Text>
+          <Text style={styles.bio} numberOfLines={4} ellipsizeMode="tail">
+            {profile.bio}
+          </Text>
+
+          <View style={styles.spacer} />
 
           <Text style={styles.label}>Looking for</Text>
           <Text style={styles.lookingFor}>{profile.lookingFor}</Text>
@@ -136,7 +140,7 @@ const styles = StyleSheet.create({
   },
   behind: { transform: [{ scale: 0.95 }] },
   avatarWrap: {
-    height: 220,
+    height: 190,
     backgroundColor: '#1E1E28',
     alignItems: 'center',
     justifyContent: 'center',
@@ -165,6 +169,7 @@ const styles = StyleSheet.create({
   },
   pillText: { color: '#B8B8C7', fontSize: 12, fontWeight: '600' },
   bio: { color: '#C8C8D4', fontSize: 14, lineHeight: 20, marginTop: 14 },
+  spacer: { flex: 1, minHeight: 8 },
   label: { color: '#6A6A78', fontSize: 11, fontWeight: '700', marginTop: 16, letterSpacing: 1 },
   lookingFor: { color: '#fff', fontSize: 15, fontWeight: '600', marginTop: 3 },
   tags: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 14, gap: 8 },
