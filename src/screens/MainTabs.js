@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThisWeekScreen from './ThisWeekScreen';
+import HireScreen from './HireScreen';
 import SwipeScreen from './SwipeScreen';
 import SettingsScreen from './SettingsScreen';
 import EditProfileScreen from './EditProfileScreen';
@@ -11,6 +12,7 @@ import { EngagementProvider } from '../context/EngagementContext';
 
 const TABS = [
   { key: 'week', label: 'This Week', icon: '🎯' },
+  { key: 'hire', label: 'Hire', icon: '🛠️' },
   { key: 'swipe', label: 'Swipe', icon: '🔥' },
 ];
 
@@ -48,13 +50,15 @@ export default function MainTabs({
     <EngagementProvider>
     <View style={styles.container}>
       <View style={styles.content}>
-        {tab === 'week' ? (
+        {tab === 'week' && (
           <ThisWeekScreen
             myProfile={myProfile}
             blocked={blocked}
             onOpenSettings={openSettings}
           />
-        ) : (
+        )}
+        {tab === 'hire' && <HireScreen onOpenSettings={openSettings} />}
+        {tab === 'swipe' && (
           <SwipeScreen
             blocked={blocked}
             onBlock={handleBlock}
