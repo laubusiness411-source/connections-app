@@ -43,12 +43,14 @@ export default function AuthScreen() {
           password,
         });
         if (error) throw error;
+        // With email confirmation disabled, signUp returns a session and the
+        // app logs in automatically. If not, sign in directly — no email step.
         if (!data.session) {
-          Alert.alert(
-            'Check your email',
-            'We sent you a confirmation link. Confirm it, then log in.'
-          );
-          setMode('login');
+          const { error: signInErr } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
+          if (signInErr) throw signInErr;
         }
       }
     } catch (e) {
