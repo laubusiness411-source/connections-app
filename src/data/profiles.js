@@ -1,7 +1,10 @@
 // Hardcoded demo profiles. `likesYou: true` triggers the connection flow on a
 // right-swipe. Portrait photos are from randomuser.me (demo placeholders).
 
-const portrait = (g, n) => `https://randomuser.me/api/portraits/${g}/${n}.jpg`;
+// Reliable placeholder face photos (pravatar). Offset women so men/women
+// numbers map to distinct portraits (valid ids are 1–70).
+const portrait = (g, n) =>
+  `https://i.pravatar.cc/300?img=${((n + (g === 'men' ? 0 : 35)) % 70) + 1}`;
 
 export const PROFILES = [
   {
