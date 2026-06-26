@@ -67,11 +67,11 @@ export default function AuthScreen() {
         <View style={styles.body}>
           <GradientText style={styles.logo}>GoalMatch</GradientText>
           <Text style={styles.tagline}>
-            tell us your goal. we'll find your people.
+            Tell us your goal. We'll find your people.
           </Text>
 
           <View style={styles.form}>
-            <Text style={styles.label}>email</Text>
+            <Text style={styles.label}>Email</Text>
             <TextInput
               style={styles.input}
               value={email}
@@ -83,7 +83,7 @@ export default function AuthScreen() {
               autoComplete="email"
             />
 
-            <Text style={styles.label}>password</Text>
+            <Text style={styles.label}>Password</Text>
             <TextInput
               style={styles.input}
               value={password}
@@ -95,7 +95,7 @@ export default function AuthScreen() {
             />
 
             <GradientButton
-              title={isLogin ? 'log in' : 'create account'}
+              title={isLogin ? 'Log in' : 'Create account'}
               onPress={submit}
               disabled={!valid || busy}
               style={styles.submit}
@@ -112,8 +112,8 @@ export default function AuthScreen() {
           >
             <Text style={styles.toggleText}>
               {isLogin
-                ? 'new here? create an account'
-                : 'already have an account? log in'}
+                ? 'New here? Create an account'
+                : 'Already have an account? Log in'}
             </Text>
           </TouchableOpacity>
         </View>

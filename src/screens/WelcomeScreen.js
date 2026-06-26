@@ -6,9 +6,9 @@ import GradientButton from '../components/GradientButton';
 import { useTheme } from '../theme/ThemeContext';
 
 const PERKS = [
-  { icon: '🎯', title: 'set your 90-day goal', sub: 'tell us what you’re trying to do' },
-  { icon: '🤝', title: 'meet the right people', sub: 'a guaranteed intro every week' },
-  { icon: '🛠️', title: 'hire local help', sub: 'post a need, match with small businesses' },
+  { icon: '🎯', title: 'Set your 90-day goal', sub: 'Tell us what you’re working toward' },
+  { icon: '🤝', title: 'Meet the right people', sub: 'A guaranteed introduction every week' },
+  { icon: '💼', title: 'Hire local help', sub: 'Post a need, connect with local pros' },
 ];
 
 export default function WelcomeScreen({ onGetStarted, onLogin }) {
@@ -20,7 +20,7 @@ export default function WelcomeScreen({ onGetStarted, onLogin }) {
         <View style={styles.hero}>
           <GradientText style={styles.logo}>GoalMatch</GradientText>
           <Text style={styles.tagline}>
-            stop networking. start an opportunity engine.
+            Stop networking. Start an opportunity engine.
           </Text>
         </View>
 
@@ -37,9 +37,9 @@ export default function WelcomeScreen({ onGetStarted, onLogin }) {
         </View>
 
         <View style={styles.footer}>
-          <GradientButton title="get started" onPress={onGetStarted} style={styles.cta} />
+          <GradientButton title="Get started" onPress={onGetStarted} style={styles.cta} />
           <TouchableOpacity onPress={onLogin} hitSlop={10} style={styles.loginBtn}>
-            <Text style={styles.loginText}>i already have an account</Text>
+            <Text style={styles.loginText}>I already have an account</Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -34,7 +34,7 @@ function firstName(p) {
 export function generateMatchReason(me, them) {
   const name = firstName(them);
   if (!me) {
-    return `You matched with ${name} — you both want to connect and build something.`;
+    return `You and ${name} are aligned — you both want to build something.`;
   }
 
   const theyWantMe = roleSatisfies(me.role, them.lookingFor);
@@ -80,8 +80,8 @@ export function generateMatchReason(me, them) {
 
   const support = supports[0];
   return support
-    ? `You matched with ${name} because ${primary} — plus ${support}.`
-    : `You matched with ${name} because ${primary}.`;
+    ? `You're a strong fit with ${name} because ${primary} — plus ${support}.`
+    : `You're a strong fit with ${name} because ${primary}.`;
 }
 
 function listify(arr) {

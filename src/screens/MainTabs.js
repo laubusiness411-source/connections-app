@@ -14,9 +14,9 @@ import { useTheme } from '../theme/ThemeContext';
 
 const TABS = [
   { key: 'week', label: 'This Week', icon: '🎯' },
-  { key: 'hire', label: 'Hire', icon: '🛠️' },
-  { key: 'swipe', label: 'Swipe', icon: '🔥' },
-  { key: 'chats', label: 'Chats', icon: '💬' },
+  { key: 'hire', label: 'Hire', icon: '💼' },
+  { key: 'swipe', label: 'Discover', icon: '🧭' },
+  { key: 'chats', label: 'Messages', icon: '💬' },
 ];
 
 export default function MainTabs({

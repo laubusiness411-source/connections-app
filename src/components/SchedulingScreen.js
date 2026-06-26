@@ -131,17 +131,13 @@ export default function SchedulingScreen({ profile, onClose }) {
           <View style={styles.checkCircle}>
             <Text style={styles.checkMark}>✓</Text>
           </View>
-          <Text style={styles.confirmTitle}>you're locked in ✅</Text>
+          <Text style={styles.confirmTitle}>You're all set</Text>
           <Text style={styles.confirmText}>
             {firstName} will get your {count} time
             {count === 1 ? ' option' : ' options'} for a {duration.toLowerCase()}{' '}
-            {callType.toLowerCase()} call. we'll ping you when they pick one.
+            {callType.toLowerCase()} call. We'll notify you when they choose a time.
           </Text>
-          <GradientButton
-            title="back to swiping"
-            onPress={onClose}
-            style={styles.cta}
-          />
+          <GradientButton title="Done" onPress={onClose} style={styles.cta} />
         </View>
       </SafeAreaView>
     );
@@ -158,7 +154,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           <TouchableOpacity onPress={onClose} hitSlop={12}>
             <Text style={styles.cancel}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>lock in a call</Text>
+          <Text style={styles.headerTitle}>Schedule a call</Text>
           <View style={{ width: 52 }} />
         </View>
 
@@ -167,7 +163,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.lead}>
-            when are you free to meet {firstName}?
+            When are you free to meet {firstName}?
           </Text>
 
           {/* Availability grid */}
@@ -211,12 +207,12 @@ export default function SchedulingScreen({ profile, onClose }) {
 
           <Text style={styles.count}>
             {count === 0
-              ? 'Tap blocks when you’re free — or press & drag to paint'
+              ? 'Tap a block when you’re free, or press and drag to select'
               : `${count} time slot${count === 1 ? '' : 's'} selected`}
           </Text>
 
           {/* Call type */}
-          <Text style={styles.label}>call type</Text>
+          <Text style={styles.label}>Call type</Text>
           <View style={styles.chipWrap}>
             {CALL_TYPES.map((t) => (
               <TouchableOpacity
@@ -232,7 +228,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           </View>
 
           {/* Duration */}
-          <Text style={styles.label}>duration</Text>
+          <Text style={styles.label}>Duration</Text>
           <View style={styles.chipWrap}>
             {DURATIONS.map((d) => (
               <TouchableOpacity
@@ -248,7 +244,7 @@ export default function SchedulingScreen({ profile, onClose }) {
           </View>
 
           {/* Note */}
-          <Text style={styles.label}>add a note (optional)</Text>
+          <Text style={styles.label}>Add a note (optional)</Text>
           <TextInput
             style={styles.input}
             placeholder={`Hey ${firstName}, excited to connect! Here's when I'm free.`}
@@ -265,8 +261,8 @@ export default function SchedulingScreen({ profile, onClose }) {
           <GradientButton
             title={
               count === 0
-                ? 'pick a time to continue'
-                : `send ${count} time${count === 1 ? '' : 's'} to ${firstName}`
+                ? 'Select a time to continue'
+                : `Send ${count} time${count === 1 ? '' : 's'} to ${firstName}`
             }
             onPress={() => count > 0 && setSent(true)}
             disabled={count === 0}

@@ -46,8 +46,8 @@ export default function StreakCard() {
           </Text>
           <Text style={styles.streakSub}>
             {allDone
-              ? 'daily goal complete — streak secured!'
-              : 'keep your streak alive today'}
+              ? 'Daily goal complete — streak secured'
+              : 'Keep your streak alive today'}
           </Text>
         </View>
         {state.longestStreak > 1 && (
@@ -59,16 +59,16 @@ export default function StreakCard() {
       </View>
 
       <View style={styles.quests}>
-        <Quest done label="opened the app" styles={styles} />
+        <Quest done label="Opened the app" styles={styles} />
         <Quest
           done={swipeDone}
-          label="swipe on 5 people"
+          label="Review 5 people"
           progress={`(${Math.min(swipes, SWIPE_GOAL)}/${SWIPE_GOAL})`}
           styles={styles}
         />
         <Quest
           done={introDone}
-          label="request an intro"
+          label="Request an introduction"
           progress={`(${Math.min(intros, INTRO_GOAL)}/${INTRO_GOAL})`}
           styles={styles}
         />

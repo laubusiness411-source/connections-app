@@ -79,7 +79,7 @@ export default function ChatScreen({ match, myId, onBack }) {
           }
         >
           <Text style={styles.matchedNote}>
-            you matched with {profile?.name?.split(' ')[0]} — say hey 👋
+            You're connected with {profile?.name?.split(' ')[0]}. Say hello.
           </Text>
           {messages.map((m) => {
             const mine = m.sender === myId;

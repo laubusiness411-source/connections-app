@@ -19,9 +19,9 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
   return (
     <View style={styles.overlay}>
       <Confetti />
-      <GradientText style={styles.title}>it's a match!</GradientText>
+      <GradientText style={styles.title}>You're connected</GradientText>
       <Text style={styles.subtitle}>
-        you & {profile.name.split(' ')[0]} are both down to build 🤝
+        You and {profile.name.split(' ')[0]} are aligned on what you're building.
       </Text>
 
       <View style={styles.avatars}>
@@ -47,14 +47,14 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
       <Text style={styles.matchRole}>{profile.role}</Text>
 
       <View style={styles.reasonCard}>
-        <Text style={styles.reasonLabel}>✨ Why you matched</Text>
+        <Text style={styles.reasonLabel}>WHY YOU'RE A FIT</Text>
         <Text style={styles.reasonText}>{reason}</Text>
       </View>
 
-      <GradientButton title="lock in a call" onPress={onSchedule} style={styles.primaryBtn} />
+      <GradientButton title="Schedule a call" onPress={onSchedule} style={styles.primaryBtn} />
 
       <TouchableOpacity style={styles.secondaryBtn} onPress={onKeepSwiping}>
-        <Text style={styles.secondaryBtnText}>keep swiping</Text>
+        <Text style={styles.secondaryBtnText}>Keep browsing</Text>
       </TouchableOpacity>
     </View>
   );

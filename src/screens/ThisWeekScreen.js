@@ -45,18 +45,18 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
   const requestIntro = (p) => {
     const fn = p.name.split(' ')[0];
     Alert.alert(
-      `request intro to ${fn}?`,
-      `we'll connect you with ${fn} this week — that's the guarantee.`,
+      `Request an introduction to ${fn}?`,
+      `We'll introduce you to ${fn} this week — that's the guarantee.`,
       [
-        { text: 'cancel', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'request',
+          text: 'Request',
           onPress: () => {
             setRequested((r) => ({ ...r, [p.id]: true }));
             engagement?.recordIntro();
             Alert.alert(
-              "🎉 you're in the queue",
-              `we'll introduce you to ${fn} within the week. keep an eye out.`
+              "You're in the queue",
+              `We'll introduce you to ${fn} within the week.`
             );
           },
         },
@@ -67,7 +67,7 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <GradientText style={styles.logo}>this week</GradientText>
+        <GradientText style={styles.logo}>This Week</GradientText>
         <TouchableOpacity
           style={styles.gearBtn}
           onPress={onOpenSettings}
@@ -84,9 +84,9 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
           onPress={onOpenSettings}
           activeOpacity={0.85}
         >
-          <Text style={styles.goalLabel}>🎯 YOUR 90-DAY GOAL</Text>
+          <Text style={styles.goalLabel}>YOUR 90-DAY GOAL</Text>
           <Text style={styles.goalText}>
-            {myProfile?.goal || 'Set a goal to get matched — tap here.'}
+            {myProfile?.goal || 'Set a goal to get introductions — tap to edit.'}
           </Text>
         </TouchableOpacity>
 
@@ -95,17 +95,15 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
 
         {/* Weekly guarantee */}
         <View style={styles.guarantee}>
-          <Text style={styles.guaranteeTitle}>🤝 your weekly intro guarantee</Text>
+          <Text style={styles.guaranteeTitle}>Your weekly introduction</Text>
           <Text style={styles.guaranteeText}>
-            every week we introduce you to at least one person who can actually
-            move your goal forward. not a swipe — a real intro.
+            Each week we introduce you to at least one person who can help move
+            your goal forward — a real introduction, not just a list.
           </Text>
         </View>
 
         {/* Recommendations */}
-        <Text style={styles.sectionTitle}>
-          the {matches.length} people you should meet this week
-        </Text>
+        <Text style={styles.sectionTitle}>People to meet this week</Text>
 
         {matches.map(({ profile, reason }) => {
           const isRequested = !!requested[profile.id];
@@ -131,17 +129,17 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
               </View>
 
               <View style={styles.reasonBox}>
-                <Text style={styles.reasonLabel}>✨ why them</Text>
+                <Text style={styles.reasonLabel}>WHY THEM</Text>
                 <Text style={styles.reasonText}>{reason}</Text>
               </View>
 
               {isRequested ? (
                 <View style={styles.requestedPill}>
-                  <Text style={styles.requestedText}>intro requested ✓</Text>
+                  <Text style={styles.requestedText}>Introduction requested</Text>
                 </View>
               ) : (
                 <GradientButton
-                  title={`request intro to ${profile.name.split(' ')[0]}`}
+                  title="Request an introduction"
                   onPress={() => requestIntro(profile)}
                   gradStyle={styles.introBtnGrad}
                 />
@@ -151,7 +149,7 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
         })}
 
         <Text style={styles.footerNote}>
-          new intros refresh every week. want more right now? hit the Swipe tab.
+          New introductions refresh weekly. Want more now? Visit Discover.
         </Text>
       </ScrollView>
     </SafeAreaView>

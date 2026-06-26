@@ -94,8 +94,8 @@ export default function SwipeScreen({
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <View>
-          <GradientText style={styles.logo}>CoFounder</GradientText>
-          <Text style={styles.headerSub}>find your person 👀</Text>
+          <GradientText style={styles.logo}>Discover</GradientText>
+          <Text style={styles.headerSub}>People who fit your goal</Text>
         </View>
         <View style={styles.headerBtns}>
           <TouchableOpacity style={styles.gearBtn} onPress={load} hitSlop={10}>
@@ -118,13 +118,13 @@ export default function SwipeScreen({
           </View>
         ) : reachedEnd ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>no one new right now</Text>
+            <Text style={styles.emptyTitle}>You're all caught up</Text>
             <Text style={styles.emptyText}>
-              your deck fills up as real people join. invite a friend to sign up —
-              or make a second account to test matching 😉
+              Your list grows as more people join. Check back soon, or invite
+              someone to join.
             </Text>
             <TouchableOpacity style={styles.emptyBtn} onPress={load}>
-              <Text style={styles.emptyBtnText}>refresh 🔄</Text>
+              <Text style={styles.emptyBtnText}>Refresh</Text>
             </TouchableOpacity>
           </View>
         ) : (

@@ -37,19 +37,19 @@ export default function HireScreen({ onOpenSettings }) {
   const requestQuote = (p) => {
     const fn = p.name.split(' ')[0];
     Alert.alert(
-      `request a quote from ${fn}?`,
-      `we'll send ${fn} your request${
+      `Request a quote from ${fn}?`,
+      `We'll send ${fn} your request${
         text.trim() ? `: "${text.trim()}"` : ''
       } and they'll get back to you.`,
       [
-        { text: 'cancel', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'send request',
+          text: 'Send request',
           onPress: () => {
             setRequested((r) => ({ ...r, [p.id]: true }));
             Alert.alert(
-              '✅ request sent',
-              `${fn} will reach out with a quote. nice — you just supported a small business.`
+              'Request sent',
+              `${fn} will reach out with a quote. You're supporting a local business.`
             );
           },
         },
@@ -64,7 +64,7 @@ export default function HireScreen({ onOpenSettings }) {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.header}>
-          <GradientText style={styles.logo}>hire</GradientText>
+          <GradientText style={styles.logo}>Hire</GradientText>
           <TouchableOpacity
             style={styles.gearBtn}
             onPress={onOpenSettings}
@@ -79,11 +79,11 @@ export default function HireScreen({ onOpenSettings }) {
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.lead}>
-            need something done? post it and we'll match you with local people
-            who can help.
+            Need something done? Describe it and we'll connect you with local
+            professionals.
           </Text>
 
-          <Text style={styles.label}>what do you need?</Text>
+          <Text style={styles.label}>What do you need?</Text>
           <TextInput
             style={styles.input}
             value={text}
@@ -92,7 +92,7 @@ export default function HireScreen({ onOpenSettings }) {
             placeholderTextColor={theme.colors.inputPlaceholder}
           />
 
-          <Text style={styles.label}>category</Text>
+          <Text style={styles.label}>Category</Text>
           <View style={styles.chips}>
             {NEED_CATEGORIES.map((c) => {
               const on = category === c;
@@ -113,10 +113,10 @@ export default function HireScreen({ onOpenSettings }) {
 
           <Text style={styles.resultsHead}>
             {started
-              ? `${providers.length} helper${
+              ? `${providers.length} pro${
                   providers.length === 1 ? '' : 's'
                 } near you${category ? ` · ${category}` : ''}`
-              : 'pick a category or describe your job to see helpers'}
+              : 'Choose a category or describe your job to see pros'}
           </Text>
 
           {providers.map((p) => {
@@ -149,11 +149,11 @@ export default function HireScreen({ onOpenSettings }) {
 
                 {isRequested ? (
                   <View style={styles.requestedPill}>
-                    <Text style={styles.requestedText}>request sent ✓</Text>
+                    <Text style={styles.requestedText}>Request sent</Text>
                   </View>
                 ) : (
                   <GradientButton
-                    title="request a quote"
+                    title="Request a quote"
                     onPress={() => requestQuote(p)}
                     gradStyle={styles.quoteGrad}
                   />

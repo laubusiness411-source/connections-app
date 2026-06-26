@@ -52,7 +52,7 @@ export default function ChatsScreen({ myId, onOpenSettings }) {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <GradientText style={styles.logo}>chats</GradientText>
+        <GradientText style={styles.logo}>Messages</GradientText>
         <TouchableOpacity style={styles.gearBtn} onPress={load} hitSlop={10}>
           <Text style={styles.gear}>🔄</Text>
         </TouchableOpacity>
@@ -64,10 +64,10 @@ export default function ChatsScreen({ myId, onOpenSettings }) {
         </View>
       ) : matches.length === 0 ? (
         <View style={styles.center}>
-          <Text style={styles.emptyTitle}>no matches yet</Text>
+          <Text style={styles.emptyTitle}>No connections yet</Text>
           <Text style={styles.emptyText}>
-            head to the Swipe tab. when you and someone both swipe right, you'll
-            land here to chat.
+            Head to Discover. When you and someone both express interest, you'll
+            be connected here to message.
           </Text>
         </View>
       ) : (

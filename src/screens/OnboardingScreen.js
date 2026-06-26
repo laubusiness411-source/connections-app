@@ -108,12 +108,12 @@ export default function OnboardingScreen({ onComplete }) {
   };
 
   const STEP_TITLES = [
-    'your 90-day goal 🎯',
-    'the basics 👋',
-    'where & how much?',
-    'your idea + who you want',
-    'your superpowers',
-    'your story',
+    'Your 90-day goal',
+    'About you',
+    'Location & commitment',
+    'Your idea & who you want',
+    'Your skills',
+    'Your pitch',
   ];
 
   return (
@@ -147,7 +147,7 @@ export default function OnboardingScreen({ onComplete }) {
           {step === 0 && (
             <>
               <Text style={styles.subtitle}>
-                we'll find the people who can actually help you get there.
+                We'll connect you with the people who can help you get there.
               </Text>
               <TextInput
                 style={styles.input}
@@ -157,7 +157,7 @@ export default function OnboardingScreen({ onComplete }) {
                 onChangeText={setGoal}
                 autoFocus
               />
-              <Text style={styles.hint}>pick one or write your own:</Text>
+              <Text style={styles.hint}>Pick one, or write your own.</Text>
               <View style={styles.chipWrap}>
                 {GOAL_EXAMPLES.map((g) => (
                   <TouchableOpacity
@@ -323,7 +323,7 @@ export default function OnboardingScreen({ onComplete }) {
             <View style={styles.backBtnPlaceholder} />
           )}
           <GradientButton
-            title={step === TOTAL_STEPS - 1 ? 'find my people' : 'continue'}
+            title={step === TOTAL_STEPS - 1 ? 'Finish' : 'Continue'}
             onPress={next}
             disabled={!canContinue()}
             style={styles.nextBtn}
