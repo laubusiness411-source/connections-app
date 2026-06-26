@@ -54,7 +54,7 @@ function buildDays() {
   return days;
 }
 
-export default function SchedulingScreen({ profile, onClose }) {
+export default function SchedulingScreen({ profile, onClose, onSend }) {
   const firstName = profile.name.split(' ')[0];
   const days = useMemo(buildDays, []);
   const { theme } = useTheme();
@@ -122,6 +122,19 @@ export default function SchedulingScreen({ profile, onClose }) {
     .onUpdate((e) => movePaint(e.x, e.y));
 
   const count = Object.keys(selected).length;
+
+  const submit = () => {
+    if (count === 0) return;
+    if (onSend) {
+      const slots = Object.keys(selected).map((k) => {
+        const [dayKey, bi] = k.split('|');
+        const b = TIME_BLOCKS[Number(bi)];
+        return { dayKey, block: b.label, sub: b.sub };
+      });
+      onSend({ slots, callType, duration, note });
+    }
+    setSent(true);
+  };
 
   // ---- Sent confirmation ----
   if (sent) {
@@ -264,7 +277,7 @@ export default function SchedulingScreen({ profile, onClose }) {
                 ? 'Select a time to continue'
                 : `Send ${count} time${count === 1 ? '' : 's'} to ${firstName}`
             }
-            onPress={() => count > 0 && setSent(true)}
+            onPress={submit}
             disabled={count === 0}
             style={styles.cta}
           />

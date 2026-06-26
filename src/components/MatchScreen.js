@@ -6,7 +6,7 @@ import GradientButton from './GradientButton';
 import Confetti from './Confetti';
 import { useTheme } from '../theme/ThemeContext';
 
-export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwiping }) {
+export default function MatchScreen({ profile, myProfile, onKeepSwiping }) {
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const myInitials = myProfile?.name
@@ -51,11 +51,9 @@ export default function MatchScreen({ profile, myProfile, onSchedule, onKeepSwip
         <Text style={styles.reasonText}>{reason}</Text>
       </View>
 
-      <GradientButton title="Schedule a call" onPress={onSchedule} style={styles.primaryBtn} />
+      <Text style={styles.tip}>Message them from the Messages tab to set up a call.</Text>
 
-      <TouchableOpacity style={styles.secondaryBtn} onPress={onKeepSwiping}>
-        <Text style={styles.secondaryBtnText}>Keep browsing</Text>
-      </TouchableOpacity>
+      <GradientButton title="Keep browsing" onPress={onKeepSwiping} style={styles.primaryBtn} />
     </View>
   );
 }
@@ -106,7 +104,6 @@ const makeStyles = (t) =>
       marginBottom: 6,
     },
     reasonText: { color: t.colors.textSoft, fontSize: 15, lineHeight: 21 },
-    primaryBtn: { width: '100%', marginTop: 24 },
-    secondaryBtn: { paddingVertical: 16, marginTop: 8 },
-    secondaryBtnText: { color: t.colors.textMuted, fontSize: 15, fontWeight: '600' },
+    tip: { color: t.colors.textMuted, fontSize: 13, marginTop: 20, textAlign: 'center' },
+    primaryBtn: { width: '100%', marginTop: 12 },
   });

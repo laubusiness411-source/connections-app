@@ -222,6 +222,60 @@ export async function sendMessage(matchId, senderId, body) {
   return data;
 }
 
+// ---------------------------------------------------------------------------
+// Meetings (scheduling).
+// ---------------------------------------------------------------------------
+export async function getLatestMeeting(matchId) {
+  const { data, error } = await supabase
+    .from('meetings')
+    .select('*')
+    .eq('match_id', matchId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.warn('getLatestMeeting failed:', error.message);
+    return null;
+  }
+  return data;
+}
+
+export async function createMeeting(matchId, proposer, recipient, payload) {
+  const { data, error } = await supabase
+    .from('meetings')
+    .insert({
+      match_id: matchId,
+      proposer,
+      recipient,
+      slots: payload.slots,
+      call_type: payload.callType,
+      duration: payload.duration,
+      note: payload.note,
+      status: 'proposed',
+    })
+    .select()
+    .maybeSingle();
+  if (error) {
+    console.warn('createMeeting failed:', error.message);
+    throw error;
+  }
+  return data;
+}
+
+export async function confirmMeeting(id, slot) {
+  const { data, error } = await supabase
+    .from('meetings')
+    .update({ status: 'confirmed', confirmed_slot: slot })
+    .eq('id', id)
+    .select()
+    .maybeSingle();
+  if (error) {
+    console.warn('confirmMeeting failed:', error.message);
+    throw error;
+  }
+  return data;
+}
+
 // Realtime: invoke onInsert(messageRow) when a new message lands for a match.
 export function subscribeToMessages(matchId, onInsert) {
   const channel = supabase

@@ -8,7 +8,6 @@ import ChatsScreen from './ChatsScreen';
 import SettingsScreen from './SettingsScreen';
 import EditProfileScreen from './EditProfileScreen';
 import MatchScreen from '../components/MatchScreen';
-import SchedulingScreen from '../components/SchedulingScreen';
 import { EngagementProvider } from '../context/EngagementContext';
 import { useTheme } from '../theme/ThemeContext';
 import { fetchMatchesWithPreview } from '../lib/db';
@@ -33,7 +32,6 @@ export default function MainTabs({
   const [tab, setTab] = useState('week');
   const [blocked, setBlocked] = useState([]);
   const [match, setMatch] = useState(null);
-  const [scheduling, setScheduling] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [editing, setEditing] = useState(false);
   const [unread, setUnread] = useState(0);
@@ -132,21 +130,8 @@ export default function MainTabs({
         <MatchScreen
           profile={match}
           myProfile={myProfile}
-          onSchedule={() => {
-            setScheduling(match);
-            setMatch(null);
-          }}
           onKeepSwiping={() => setMatch(null)}
         />
-      )}
-
-      {scheduling && (
-        <View style={[styles.overlay, { zIndex: 200 }]}>
-          <SchedulingScreen
-            profile={scheduling}
-            onClose={() => setScheduling(null)}
-          />
-        </View>
       )}
 
       {showSettings && (

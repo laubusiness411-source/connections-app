@@ -9,15 +9,21 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   fetchMessages,
   sendMessage,
   subscribeToMessages,
+  getLatestMeeting,
+  createMeeting,
+  confirmMeeting,
 } from '../lib/db';
 import { useTheme } from '../theme/ThemeContext';
 import { generateIcebreakers } from '../data/icebreakers';
+import { buildCalendarUrl } from '../lib/gcal';
+import SchedulingScreen from '../components/SchedulingScreen';
 
 export default function ChatScreen({ match, myId, me, onBack }) {
   const { matchId, profile } = match;
@@ -25,8 +31,51 @@ export default function ChatScreen({ match, myId, me, onBack }) {
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
+  const [meeting, setMeeting] = useState(null);
+  const [showSchedule, setShowSchedule] = useState(false);
   const scrollRef = useRef(null);
   const starters = useMemo(() => generateIcebreakers(me, profile), [me, profile]);
+  const firstName = profile?.name?.split(' ')[0] || 'them';
+
+  const loadMeeting = async () => {
+    const m = await getLatestMeeting(matchId);
+    setMeeting(m);
+  };
+  useEffect(() => {
+    loadMeeting();
+  }, [matchId]);
+
+  const propose = async (payload) => {
+    try {
+      const m = await createMeeting(matchId, myId, profile.id, payload);
+      setMeeting(m);
+    } catch {
+      // surfaced via console
+    }
+  };
+
+  const confirm = async (slot) => {
+    try {
+      const m = await confirmMeeting(meeting.id, slot);
+      setMeeting(m);
+    } catch {
+      // ignore
+    }
+  };
+
+  const addToCalendar = () => {
+    const url = buildCalendarUrl({
+      slot: meeting.confirmed_slot,
+      duration: meeting.duration,
+      callType: meeting.call_type,
+      note: meeting.note,
+      otherName: firstName,
+    });
+    if (url) Linking.openURL(url);
+  };
+
+  const slotLabel = (s) => (s ? `${s.dayKey} · ${s.block}` : '');
+  const amRecipient = meeting && myId === meeting.recipient;
 
   useEffect(() => {
     let active = true;
@@ -96,6 +145,60 @@ export default function ChatScreen({ match, myId, me, onBack }) {
             You're connected with {profile?.name?.split(' ')[0]}. Say hello.
           </Text>
 
+          {/* Scheduling */}
+          <View style={styles.meetingCard}>
+            {!meeting && (
+              <TouchableOpacity
+                style={styles.proposeBtn}
+                onPress={() => setShowSchedule(true)}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.proposeText}>📅 Propose a meeting</Text>
+              </TouchableOpacity>
+            )}
+
+            {meeting?.status === 'proposed' && amRecipient && (
+              <>
+                <Text style={styles.meetingLabel}>
+                  📅 {firstName} proposed times — tap to confirm
+                </Text>
+                {(meeting.slots || []).map((s, i) => (
+                  <TouchableOpacity
+                    key={i}
+                    style={styles.slotBtn}
+                    onPress={() => confirm(s)}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.slotText}>{slotLabel(s)}</Text>
+                  </TouchableOpacity>
+                ))}
+              </>
+            )}
+
+            {meeting?.status === 'proposed' && !amRecipient && (
+              <Text style={styles.meetingLabel}>
+                📅 Waiting for {firstName} to pick a time…
+              </Text>
+            )}
+
+            {meeting?.status === 'confirmed' && (
+              <>
+                <Text style={styles.meetingConfirmed}>✅ Call confirmed</Text>
+                <Text style={styles.meetingWhen}>
+                  {slotLabel(meeting.confirmed_slot)} · {meeting.duration} ·{' '}
+                  {meeting.call_type}
+                </Text>
+                <TouchableOpacity
+                  style={styles.calBtn}
+                  onPress={addToCalendar}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.calText}>Add to Google Calendar</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+
           {messages.length === 0 && starters.length > 0 && (
             <View style={styles.starters}>
               <Text style={styles.startersLabel}>✨ Conversation starters</Text>
@@ -148,6 +251,16 @@ export default function ChatScreen({ match, myId, me, onBack }) {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      {showSchedule && (
+        <View style={styles.scheduleOverlay}>
+          <SchedulingScreen
+            profile={profile}
+            onSend={propose}
+            onClose={() => setShowSchedule(false)}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -183,6 +296,42 @@ const makeStyles = (t) =>
       fontSize: 13,
       textAlign: 'center',
       marginBottom: 16,
+    },
+    meetingCard: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.borderAccent,
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 14,
+    },
+    proposeBtn: { alignItems: 'center', paddingVertical: 4 },
+    proposeText: { color: t.colors.accent, fontSize: 15, fontWeight: '700' },
+    meetingLabel: { color: t.colors.textSoft, fontSize: 14, fontWeight: '600', marginBottom: 8 },
+    slotBtn: {
+      backgroundColor: t.colors.surface2,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      borderRadius: 10,
+      paddingVertical: 12,
+      paddingHorizontal: 14,
+      marginTop: 8,
+    },
+    slotText: { color: t.colors.text, fontSize: 14, fontWeight: '600' },
+    meetingConfirmed: { color: t.colors.success, fontSize: 15, fontWeight: '800' },
+    meetingWhen: { color: t.colors.textSoft, fontSize: 14, marginTop: 4 },
+    calBtn: {
+      backgroundColor: t.colors.accent,
+      borderRadius: 22,
+      paddingVertical: 11,
+      alignItems: 'center',
+      marginTop: 12,
+    },
+    calText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+    scheduleOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: t.colors.bg,
+      zIndex: 500,
     },
     starters: { marginBottom: 8 },
     startersLabel: {
