@@ -27,3 +27,5 @@ export const LOOKING_FOR = [
 ];
 
 export const MAX_SKILLS = 5;
+
+export const EDU_STATUSES = ['Student', 'Recent grad', 'Working', 'Other'];

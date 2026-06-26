@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ChipSelect from '../components/ChipSelect';
 import AvatarPicker from '../components/AvatarPicker';
 import CityAutocomplete from '../components/CityAutocomplete';
+import SchoolAutocomplete from '../components/SchoolAutocomplete';
 import { useTheme } from '../theme/ThemeContext';
 import {
   ROLES,
@@ -20,6 +21,7 @@ import {
   IDEA_STATUSES,
   LOOKING_FOR,
   MAX_SKILLS,
+  EDU_STATUSES,
 } from '../data/profileFields';
 
 // Single-page form for editing an existing profile (vs the step wizard
@@ -31,6 +33,9 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
   const [photoUri, setPhotoUri] = useState(initialProfile.photoUri || null);
   const [name, setName] = useState(initialProfile.name || '');
   const [role, setRole] = useState(initialProfile.role || '');
+  const [eduStatus, setEduStatus] = useState(initialProfile.eduStatus || '');
+  const [school, setSchool] = useState(initialProfile.school || '');
+  const [gradYear, setGradYear] = useState(initialProfile.gradYear || '');
   const [location, setLocation] = useState(initialProfile.location || '');
   const [commitment, setCommitment] = useState(initialProfile.commitment || '');
   const [ideaStatus, setIdeaStatus] = useState(initialProfile.ideaStatus || '');
@@ -70,6 +75,9 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
       photoUri,
       name: name.trim(),
       role,
+      eduStatus,
+      school: school.trim(),
+      gradYear: gradYear.trim(),
       location: location.trim(),
       commitment,
       ideaStatus,
@@ -125,6 +133,29 @@ export default function EditProfileScreen({ initialProfile, onSave, onCancel }) 
 
           <Text style={styles.label}>Role</Text>
           <ChipSelect options={ROLES} value={role} onChange={setRole} />
+
+          <Text style={styles.label}>Status</Text>
+          <ChipSelect options={EDU_STATUSES} value={eduStatus} onChange={setEduStatus} />
+          {(eduStatus === 'Student' || eduStatus === 'Recent grad') && (
+            <>
+              <Text style={styles.label}>School</Text>
+              <SchoolAutocomplete
+                value={school}
+                onChange={setSchool}
+                placeholder="Start typing your school"
+              />
+              <Text style={styles.label}>Graduation year</Text>
+              <TextInput
+                style={styles.input}
+                value={gradYear}
+                onChangeText={setGradYear}
+                placeholder="e.g. 2026"
+                placeholderTextColor={theme.colors.inputPlaceholder}
+                keyboardType="number-pad"
+                maxLength={4}
+              />
+            </>
+          )}
 
           <Text style={styles.label}>Location</Text>
           <CityAutocomplete

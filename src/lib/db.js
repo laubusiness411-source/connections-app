@@ -15,6 +15,9 @@ function toApp(row) {
     skills: row.skills || [],
     bio: row.bio,
     photoUri: row.photo_url,
+    school: row.school,
+    eduStatus: row.edu_status,
+    gradYear: row.grad_year,
   };
 }
 
@@ -30,6 +33,9 @@ function fromApp(p) {
     skills: p.skills ?? [],
     bio: p.bio ?? null,
     photo_url: p.photoUri ?? null,
+    school: p.school ?? null,
+    edu_status: p.eduStatus ?? null,
+    grad_year: p.gradYear ?? null,
     updated_at: new Date().toISOString(),
   };
 }

@@ -14,6 +14,7 @@ import ChipSelect from '../components/ChipSelect';
 import AvatarPicker from '../components/AvatarPicker';
 import GradientButton from '../components/GradientButton';
 import CityAutocomplete from '../components/CityAutocomplete';
+import SchoolAutocomplete from '../components/SchoolAutocomplete';
 import { useTheme } from '../theme/ThemeContext';
 import { GOAL_EXAMPLES } from '../data/goalMatch';
 import {
@@ -22,6 +23,7 @@ import {
   IDEA_STATUSES,
   LOOKING_FOR,
   MAX_SKILLS,
+  EDU_STATUSES,
 } from '../data/profileFields';
 
 const TOTAL_STEPS = 6;
@@ -35,6 +37,9 @@ export default function OnboardingScreen({ onComplete }) {
   const [photoUri, setPhotoUri] = useState(null);
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
+  const [eduStatus, setEduStatus] = useState('');
+  const [school, setSchool] = useState('');
+  const [gradYear, setGradYear] = useState('');
   const [location, setLocation] = useState('');
   const [commitment, setCommitment] = useState('');
   const [ideaStatus, setIdeaStatus] = useState('');
@@ -84,6 +89,9 @@ export default function OnboardingScreen({ onComplete }) {
       photoUri,
       name: name.trim(),
       role,
+      eduStatus,
+      school: school.trim(),
+      gradYear: gradYear.trim(),
       location: location.trim(),
       commitment,
       ideaStatus,
@@ -200,6 +208,33 @@ export default function OnboardingScreen({ onComplete }) {
               />
               <Text style={styles.label}>Your role</Text>
               <ChipSelect options={ROLES} value={role} onChange={setRole} />
+
+              <Text style={styles.label}>Status</Text>
+              <ChipSelect
+                options={EDU_STATUSES}
+                value={eduStatus}
+                onChange={setEduStatus}
+              />
+              {(eduStatus === 'Student' || eduStatus === 'Recent grad') && (
+                <>
+                  <Text style={styles.label}>School</Text>
+                  <SchoolAutocomplete
+                    value={school}
+                    onChange={setSchool}
+                    placeholder="Start typing your school"
+                  />
+                  <Text style={styles.label}>Graduation year</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={gradYear}
+                    onChangeText={setGradYear}
+                    placeholder="e.g. 2026"
+                    placeholderTextColor={theme.colors.inputPlaceholder}
+                    keyboardType="number-pad"
+                    maxLength={4}
+                  />
+                </>
+              )}
             </>
           )}
 

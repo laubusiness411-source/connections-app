@@ -103,6 +103,12 @@ export default function SwipeCard({ profile, isTop, onSwipe, onReport }) {
           <Text style={styles.meta}>
             {profile.location}  ·  {profile.commitment}
           </Text>
+          {profile.school ? (
+            <Text style={styles.edu}>
+              🎓 {profile.school}
+              {profile.gradYear ? `  ·  ${profile.gradYear}` : ''}
+            </Text>
+          ) : null}
 
           <View style={styles.pill}>
             <Text style={styles.pillText}>{profile.ideaStatus}</Text>
@@ -163,6 +169,7 @@ const makeStyles = (t) =>
     name: { color: t.colors.text, fontSize: 24, fontWeight: '700' },
     role: { color: t.colors.accent, fontSize: 15, fontWeight: '600', marginTop: 2 },
     meta: { color: t.colors.textMuted, fontSize: 13, marginTop: 6 },
+    edu: { color: t.colors.textMuted, fontSize: 13, marginTop: 4 },
     pill: {
       alignSelf: 'flex-start',
       backgroundColor: t.colors.surface2,
