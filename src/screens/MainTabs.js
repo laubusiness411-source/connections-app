@@ -66,6 +66,7 @@ export default function MainTabs({
         {tab === 'swipe' && (
           <SwipeScreen
             myId={myProfile?.id}
+            myProfile={myProfile}
             blocked={blocked}
             onBlock={handleBlock}
             onOpenSettings={openSettings}
