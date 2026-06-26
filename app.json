@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "CoFounder",
+    "name": "Catalyst",
     "slug": "cofounder-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,7 +12,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow CoFounder to access your photos so you can set a profile picture."
+          "photosPermission": "Allow Catalyst to access your photos so you can set a profile picture."
         }
       ]
     ],

@@ -140,7 +140,7 @@ export default function SettingsScreen({
           <Text style={[styles.rowText, styles.danger]}>reset profile</Text>
         </TouchableOpacity>
 
-        <Text style={styles.version}>GoalMatch · v1.0.0</Text>
+        <Text style={styles.version}>Catalyst · v1.0.0</Text>
       </ScrollView>
     </SafeAreaView>
   );

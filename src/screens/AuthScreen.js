@@ -65,7 +65,7 @@ export default function AuthScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.body}>
-          <GradientText style={styles.logo}>GoalMatch</GradientText>
+          <GradientText style={styles.logo}>Catalyst</GradientText>
           <Text style={styles.tagline}>
             Tell us your goal. We'll find your people.
           </Text>
