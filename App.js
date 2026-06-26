@@ -9,6 +9,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import { supabase } from './src/lib/supabase';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+import { FiltersProvider } from './src/context/FiltersContext';
 import {
   fetchMyProfile,
   saveMyProfile,
@@ -137,8 +138,10 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ThemeProvider>
-          <ThemedStatusBar />
-          {content}
+          <FiltersProvider>
+            <ThemedStatusBar />
+            {content}
+          </FiltersProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

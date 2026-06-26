@@ -1,5 +1,8 @@
 // Demo job listings for the Jobs swipe mode. In production these are postings
 // from real employer accounts; swiping right sends the seeker's profile.
+//
+// state / payMin (annualized USD) / distanceMi power the filters. distanceMi is
+// a placeholder distance "from you" until real geocoding is added.
 
 export const JOBS = [
   {
@@ -7,9 +10,12 @@ export const JOBS = [
     title: 'Frontend Engineer',
     company: 'Bloom Labs',
     location: 'Austin, TX',
+    state: 'TX',
     type: 'Full-time',
     remote: false,
     salary: '$110k–$140k',
+    payMin: 110000,
+    distanceMi: 8,
     description:
       'Build delightful React/React Native interfaces for our consumer app. You care about craft, speed, and shipping. 3+ years experience.',
     tags: ['React', 'TypeScript', 'UI'],
@@ -19,9 +25,12 @@ export const JOBS = [
     title: 'Social Media Manager',
     company: 'Crave Foods',
     location: 'Remote',
+    state: 'Remote',
     type: 'Full-time',
     remote: true,
     salary: '$55k–$70k',
+    payMin: 55000,
+    distanceMi: 0,
     description:
       'Own our TikTok and Instagram. Plan content, shoot, edit, and grow our audience. Bonus if you can make a trend out of anything.',
     tags: ['Content', 'TikTok', 'Growth'],
@@ -31,9 +40,12 @@ export const JOBS = [
     title: 'Barista (Part-time)',
     company: 'Third Wave Coffee',
     location: 'Austin, TX',
+    state: 'TX',
     type: 'Part-time',
     remote: false,
     salary: '$16/hr + tips',
+    payMin: 33000,
+    distanceMi: 5,
     description:
       'Morning shifts, great team, free coffee. We’ll train you on espresso. Just bring good energy and reliability.',
     tags: ['Customer service', 'Mornings'],
@@ -43,9 +55,12 @@ export const JOBS = [
     title: 'Sales Development Rep',
     company: 'Northwind SaaS',
     location: 'Remote',
+    state: 'Remote',
     type: 'Full-time',
     remote: true,
     salary: '$50k base + commission',
+    payMin: 50000,
+    distanceMi: 0,
     description:
       'Book meetings for our enterprise team. High volume outreach, fast feedback, real path to AE. We love hungry closers.',
     tags: ['Sales', 'Outbound', 'B2B'],
@@ -55,9 +70,12 @@ export const JOBS = [
     title: 'Graphic Design Intern',
     company: 'Studio Mira',
     location: 'New York, NY',
+    state: 'NY',
     type: 'Internship',
     remote: false,
     salary: '$22/hr',
+    payMin: 45000,
+    distanceMi: 1500,
     description:
       'Support our brand team with social assets, decks, and merch. Figma fluency required. Portfolio over résumé.',
     tags: ['Figma', 'Branding', 'Design'],
@@ -67,9 +85,12 @@ export const JOBS = [
     title: 'Warehouse Associate',
     company: 'QuickShip Logistics',
     location: 'Round Rock, TX',
+    state: 'TX',
     type: 'Full-time',
     remote: false,
     salary: '$20/hr',
+    payMin: 41600,
+    distanceMi: 18,
     description:
       'Pick, pack, and ship orders. Weekday shifts, overtime available. Must lift 40lbs. Reliable transportation a plus.',
     tags: ['Logistics', 'On-site'],
@@ -79,9 +100,12 @@ export const JOBS = [
     title: 'Junior Data Analyst',
     company: 'Ledger Analytics',
     location: 'Remote',
+    state: 'Remote',
     type: 'Full-time',
     remote: true,
     salary: '$70k–$85k',
+    payMin: 70000,
+    distanceMi: 0,
     description:
       'Turn messy data into clear dashboards. SQL required, Python a plus. We’ll mentor you hard. Entry-level friendly.',
     tags: ['SQL', 'Python', 'Dashboards'],
@@ -91,9 +115,12 @@ export const JOBS = [
     title: 'Line Cook',
     company: 'Casa Verde',
     location: 'Austin, TX',
+    state: 'TX',
     type: 'Full-time',
     remote: false,
     salary: '$19–$23/hr',
+    payMin: 39500,
+    distanceMi: 6,
     description:
       'Busy scratch kitchen looking for a dependable line cook. Prep, plate, keep the station clean. Experience preferred, attitude required.',
     tags: ['Kitchen', 'Food service'],
@@ -103,9 +130,12 @@ export const JOBS = [
     title: 'Customer Support Specialist',
     company: 'Helply',
     location: 'Remote',
+    state: 'Remote',
     type: 'Full-time',
     remote: true,
     salary: '$45k–$55k',
+    payMin: 45000,
+    distanceMi: 0,
     description:
       'Be the friendly voice our users love. Email + chat support, write help docs, flag bugs. Empathy and clear writing matter most.',
     tags: ['Support', 'Writing', 'Remote'],
@@ -115,9 +145,12 @@ export const JOBS = [
     title: 'Marketing Coordinator',
     company: 'Summit Fitness',
     location: 'Denver, CO',
+    state: 'CO',
     type: 'Full-time',
     remote: false,
     salary: '$50k–$60k',
+    payMin: 50000,
+    distanceMi: 900,
     description:
       'Run local campaigns, events, and email for our gym chain. Organized, creative, and comfortable on camera. Free membership included.',
     tags: ['Marketing', 'Events', 'Email'],

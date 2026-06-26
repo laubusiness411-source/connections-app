@@ -21,6 +21,13 @@ import { useEngagement } from '../context/EngagementContext';
 import { useTheme } from '../theme/ThemeContext';
 import { fetchCandidates, recordSwipeRemote } from '../lib/db';
 import { JOBS } from '../data/jobs';
+import { parseState } from '../data/usStates';
+import FiltersScreen from './FiltersScreen';
+import {
+  useFilters,
+  activeJobCount,
+  activePeopleCount,
+} from '../context/FiltersContext';
 
 export default function SwipeScreen({
   myId,
@@ -43,7 +50,9 @@ export default function SwipeScreen({
 
   // Jobs
   const [seenJobs, setSeenJobs] = useState([]);
-  const [nearMe, setNearMe] = useState(false);
+
+  const filters = useFilters();
+  const [showFilters, setShowFilters] = useState(false);
 
   const load = useCallback(async () => {
     if (!myId) return;
@@ -57,20 +66,32 @@ export default function SwipeScreen({
     load();
   }, [load]);
 
-  const peopleVisible = useMemo(
-    () => people.filter((p) => !blockedIds.has(p.id)),
-    [people, blockedIds]
-  );
+  const pf = filters.people;
+  const peopleVisible = useMemo(() => {
+    return people.filter((p) => {
+      if (blockedIds.has(p.id)) return false;
+      if (pf.roles.length && !pf.roles.includes(p.role)) return false;
+      if (pf.lookingFor.length && !pf.lookingFor.includes(p.lookingFor)) return false;
+      const st = parseState(p.location);
+      if (st === 'Remote') return pf.includeRemote;
+      if (pf.states.length && !pf.states.includes(st)) return false;
+      return true;
+    });
+  }, [people, blockedIds, pf]);
 
-  const myLoc = (myProfile?.location || '').toLowerCase();
+  const jf = filters.jobs;
   const jobsVisible = useMemo(() => {
     const seen = new Set(seenJobs);
-    return JOBS.filter(
-      (j) =>
-        !seen.has(j.id) &&
-        (!nearMe || j.remote || j.location.toLowerCase() === myLoc)
-    );
-  }, [seenJobs, nearMe, myLoc]);
+    return JOBS.filter((j) => {
+      if (seen.has(j.id)) return false;
+      if (jf.types.length && !jf.types.includes(j.type)) return false;
+      if ((j.payMin || 0) < jf.minPay) return false;
+      if (j.remote) return jf.includeRemote;
+      if (jf.states.length && !jf.states.includes(j.state)) return false;
+      if (j.distanceMi > jf.maxCommute) return false;
+      return true;
+    });
+  }, [seenJobs, jf]);
 
   // Guard against a second swipe before re-render.
   const lockRef = useRef(false);
@@ -170,20 +191,22 @@ export default function SwipeScreen({
         })}
       </View>
 
-      {/* Near me filter (jobs only) */}
-      {isJobs && (
-        <View style={styles.filterRow}>
-          <TouchableOpacity
-            style={[styles.filterPill, nearMe && styles.filterPillOn]}
-            onPress={() => setNearMe((v) => !v)}
-            activeOpacity={0.85}
-          >
-            <Text style={[styles.filterText, nearMe && styles.filterTextOn]}>
-              📍 Near me{myProfile?.location ? ` · ${myProfile.location}` : ''}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Filters */}
+      <View style={styles.filterRow}>
+        <TouchableOpacity
+          style={styles.filterPill}
+          onPress={() => setShowFilters(true)}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.filterText}>
+            ⚙ Filters
+            {(() => {
+              const c = isJobs ? activeJobCount(jf) : activePeopleCount(pf);
+              return c ? ` · ${c}` : '';
+            })()}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.deck}>
         {!isJobs && loading ? (
@@ -197,10 +220,8 @@ export default function SwipeScreen({
             </Text>
             <Text style={styles.emptyText}>
               {isJobs
-                ? nearMe
-                  ? 'Try turning off "Near me" to see jobs everywhere.'
-                  : 'New roles are added often. Check back soon.'
-                : 'Your list grows as more people join. Check back soon, or invite someone to join.'}
+                ? 'No jobs match your filters. Try widening them, or check back soon.'
+                : 'Your list grows as more people join — or try widening your filters.'}
             </Text>
             <TouchableOpacity style={styles.emptyBtn} onPress={refresh}>
               <Text style={styles.emptyBtnText}>Refresh</Text>
@@ -258,6 +279,12 @@ export default function SwipeScreen({
           </TouchableOpacity>
         </View>
       )}
+
+      {showFilters && (
+        <View style={styles.filtersOverlay}>
+          <FiltersScreen mode={mode} onClose={() => setShowFilters(false)} />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -309,9 +336,12 @@ const makeStyles = (t) =>
       paddingHorizontal: 14,
       paddingVertical: 8,
     },
-    filterPillOn: { backgroundColor: t.colors.accent, borderColor: t.colors.accent },
-    filterText: { color: t.colors.textMuted, fontSize: 13, fontWeight: '600' },
-    filterTextOn: { color: '#fff' },
+    filterText: { color: t.colors.textSoft, fontSize: 13, fontWeight: '700' },
+    filtersOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: t.colors.bg,
+      zIndex: 500,
+    },
     deck: { flex: 1, marginHorizontal: 16, marginVertical: 8 },
     controls: {
       flexDirection: 'row',
