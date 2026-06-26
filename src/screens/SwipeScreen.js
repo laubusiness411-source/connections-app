@@ -24,6 +24,7 @@ import { JOBS } from '../data/jobs';
 import { PROFILES } from '../data/profiles';
 import { parseState } from '../data/usStates';
 import FiltersScreen from './FiltersScreen';
+import PassedScreen from './PassedScreen';
 import {
   useFilters,
   activeJobCount,
@@ -59,6 +60,8 @@ export default function SwipeScreen({
 
   const filters = useFilters();
   const [showFilters, setShowFilters] = useState(false);
+  const [history, setHistory] = useState([]); // [{profile, direction}]
+  const [showPassed, setShowPassed] = useState(false);
 
   const load = useCallback(async () => {
     if (!myId) return;
@@ -112,6 +115,10 @@ export default function SwipeScreen({
       lockRef.current = true;
       engagement?.recordSwipe();
       setSeenPeople((s) => [...s, profile.id]);
+      setHistory((h) => [
+        { profile, direction },
+        ...h.filter((x) => x.profile.id !== profile.id),
+      ]);
       if (direction !== 'right') return;
       if (profile.isDemo) {
         // Demo people can't create a real DB match (no chat), but still
@@ -155,6 +162,11 @@ export default function SwipeScreen({
     },
     [onBlock]
   );
+
+  const bringBack = (id) => {
+    setSeenPeople((s) => s.filter((x) => x !== id));
+    setHistory((h) => h.filter((x) => x.profile.id !== id));
+  };
 
   const refresh = () => {
     if (mode === 'people') {
@@ -209,7 +221,7 @@ export default function SwipeScreen({
         })}
       </View>
 
-      {/* Filters */}
+      {/* Filters + Passed */}
       <View style={styles.filterRow}>
         <TouchableOpacity
           style={styles.filterPill}
@@ -224,6 +236,17 @@ export default function SwipeScreen({
             })()}
           </Text>
         </TouchableOpacity>
+        {!isJobs && (
+          <TouchableOpacity
+            style={styles.filterPill}
+            onPress={() => setShowPassed(true)}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.filterText}>
+              ↩ Passed{history.length ? ` · ${history.length}` : ''}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.deck}>
@@ -304,6 +327,16 @@ export default function SwipeScreen({
           <FiltersScreen mode={mode} onClose={() => setShowFilters(false)} />
         </View>
       )}
+
+      {showPassed && (
+        <View style={styles.filtersOverlay}>
+          <PassedScreen
+            history={history}
+            onBringBack={bringBack}
+            onClose={() => setShowPassed(false)}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -346,7 +379,7 @@ const makeStyles = (t) =>
     segBtnOn: { backgroundColor: t.colors.accent },
     segText: { color: t.colors.textMuted, fontSize: 14, fontWeight: '700' },
     segTextOn: { color: '#fff' },
-    filterRow: { flexDirection: 'row', paddingHorizontal: 20, marginTop: 10 },
+    filterRow: { flexDirection: 'row', gap: 10, paddingHorizontal: 20, marginTop: 10 },
     filterPill: {
       backgroundColor: t.colors.surface,
       borderWidth: 1,
