@@ -17,14 +17,16 @@ import {
   subscribeToMessages,
 } from '../lib/db';
 import { useTheme } from '../theme/ThemeContext';
+import { generateIcebreakers } from '../data/icebreakers';
 
-export default function ChatScreen({ match, myId, onBack }) {
+export default function ChatScreen({ match, myId, me, onBack }) {
   const { matchId, profile } = match;
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const scrollRef = useRef(null);
+  const starters = useMemo(() => generateIcebreakers(me, profile), [me, profile]);
 
   useEffect(() => {
     let active = true;
@@ -93,6 +95,24 @@ export default function ChatScreen({ match, myId, onBack }) {
           <Text style={styles.matchedNote}>
             You're connected with {profile?.name?.split(' ')[0]}. Say hello.
           </Text>
+
+          {messages.length === 0 && starters.length > 0 && (
+            <View style={styles.starters}>
+              <Text style={styles.startersLabel}>✨ Conversation starters</Text>
+              {starters.map((s) => (
+                <TouchableOpacity
+                  key={s}
+                  style={styles.starter}
+                  onPress={() => setText(s)}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.starterText}>{s}</Text>
+                </TouchableOpacity>
+              ))}
+              <Text style={styles.startersHint}>Tap one to use it, then edit & send.</Text>
+            </View>
+          )}
+
           {messages.map((m) => {
             const mine = m.sender === myId;
             return (
@@ -163,6 +183,30 @@ const makeStyles = (t) =>
       fontSize: 13,
       textAlign: 'center',
       marginBottom: 16,
+    },
+    starters: { marginBottom: 8 },
+    startersLabel: {
+      color: t.colors.accentSoft,
+      fontSize: 12,
+      fontWeight: '800',
+      letterSpacing: 0.5,
+      marginBottom: 10,
+    },
+    starter: {
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.borderAccent,
+      borderRadius: 14,
+      padding: 12,
+      marginBottom: 8,
+    },
+    starterText: { color: t.colors.textSoft, fontSize: 14, lineHeight: 20 },
+    startersHint: {
+      color: t.colors.textFaint,
+      fontSize: 12,
+      textAlign: 'center',
+      marginTop: 4,
+      marginBottom: 8,
     },
     bubbleRow: { flexDirection: 'row', marginBottom: 8 },
     rowMine: { justifyContent: 'flex-end' },

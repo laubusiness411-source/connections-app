@@ -90,7 +90,11 @@ export default function MainTabs({
           />
         )}
         {tab === 'chats' && (
-          <ChatsScreen myId={myProfile?.id} onOpenSettings={openSettings} />
+          <ChatsScreen
+            myId={myProfile?.id}
+            myProfile={myProfile}
+            onOpenSettings={openSettings}
+          />
         )}
       </View>
 

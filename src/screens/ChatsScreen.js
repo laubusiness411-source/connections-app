@@ -29,7 +29,7 @@ function relativeTime(iso) {
   return `${Math.floor(s / 604800)}w`;
 }
 
-export default function ChatsScreen({ myId, onOpenSettings }) {
+export default function ChatsScreen({ myId, myProfile, onOpenSettings }) {
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [matches, setMatches] = useState([]);
@@ -63,6 +63,7 @@ export default function ChatsScreen({ myId, onOpenSettings }) {
       <ChatScreen
         match={selected}
         myId={myId}
+        me={myProfile}
         onBack={() => {
           setSelected(null);
           load();
