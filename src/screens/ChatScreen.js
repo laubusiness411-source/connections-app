@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
+  Image,
   TextInput,
   TouchableOpacity,
   ScrollView,
@@ -65,9 +66,20 @@ export default function ChatScreen({ match, myId, onBack }) {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={onBack} hitSlop={12}>
-            <Text style={styles.back}>‹ back</Text>
+            <Text style={styles.back}>‹ Back</Text>
           </TouchableOpacity>
-          <Text style={styles.name}>{profile?.name?.split(' ')[0] || 'chat'}</Text>
+          <View style={styles.headerCenter}>
+            {profile?.photoUri ? (
+              <Image source={{ uri: profile.photoUri }} style={styles.headerAvatar} />
+            ) : (
+              <View style={styles.headerAvatar}>
+                <Text style={styles.headerAvatarText}>
+                  {profile?.name ? profile.name.split(' ').map((n) => n[0]).join('').slice(0, 2) : '?'}
+                </Text>
+              </View>
+            )}
+            <Text style={styles.name}>{profile?.name?.split(' ')[0] || 'Chat'}</Text>
+          </View>
           <View style={{ width: 50 }} />
         </View>
 
@@ -134,6 +146,16 @@ const makeStyles = (t) =>
       borderBottomColor: t.colors.border,
     },
     back: { color: t.colors.accent, fontSize: 16, fontWeight: '700', width: 50 },
+    headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    headerAvatar: {
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      backgroundColor: t.colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    headerAvatarText: { color: '#fff', fontSize: 12, fontWeight: '700' },
     name: { color: t.colors.text, fontSize: 17, fontWeight: '700' },
     messages: { padding: 16, paddingBottom: 8 },
     matchedNote: {

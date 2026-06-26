@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
+  Image,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
@@ -11,30 +12,51 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientText from '../components/GradientText';
 import ChatScreen from './ChatScreen';
 import { useTheme } from '../theme/ThemeContext';
-import { fetchMatches } from '../lib/db';
+import { fetchMatchesWithPreview } from '../lib/db';
+import { getReads, markRead, isUnread } from '../lib/reads';
 
 function initialsOf(name) {
   return name ? name.split(' ').map((n) => n[0]).join('').slice(0, 2) : '?';
+}
+
+function relativeTime(iso) {
+  if (!iso) return '';
+  const s = (new Date() - new Date(iso)) / 1000;
+  if (s < 60) return 'now';
+  if (s < 3600) return `${Math.floor(s / 60)}m`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h`;
+  if (s < 604800) return `${Math.floor(s / 86400)}d`;
+  return `${Math.floor(s / 604800)}w`;
 }
 
 export default function ChatsScreen({ myId, onOpenSettings }) {
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [matches, setMatches] = useState([]);
+  const [reads, setReads] = useState({});
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
 
   const load = useCallback(async () => {
     if (!myId) return;
     setLoading(true);
-    const list = await fetchMatches(myId);
+    const [list, r] = await Promise.all([
+      fetchMatchesWithPreview(myId),
+      getReads(),
+    ]);
     setMatches(list);
+    setReads(r);
     setLoading(false);
   }, [myId]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  const open = async (m) => {
+    await markRead(m.matchId);
+    setSelected(m);
+  };
 
   if (selected) {
     return (
@@ -72,25 +94,47 @@ export default function ChatsScreen({ myId, onOpenSettings }) {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.list}>
-          {matches.map((m) => (
-            <TouchableOpacity
-              key={m.matchId}
-              style={styles.row}
-              onPress={() => setSelected(m)}
-              activeOpacity={0.85}
-            >
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>
-                  {initialsOf(m.profile.name)}
-                </Text>
-              </View>
-              <View style={styles.rowText}>
-                <Text style={styles.name}>{m.profile.name}</Text>
-                <Text style={styles.role}>{m.profile.role}</Text>
-              </View>
-              <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
-          ))}
+          {matches.map((m) => {
+            const unread = isUnread(m, reads, myId);
+            const preview = m.lastMessage
+              ? `${m.lastMessage.sender === myId ? 'You: ' : ''}${m.lastMessage.body}`
+              : 'Say hello 👋';
+            return (
+              <TouchableOpacity
+                key={m.matchId}
+                style={styles.row}
+                onPress={() => open(m)}
+                activeOpacity={0.85}
+              >
+                {m.profile.photoUri ? (
+                  <Image source={{ uri: m.profile.photoUri }} style={styles.avatar} />
+                ) : (
+                  <View style={styles.avatar}>
+                    <Text style={styles.avatarText}>
+                      {initialsOf(m.profile.name)}
+                    </Text>
+                  </View>
+                )}
+                <View style={styles.rowText}>
+                  <Text style={styles.name}>{m.profile.name}</Text>
+                  <Text
+                    style={[styles.preview, unread && styles.previewUnread]}
+                    numberOfLines={1}
+                  >
+                    {preview}
+                  </Text>
+                </View>
+                <View style={styles.rowEnd}>
+                  {m.lastMessage && (
+                    <Text style={styles.time}>
+                      {relativeTime(m.lastMessage.created_at)}
+                    </Text>
+                  )}
+                  {unread && <View style={styles.dot} />}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       )}
     </SafeAreaView>
@@ -157,6 +201,15 @@ const makeStyles = (t) =>
     avatarText: { color: '#fff', fontSize: 18, fontWeight: '700' },
     rowText: { flex: 1 },
     name: { color: t.colors.text, fontSize: 16, fontWeight: '700' },
-    role: { color: t.colors.accent, fontSize: 13, fontWeight: '600', marginTop: 1 },
-    chevron: { color: t.colors.textFaint, fontSize: 22, fontWeight: '700' },
+    preview: { color: t.colors.textMuted, fontSize: 14, marginTop: 2 },
+    previewUnread: { color: t.colors.text, fontWeight: '700' },
+    rowEnd: { alignItems: 'flex-end', marginLeft: 8 },
+    time: { color: t.colors.textFaint, fontSize: 12 },
+    dot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      backgroundColor: t.colors.accent,
+      marginTop: 6,
+    },
   });

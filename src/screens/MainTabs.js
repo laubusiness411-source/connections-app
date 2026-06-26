@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThisWeekScreen from './ThisWeekScreen';
@@ -11,6 +11,8 @@ import MatchScreen from '../components/MatchScreen';
 import SchedulingScreen from '../components/SchedulingScreen';
 import { EngagementProvider } from '../context/EngagementContext';
 import { useTheme } from '../theme/ThemeContext';
+import { fetchMatchesWithPreview } from '../lib/db';
+import { getReads, isUnread } from '../lib/reads';
 
 const TABS = [
   { key: 'week', label: 'This Week', icon: '🎯' },
@@ -34,6 +36,20 @@ export default function MainTabs({
   const [scheduling, setScheduling] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [unread, setUnread] = useState(0);
+
+  const refreshUnread = useCallback(async () => {
+    if (!myProfile?.id) return;
+    const [list, reads] = await Promise.all([
+      fetchMatchesWithPreview(myProfile.id),
+      getReads(),
+    ]);
+    setUnread(list.filter((m) => isUnread(m, reads, myProfile.id)).length);
+  }, [myProfile?.id]);
+
+  useEffect(() => {
+    refreshUnread();
+  }, [refreshUnread, tab]);
 
   const handleBlock = useCallback((profile, { reported } = {}) => {
     setBlocked((b) => (b.some((x) => x.id === profile.id) ? b : [...b, profile]));
@@ -89,9 +105,16 @@ export default function MainTabs({
               onPress={() => setTab(t.key)}
               activeOpacity={0.8}
             >
-              <Text style={[styles.tabIcon, !active && styles.tabInactive]}>
-                {t.icon}
-              </Text>
+              <View>
+                <Text style={[styles.tabIcon, !active && styles.tabInactive]}>
+                  {t.icon}
+                </Text>
+                {t.key === 'chats' && unread > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{unread > 9 ? '9+' : unread}</Text>
+                  </View>
+                )}
+              </View>
               <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
                 {t.label}
               </Text>
@@ -169,6 +192,19 @@ const makeStyles = (t) =>
     tabInactive: { opacity: 0.45 },
     tabLabel: { color: t.colors.textFaint, fontSize: 11, fontWeight: '700', marginTop: 3 },
     tabLabelActive: { color: t.colors.accent },
+    badge: {
+      position: 'absolute',
+      top: -5,
+      right: -12,
+      minWidth: 18,
+      height: 18,
+      borderRadius: 9,
+      paddingHorizontal: 5,
+      backgroundColor: t.colors.danger,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    badgeText: { color: '#fff', fontSize: 10, fontWeight: '800' },
     overlay: {
       ...StyleSheet.absoluteFillObject,
       backgroundColor: t.colors.bg,

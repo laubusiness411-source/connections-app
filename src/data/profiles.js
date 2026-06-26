@@ -1,9 +1,12 @@
-// Hardcoded demo profiles for the co-founder swipe loop.
-// `likesYou: true` triggers the match flow on a right-swipe.
+// Hardcoded demo profiles. `likesYou: true` triggers the connection flow on a
+// right-swipe. Portrait photos are from randomuser.me (demo placeholders).
+
+const portrait = (g, n) => `https://randomuser.me/api/portraits/${g}/${n}.jpg`;
 
 export const PROFILES = [
   {
     id: '1',
+    photoUri: portrait('women', 44),
     name: 'Maya Chen',
     role: 'Technical Co-Founder',
     location: 'San Francisco, CA',
@@ -16,6 +19,7 @@ export const PROFILES = [
   },
   {
     id: '2',
+    photoUri: portrait('men', 32),
     name: 'Marcus Webb',
     role: 'Business Co-Founder',
     location: 'Austin, TX',
@@ -28,6 +32,7 @@ export const PROFILES = [
   },
   {
     id: '3',
+    photoUri: portrait('women', 68),
     name: 'Priya Nair',
     role: 'Design + Product',
     location: 'Remote',
@@ -40,6 +45,7 @@ export const PROFILES = [
   },
   {
     id: '4',
+    photoUri: portrait('men', 45),
     name: 'Diego Santos',
     role: 'Technical Co-Founder',
     location: 'New York, NY',
@@ -52,6 +58,7 @@ export const PROFILES = [
   },
   {
     id: '5',
+    photoUri: portrait('women', 65),
     name: 'Sara Kim',
     role: 'Growth + Marketing',
     location: 'Los Angeles, CA',
@@ -64,6 +71,7 @@ export const PROFILES = [
   },
   {
     id: '6',
+    photoUri: portrait('men', 12),
     name: 'Tom Becker',
     role: 'Technical Co-Founder',
     location: 'Berlin, Germany',
@@ -76,6 +84,7 @@ export const PROFILES = [
   },
   {
     id: '7',
+    photoUri: portrait('women', 90),
     name: 'Aisha Rahman',
     role: 'Business Co-Founder',
     location: 'London, UK',
@@ -88,6 +97,7 @@ export const PROFILES = [
   },
   {
     id: '8',
+    photoUri: portrait('men', 22),
     name: 'Leo Martins',
     role: 'Design + Product',
     location: 'Lisbon, Portugal',
@@ -100,6 +110,7 @@ export const PROFILES = [
   },
   {
     id: '9',
+    photoUri: portrait('women', 33),
     name: 'Hannah Cohen',
     role: 'Technical Co-Founder',
     location: 'Tel Aviv, Israel',
@@ -112,6 +123,7 @@ export const PROFILES = [
   },
   {
     id: '10',
+    photoUri: portrait('men', 51),
     name: 'Raj Patel',
     role: 'Growth + Marketing',
     location: 'Toronto, Canada',
@@ -124,6 +136,7 @@ export const PROFILES = [
   },
   {
     id: '11',
+    photoUri: portrait('women', 12),
     name: 'Elena Petrova',
     role: 'Technical Co-Founder',
     location: 'Remote',
@@ -136,6 +149,7 @@ export const PROFILES = [
   },
   {
     id: '12',
+    photoUri: portrait('men', 76),
     name: 'Marcus Lee',
     role: 'Business Co-Founder',
     location: 'Singapore',

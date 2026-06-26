@@ -170,6 +170,32 @@ export async function fetchMatches(userId) {
     .filter((x) => x.profile);
 }
 
+// Matches plus each conversation's most recent message (for previews/unread).
+export async function fetchMatchesWithPreview(userId) {
+  const matches = await fetchMatches(userId);
+  const ids = matches.map((m) => m.matchId);
+  if (!ids.length) return matches.map((m) => ({ ...m, lastMessage: null }));
+
+  const { data } = await supabase
+    .from('messages')
+    .select('*')
+    .in('match_id', ids)
+    .order('created_at', { ascending: false });
+
+  const lastByMatch = {};
+  (data || []).forEach((msg) => {
+    if (!lastByMatch[msg.match_id]) lastByMatch[msg.match_id] = msg;
+  });
+
+  return matches
+    .map((m) => ({ ...m, lastMessage: lastByMatch[m.matchId] || null }))
+    .sort((a, b) => {
+      const ta = a.lastMessage?.created_at || a.createdAt || '';
+      const tb = b.lastMessage?.created_at || b.createdAt || '';
+      return tb.localeCompare(ta);
+    });
+}
+
 export async function fetchMessages(matchId) {
   const { data, error } = await supabase
     .from('messages')
