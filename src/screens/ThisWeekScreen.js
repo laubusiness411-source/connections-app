@@ -15,6 +15,7 @@ import StreakCard from '../components/StreakCard';
 import { useEngagement } from '../context/EngagementContext';
 import { useTheme } from '../theme/ThemeContext';
 import { generateGoalMatches } from '../data/goalMatch';
+import { topCompaniesForUser } from '../data/topCompanies';
 import { PROFILES } from '../data/profiles';
 
 function initialsOf(name) {
@@ -41,6 +42,8 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
       ),
     [myProfile, blockedIds]
   );
+
+  const companies = useMemo(() => topCompaniesForUser(myProfile), [myProfile]);
 
   const requestIntro = (p) => {
     const fn = p.name.split(' ')[0];
@@ -148,6 +151,33 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
           );
         })}
 
+        {/* Top companies (daily) */}
+        <Text style={styles.sectionTitle}>Top companies for you today</Text>
+        <Text style={styles.sectionHint}>
+          Ranked by peer reviews + your skills · refreshes daily
+        </Text>
+        {companies.map(({ company, fit }, i) => (
+          <View key={company.id} style={styles.coCard}>
+            <Text style={styles.coRank}>{i + 1}</Text>
+            <View style={styles.coLogo}>
+              <Text style={styles.coLogoText}>{initialsOf(company.name)}</Text>
+            </View>
+            <View style={styles.coBody}>
+              <Text style={styles.coName}>{company.name}</Text>
+              <Text style={styles.coMeta}>
+                ⭐ {company.rating} · {company.reviews} reviews
+              </Text>
+              <Text style={styles.coMeta2}>
+                {company.industry} · {company.location}
+              </Text>
+              <Text style={styles.coFit}>
+                {fit > 0 ? 'Matches your skills · ' : ''}
+                {company.openRoles} open roles
+              </Text>
+            </View>
+          </View>
+        ))}
+
         <Text style={styles.footerNote}>
           New introductions refresh weekly. Want more now? Visit Discover.
         </Text>
@@ -218,6 +248,44 @@ const makeStyles = (t) =>
       marginTop: 26,
       marginBottom: 14,
     },
+    sectionHint: {
+      color: t.colors.textFaint,
+      fontSize: 12,
+      marginTop: -10,
+      marginBottom: 14,
+    },
+    coCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: t.colors.surface,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+      padding: 12,
+      marginBottom: 10,
+    },
+    coRank: {
+      color: t.colors.accentSoft,
+      fontSize: 16,
+      fontWeight: '800',
+      width: 22,
+      textAlign: 'center',
+    },
+    coLogo: {
+      width: 44,
+      height: 44,
+      borderRadius: 10,
+      backgroundColor: t.colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 10,
+    },
+    coLogoText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+    coBody: { flex: 1 },
+    coName: { color: t.colors.text, fontSize: 16, fontWeight: '700' },
+    coMeta: { color: t.colors.warn, fontSize: 12, fontWeight: '600', marginTop: 2 },
+    coMeta2: { color: t.colors.textMuted, fontSize: 12, marginTop: 2 },
+    coFit: { color: t.colors.accentSoft, fontSize: 12, fontWeight: '600', marginTop: 3 },
     card: {
       backgroundColor: t.colors.surface,
       borderRadius: 18,

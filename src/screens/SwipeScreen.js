@@ -21,6 +21,7 @@ import { useEngagement } from '../context/EngagementContext';
 import { useTheme } from '../theme/ThemeContext';
 import { fetchCandidates, recordSwipeRemote } from '../lib/db';
 import { JOBS } from '../data/jobs';
+import { PROFILES } from '../data/profiles';
 import { parseState } from '../data/usStates';
 import FiltersScreen from './FiltersScreen';
 import {
@@ -28,6 +29,9 @@ import {
   activeJobCount,
   activePeopleCount,
 } from '../context/FiltersContext';
+
+// Demo people so the deck is never empty while testing.
+const DEMO_PEOPLE = PROFILES.map((p) => ({ ...p, isDemo: true }));
 
 export default function SwipeScreen({
   myId,
@@ -45,8 +49,10 @@ export default function SwipeScreen({
 
   // People
   const [people, setPeople] = useState([]);
+  const [seenPeople, setSeenPeople] = useState([]);
   const [loading, setLoading] = useState(true);
   const blockedIds = useMemo(() => new Set(blocked.map((b) => b.id)), [blocked]);
+  const seenSet = useMemo(() => new Set(seenPeople), [seenPeople]);
 
   // Jobs
   const [seenJobs, setSeenJobs] = useState([]);
@@ -68,8 +74,9 @@ export default function SwipeScreen({
 
   const pf = filters.people;
   const peopleVisible = useMemo(() => {
-    return people.filter((p) => {
-      if (blockedIds.has(p.id)) return false;
+    const all = [...people, ...DEMO_PEOPLE];
+    return all.filter((p) => {
+      if (seenSet.has(p.id) || blockedIds.has(p.id)) return false;
       if (pf.roles.length && !pf.roles.includes(p.role)) return false;
       if (pf.lookingFor.length && !pf.lookingFor.includes(p.lookingFor)) return false;
       const st = parseState(p.location);
@@ -77,7 +84,7 @@ export default function SwipeScreen({
       if (pf.states.length && !pf.states.includes(st)) return false;
       return true;
     });
-  }, [people, blockedIds, pf]);
+  }, [people, seenSet, blockedIds, pf]);
 
   const jf = filters.jobs;
   const jobsVisible = useMemo(() => {
@@ -104,9 +111,16 @@ export default function SwipeScreen({
       if (lockRef.current || !profile) return;
       lockRef.current = true;
       engagement?.recordSwipe();
-      setPeople((d) => d.filter((p) => p.id !== profile.id));
-      const res = await recordSwipeRemote(myId, profile.id, direction);
-      if (res && direction === 'right') onMatch?.(res.profile);
+      setSeenPeople((s) => [...s, profile.id]);
+      if (direction !== 'right') return;
+      if (profile.isDemo) {
+        // Demo people can't create a real DB match (no chat), but still
+        // celebrate so swiping is testable.
+        if (profile.likesYou) onMatch?.(profile);
+      } else {
+        const res = await recordSwipeRemote(myId, profile.id, direction);
+        if (res) onMatch?.(res.profile);
+      }
     },
     [myId, engagement, onMatch]
   );
@@ -143,8 +157,12 @@ export default function SwipeScreen({
   );
 
   const refresh = () => {
-    if (mode === 'people') load();
-    else setSeenJobs([]);
+    if (mode === 'people') {
+      setSeenPeople([]);
+      load();
+    } else {
+      setSeenJobs([]);
+    }
   };
 
   const isJobs = mode === 'jobs';
@@ -247,6 +265,7 @@ export default function SwipeScreen({
               <SwipeCard
                 key={profile.id}
                 profile={profile}
+                me={myProfile}
                 isTop={i === arr.length - 1}
                 onSwipe={handlePeopleSwipe}
                 onReport={handleReport}

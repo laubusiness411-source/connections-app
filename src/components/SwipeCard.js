@@ -11,13 +11,15 @@ import Animated, {
   Extrapolation,
 } from 'react-native-reanimated';
 import { useTheme } from '../theme/ThemeContext';
+import { computeSimilarities } from '../data/similarities';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_W * 0.28;
 
-export default function SwipeCard({ profile, isTop, onSwipe, onReport }) {
+export default function SwipeCard({ profile, isTop, onSwipe, onReport, me }) {
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
+  const sims = useMemo(() => computeSimilarities(me, profile), [me, profile]);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
@@ -110,6 +112,16 @@ export default function SwipeCard({ profile, isTop, onSwipe, onReport }) {
             </Text>
           ) : null}
 
+          {sims.length > 0 && (
+            <View style={styles.simWrap}>
+              {sims.map((s) => (
+                <View key={s} style={styles.simChip}>
+                  <Text style={styles.simText}>✓ {s}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
           <View style={styles.pill}>
             <Text style={styles.pillText}>{profile.ideaStatus}</Text>
           </View>
@@ -170,6 +182,16 @@ const makeStyles = (t) =>
     role: { color: t.colors.accent, fontSize: 15, fontWeight: '600', marginTop: 2 },
     meta: { color: t.colors.textMuted, fontSize: 13, marginTop: 6 },
     edu: { color: t.colors.textMuted, fontSize: 13, marginTop: 4 },
+    simWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12 },
+    simChip: {
+      backgroundColor: t.colors.surface2,
+      borderWidth: 1,
+      borderColor: t.colors.borderAccent,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 14,
+    },
+    simText: { color: t.colors.accentSoft, fontSize: 12, fontWeight: '700' },
     pill: {
       alignSelf: 'flex-start',
       backgroundColor: t.colors.surface2,
