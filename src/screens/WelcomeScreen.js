@@ -18,7 +18,7 @@ export default function WelcomeScreen({ onGetStarted, onLogin }) {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.body}>
         <View style={styles.hero}>
-          <GradientText style={styles.logo}>Catalyst</GradientText>
+          <GradientText style={styles.logo}>Klyk</GradientText>
           <Text style={styles.tagline}>
             Stop networking. Start an opportunity engine.
           </Text>

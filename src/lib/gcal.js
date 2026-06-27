@@ -23,7 +23,7 @@ export function buildCalendarUrl({ slot, duration, callType, note, otherName }) 
 
   const text = `Call with ${otherName || 'a connection'}`;
   const details =
-    `${callType || 'Video'} call set up via Catalyst.` +
+    `${callType || 'Video'} call set up via Klyk.` +
     (note ? `\n\nNote: ${note}` : '') +
     `\n\nTip: add Google Meet to this event in one click.`;
 

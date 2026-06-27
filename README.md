@@ -1,4 +1,4 @@
-# Catalyst — Expo App
+# Klyk — Expo App
 
 An **opportunity engine**: set your 90-day goal, get connected with the people,
 jobs, and local pros who move it forward. Swipe-based discovery for people and
