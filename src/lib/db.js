@@ -293,3 +293,22 @@ export function subscribeToMessages(matchId, onInsert) {
     .subscribe();
   return channel;
 }
+
+// Realtime: invoke onChange() on any meeting insert/update for a match, so
+// both people see proposals and confirmations live.
+export function subscribeToMeetings(matchId, onChange) {
+  const channel = supabase
+    .channel(`meetings:${matchId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'meetings',
+        filter: `match_id=eq.${matchId}`,
+      },
+      () => onChange()
+    )
+    .subscribe();
+  return channel;
+}

@@ -19,6 +19,7 @@ import {
   getLatestMeeting,
   createMeeting,
   confirmMeeting,
+  subscribeToMeetings,
 } from '../lib/db';
 import { useTheme } from '../theme/ThemeContext';
 import { generateIcebreakers } from '../data/icebreakers';
@@ -43,6 +44,9 @@ export default function ChatScreen({ match, myId, me, onBack }) {
   };
   useEffect(() => {
     loadMeeting();
+    const channel = subscribeToMeetings(matchId, loadMeeting);
+    return () => channel.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchId]);
 
   const propose = async (payload) => {

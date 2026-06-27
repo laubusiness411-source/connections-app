@@ -1,8 +1,13 @@
-# CoFounder — Expo App
+# Catalyst — Expo App
 
-"Tinder for co-founders." Swipe-based matching to find a business partner.
-This is the Co-Founder Mode MVP scaffold, ported from the single-file web prototype
-to React Native + Expo with **native gesture physics** (Reanimated + Gesture Handler).
+An **opportunity engine**: set your 90-day goal, get connected with the people,
+jobs, and local pros who move it forward. Swipe-based discovery for people and
+jobs, real auth + profiles + chat (Supabase), goal-based recommendations,
+in-chat scheduling, and a daily Top 5 companies. Built with React Native + Expo
+and **native gesture physics** (Reanimated + Gesture Handler).
+
+> Run the SQL files in `supabase/` (schema, messages, education, meetings) in the
+> Supabase SQL editor to enable the backend features.
 
 ## What's here
 

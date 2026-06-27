@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image } from 'react-native';
 import { generateMatchReason } from '../data/matchReason';
 import GradientText from './GradientText';
 import GradientButton from './GradientButton';
