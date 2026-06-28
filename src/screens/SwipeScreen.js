@@ -14,6 +14,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import SwipeCard from '../components/SwipeCard';
 import JobCard from '../components/JobCard';
 import GradientText from '../components/GradientText';
@@ -62,6 +64,26 @@ export default function SwipeScreen({
   const [showFilters, setShowFilters] = useState(false);
   const [history, setHistory] = useState([]); // [{profile, direction}]
   const [showPassed, setShowPassed] = useState(false);
+  const [daysLeft, setDaysLeft] = useState(90);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const KEY = '@klyk/goalStart';
+        let start = await AsyncStorage.getItem(KEY);
+        if (!start) {
+          start = new Date().toISOString();
+          await AsyncStorage.setItem(KEY, start);
+        }
+        const elapsed = Math.floor(
+          (Date.now() - new Date(start).getTime()) / 86400000
+        );
+        setDaysLeft(Math.max(0, 90 - elapsed));
+      } catch {
+        // keep default
+      }
+    })();
+  }, []);
 
   const load = useCallback(async () => {
     if (!myId) return;
@@ -185,18 +207,18 @@ export default function SwipeScreen({
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <View>
-          <GradientText style={styles.logo}>Discover</GradientText>
-          <Text style={styles.headerSub}>
-            {isJobs ? 'Jobs that fit you' : 'People who fit your goal'}
-          </Text>
-        </View>
+        <GradientText style={styles.logo}>Klyk</GradientText>
         <View style={styles.headerBtns}>
           <TouchableOpacity style={styles.gearBtn} onPress={refresh} hitSlop={10}>
             <Text style={styles.gear}>🔄</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.gearBtn} onPress={onOpenSettings} hitSlop={10}>
-            <Text style={styles.gear}>⚙</Text>
+          <TouchableOpacity
+            style={styles.goalPill}
+            onPress={onOpenSettings}
+            hitSlop={8}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.goalPillText}>🎯 Goal · {daysLeft} days left</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -300,24 +322,33 @@ export default function SwipeScreen({
       {!reachedEnd && !(loading && !isJobs) && (
         <View style={styles.controls}>
           <TouchableOpacity
-            style={[styles.controlBtn, styles.passBtn]}
+            style={styles.passBtn}
             onPress={() =>
               isJobs
                 ? handleJobSwipe('left', topJob)
                 : handlePeopleSwipe('left', topPerson)
             }
+            activeOpacity={0.85}
           >
             <Text style={styles.passIcon}>✕</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.controlBtn, styles.likeBtn]}
+            style={styles.likeWrap}
             onPress={() =>
               isJobs
                 ? handleJobSwipe('right', topJob)
                 : handlePeopleSwipe('right', topPerson)
             }
+            activeOpacity={0.85}
           >
-            <Text style={styles.likeIcon}>{isJobs ? '↗' : '✓'}</Text>
+            <LinearGradient
+              colors={theme.gradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.likeBtn}
+            >
+              <Text style={styles.likeIcon}>{isJobs ? '↗' : '✓'}</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       )}
@@ -366,6 +397,17 @@ const makeStyles = (t) =>
       borderColor: t.colors.border,
     },
     gear: { color: t.colors.textSoft, fontSize: 20 },
+    goalPill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      height: 44,
+      paddingHorizontal: 14,
+      borderRadius: 22,
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
+    },
+    goalPillText: { color: t.colors.textSoft, fontSize: 13, fontWeight: '700' },
     segment: {
       flexDirection: 'row',
       backgroundColor: t.colors.surface,
@@ -398,21 +440,37 @@ const makeStyles = (t) =>
     controls: {
       flexDirection: 'row',
       justifyContent: 'center',
-      gap: 28,
+      alignItems: 'center',
+      gap: 32,
       paddingVertical: 20,
     },
-    controlBtn: {
-      width: 64,
-      height: 64,
-      borderRadius: 32,
+    passBtn: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
       alignItems: 'center',
       justifyContent: 'center',
-      borderWidth: 2,
+      backgroundColor: t.colors.surface,
+      borderWidth: 1,
+      borderColor: t.colors.border,
     },
-    passBtn: { borderColor: t.colors.danger, backgroundColor: t.colors.surface },
-    likeBtn: { borderColor: t.colors.success, backgroundColor: t.colors.surface },
-    passIcon: { color: t.colors.danger, fontSize: 28, fontWeight: '700' },
-    likeIcon: { color: t.colors.success, fontSize: 28, fontWeight: '700' },
+    likeWrap: {
+      borderRadius: 34,
+      shadowColor: t.colors.accent,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.55,
+      shadowRadius: 14,
+      elevation: 10,
+    },
+    likeBtn: {
+      width: 68,
+      height: 68,
+      borderRadius: 34,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    passIcon: { color: t.colors.danger, fontSize: 26, fontWeight: '700' },
+    likeIcon: { color: '#fff', fontSize: 30, fontWeight: '800' },
     empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
     emptyTitle: { color: t.colors.text, fontSize: 20, fontWeight: '700' },
     emptyText: {
