@@ -329,7 +329,7 @@ const makeStyles = (t) =>
     meetingWhen: { color: t.colors.textSoft, fontSize: 14, marginTop: 4 },
     calBtn: {
       backgroundColor: t.colors.accent,
-      borderRadius: 22,
+      borderRadius: 8,
       paddingVertical: 11,
       alignItems: 'center',
       marginTop: 12,
@@ -352,7 +352,7 @@ const makeStyles = (t) =>
       backgroundColor: t.colors.surface,
       borderWidth: 1,
       borderColor: t.colors.borderAccent,
-      borderRadius: 14,
+      borderRadius: 10,
       padding: 12,
       marginBottom: 8,
     },

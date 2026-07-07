@@ -156,9 +156,9 @@ const makeStyles = (t) =>
     },
     logo: { fontSize: 26, fontWeight: '800', color: t.colors.accent },
     gearBtn: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
+      width: 40,
+      height: 40,
+      borderRadius: 8,
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: t.colors.surface,

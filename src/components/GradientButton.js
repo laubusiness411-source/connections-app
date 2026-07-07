@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 
-// Primary CTA with a diagonal gradient fill (uses the active accent).
+// Primary CTA. Flat, structured, solid accent (name kept for compatibility
+// with existing call sites; `colors` overrides the fill with its last color).
 export default function GradientButton({
   title,
   onPress,
@@ -14,8 +14,11 @@ export default function GradientButton({
   colors,
 }) {
   const { theme } = useTheme();
-  const grad = colors || theme.gradient;
-  const off = theme.colors.surface2;
+  const fill = disabled
+    ? theme.colors.surface2
+    : colors
+      ? colors[colors.length - 1]
+      : theme.colors.accent;
 
   return (
     <TouchableOpacity
@@ -24,12 +27,7 @@ export default function GradientButton({
       activeOpacity={0.85}
       style={style}
     >
-      <LinearGradient
-        colors={disabled ? [off, off] : grad}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.grad, gradStyle]}
-      >
+      <View style={[styles.btn, { backgroundColor: fill }, gradStyle]}>
         <Text
           style={[
             styles.text,
@@ -39,17 +37,17 @@ export default function GradientButton({
         >
           {title}
         </Text>
-      </LinearGradient>
+      </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  grad: {
-    paddingVertical: 16,
-    borderRadius: 30,
+  btn: {
+    paddingVertical: 14,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  text: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  text: { color: '#fff', fontSize: 15, fontWeight: '700' },
 });

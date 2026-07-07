@@ -14,7 +14,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SwipeCard from '../components/SwipeCard';
@@ -337,7 +336,7 @@ export default function SwipeScreen({
             <Ionicons name="close" size={26} color={theme.colors.danger} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.likeWrap}
+            style={styles.likeBtn}
             onPress={() =>
               isJobs
                 ? handleJobSwipe('right', topJob)
@@ -345,18 +344,11 @@ export default function SwipeScreen({
             }
             activeOpacity={0.85}
           >
-            <LinearGradient
-              colors={theme.gradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.likeBtn}
-            >
-              <Ionicons
-                name={isJobs ? 'paper-plane' : 'checkmark'}
-                size={28}
-                color="#fff"
-              />
-            </LinearGradient>
+            <Ionicons
+              name={isJobs ? 'paper-plane' : 'checkmark'}
+              size={28}
+              color="#fff"
+            />
           </TouchableOpacity>
         </View>
       )}
@@ -395,9 +387,9 @@ const makeStyles = (t) =>
     headerSub: { color: t.colors.textFaint, fontSize: 13, marginTop: 2 },
     headerBtns: { flexDirection: 'row', gap: 10 },
     gearBtn: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
+      width: 40,
+      height: 40,
+      borderRadius: 8,
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: t.colors.surface,
@@ -409,9 +401,9 @@ const makeStyles = (t) =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: 6,
-      height: 44,
-      paddingHorizontal: 14,
-      borderRadius: 22,
+      height: 40,
+      paddingHorizontal: 12,
+      borderRadius: 8,
       backgroundColor: t.colors.surface,
       borderWidth: 1,
       borderColor: t.colors.border,
@@ -422,11 +414,11 @@ const makeStyles = (t) =>
       backgroundColor: t.colors.surface,
       borderWidth: 1,
       borderColor: t.colors.border,
-      borderRadius: 22,
+      borderRadius: 10,
       marginHorizontal: 20,
-      padding: 4,
+      padding: 3,
     },
-    segBtn: { flex: 1, paddingVertical: 9, borderRadius: 18, alignItems: 'center' },
+    segBtn: { flex: 1, paddingVertical: 9, borderRadius: 8, alignItems: 'center' },
     segBtnOn: { backgroundColor: t.colors.accent },
     segText: { color: t.colors.textMuted, fontSize: 14, fontWeight: '700' },
     segTextOn: { color: '#fff' },
@@ -438,8 +430,8 @@ const makeStyles = (t) =>
       backgroundColor: t.colors.surface,
       borderWidth: 1,
       borderColor: t.colors.border,
-      borderRadius: 18,
-      paddingHorizontal: 14,
+      borderRadius: 8,
+      paddingHorizontal: 12,
       paddingVertical: 8,
     },
     filterText: { color: t.colors.textSoft, fontSize: 13, fontWeight: '700' },
@@ -466,20 +458,13 @@ const makeStyles = (t) =>
       borderWidth: 1,
       borderColor: t.colors.border,
     },
-    likeWrap: {
-      borderRadius: 34,
-      shadowColor: t.colors.accent,
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.55,
-      shadowRadius: 14,
-      elevation: 10,
-    },
     likeBtn: {
-      width: 68,
-      height: 68,
-      borderRadius: 34,
+      width: 64,
+      height: 64,
+      borderRadius: 32,
       alignItems: 'center',
       justifyContent: 'center',
+      backgroundColor: t.colors.accent,
     },
     passIcon: { color: t.colors.danger, fontSize: 26, fontWeight: '700' },
     likeIcon: { color: '#fff', fontSize: 30, fontWeight: '800' },
@@ -496,9 +481,9 @@ const makeStyles = (t) =>
       marginTop: 20,
       borderWidth: 1,
       borderColor: t.colors.accent,
-      borderRadius: 24,
+      borderRadius: 8,
       paddingHorizontal: 22,
-      paddingVertical: 12,
+      paddingVertical: 11,
     },
-    emptyBtnText: { color: t.colors.accentSoft, fontSize: 15, fontWeight: '700' },
+    emptyBtnText: { color: t.colors.accent, fontSize: 15, fontWeight: '700' },
   });

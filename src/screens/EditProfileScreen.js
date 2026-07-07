@@ -292,9 +292,9 @@ const makeStyles = (t) =>
     skillChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
     skillChip: {
       backgroundColor: t.colors.accent,
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      borderRadius: 22,
+      paddingHorizontal: 14,
+      paddingVertical: 9,
+      borderRadius: 8,
     },
     skillChipText: { color: t.colors.onAccent, fontSize: 14, fontWeight: '600' },
     hint: { color: t.colors.textFaint, fontSize: 13, marginTop: 10 },
