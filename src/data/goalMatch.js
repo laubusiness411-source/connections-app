@@ -5,14 +5,14 @@
 // the natural place to call Claude server-side with the goal + candidate pool.
 
 export const GOAL_EXAMPLES = [
-  'Find a technical cofounder',
-  'Find a business cofounder',
-  'Start an AI agency',
-  'Land a marketing job',
+  'Land a summer internship',
+  'Get my first full-time job',
+  'Find a mentor in my field',
+  'Grow my professional network',
+  'Build & launch a project',
+  'Find a co-founder',
   'Get my first 10 clients',
-  'Raise $50k',
-  'Find an internship',
-  'Build & launch an MVP',
+  'Start a business',
 ];
 
 // Intent buckets -> what kind of person helps, and how to phrase it.

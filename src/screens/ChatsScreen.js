@@ -86,6 +86,12 @@ export default function ChatsScreen({ myId, myProfile, onOpenSettings }) {
         <SkeletonRows count={4} />
       ) : matches.length === 0 ? (
         <View style={styles.center}>
+          <Ionicons
+            name="chatbubbles-outline"
+            size={36}
+            color={theme.colors.textFaint}
+            style={{ marginBottom: 12 }}
+          />
           <Text style={styles.emptyTitle}>No connections yet</Text>
           <Text style={styles.emptyText}>
             Head to Discover. When you and someone both express interest, you'll

@@ -272,6 +272,12 @@ export default function SwipeScreen({
           <SkeletonCard />
         ) : reachedEnd ? (
           <View style={styles.empty}>
+            <Ionicons
+              name={isJobs ? 'briefcase-outline' : 'people-outline'}
+              size={36}
+              color={theme.colors.textFaint}
+              style={{ marginBottom: 12 }}
+            />
             <Text style={styles.emptyTitle}>
               {isJobs ? 'No more jobs right now' : "You're all caught up"}
             </Text>

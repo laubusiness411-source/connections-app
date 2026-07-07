@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import SwipeCard from '../components/SwipeCard';
 import { useTheme } from '../theme/ThemeContext';
 import { ACCENT_LIST } from '../theme/themes';
 
@@ -23,6 +25,7 @@ export default function SettingsScreen({
 }) {
   const { theme, mode, accentKey, setMode, setAccent } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
+  const [showPreview, setShowPreview] = useState(false);
 
   const initials = profile?.name
     ? profile.name.split(' ').map((n) => n[0]).join('')
@@ -69,6 +72,11 @@ export default function SettingsScreen({
 
         <TouchableOpacity style={styles.row} onPress={onEditProfile}>
           <Text style={styles.rowText}>Edit profile</Text>
+          <Text style={styles.chevron}>›</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.row} onPress={() => setShowPreview(true)}>
+          <Text style={styles.rowText}>Preview my profile</Text>
           <Text style={styles.chevron}>›</Text>
         </TouchableOpacity>
 
@@ -142,6 +150,26 @@ export default function SettingsScreen({
 
         <Text style={styles.version}>Klyk · v1.0.0</Text>
       </ScrollView>
+
+      <Modal
+        visible={showPreview}
+        animationType="slide"
+        onRequestClose={() => setShowPreview(false)}
+      >
+        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>How others see you</Text>
+            <TouchableOpacity onPress={() => setShowPreview(false)} hitSlop={12}>
+              <Text style={styles.done}>Done</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.previewDeck}>
+            {profile && (
+              <SwipeCard profile={profile} isTop preview onSwipe={() => {}} />
+            )}
+          </View>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -244,4 +272,5 @@ const makeStyles = (t) =>
     emptyText: { color: t.colors.textFaint, fontSize: 14 },
     unblock: { color: t.colors.accent, fontSize: 14, fontWeight: '700' },
     version: { color: t.colors.textFaint, fontSize: 12, textAlign: 'center', marginTop: 28 },
+    previewDeck: { flex: 1, marginHorizontal: 16, marginBottom: 16 },
   });

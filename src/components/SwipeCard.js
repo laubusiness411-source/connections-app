@@ -18,7 +18,7 @@ import { computeSimilarities, computeMatchPercent } from '../data/similarities';
 const { width: SCREEN_W } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_W * 0.28;
 
-export default function SwipeCard({ profile, isTop, onSwipe, onReport, me }) {
+export default function SwipeCard({ profile, isTop, onSwipe, onReport, me, preview }) {
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const sims = useMemo(() => computeSimilarities(me, profile), [me, profile]);
@@ -29,7 +29,7 @@ export default function SwipeCard({ profile, isTop, onSwipe, onReport, me }) {
   const translateY = useSharedValue(0);
 
   const pan = Gesture.Pan()
-    .enabled(isTop)
+    .enabled(isTop && !preview)
     .onUpdate((e) => {
       translateX.value = e.translationX;
       translateY.value = e.translationY * 0.25;
@@ -96,9 +96,11 @@ export default function SwipeCard({ profile, isTop, onSwipe, onReport, me }) {
             </LinearGradient>
           )}
 
-          <View style={styles.matchBadge}>
-            <Text style={styles.matchBadgeText}>{pct}% match</Text>
-          </View>
+          {!preview && (
+            <View style={styles.matchBadge}>
+              <Text style={styles.matchBadgeText}>{pct}% match</Text>
+            </View>
+          )}
 
           {isTop && onReport && (
             <TouchableOpacity
@@ -126,7 +128,7 @@ export default function SwipeCard({ profile, isTop, onSwipe, onReport, me }) {
             </Text>
           ) : null}
 
-          {sims.length > 0 && (
+          {!preview && sims.length > 0 && (
             <View style={styles.simSection}>
               <Text style={styles.simLabel}>WHY YOU MATCHED</Text>
               {sims.map((s) => (

@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientText from '../components/GradientText';
@@ -23,6 +22,7 @@ export default function AuthScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
   const isLogin = mode === 'login';
   const valid = /\S+@\S+\.\S+/.test(email) && password.length >= 6;
@@ -30,6 +30,7 @@ export default function AuthScreen() {
   const submit = async () => {
     if (!valid || busy) return;
     setBusy(true);
+    setError('');
     try {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({
@@ -54,7 +55,7 @@ export default function AuthScreen() {
         }
       }
     } catch (e) {
-      Alert.alert('Something went wrong', e.message || 'Please try again.');
+      setError(e.message || 'Something went wrong. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -95,6 +96,8 @@ export default function AuthScreen() {
               secureTextEntry
               autoCapitalize="none"
             />
+
+            {error ? <Text style={styles.error}>{error}</Text> : null}
 
             <GradientButton
               title={isLogin ? 'Log in' : 'Create account'}
@@ -155,6 +158,7 @@ const makeStyles = (t) =>
       color: t.colors.text,
       fontSize: 16,
     },
+    error: { color: t.colors.danger, fontSize: 13, fontWeight: '600', marginTop: 14 },
     submit: { marginTop: 28 },
     spinner: { marginTop: 16 },
     toggle: { marginTop: 24, alignItems: 'center' },
