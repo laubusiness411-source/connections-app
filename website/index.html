@@ -7,6 +7,7 @@
   <meta name="description" content="Klyk matches college students with internships, mentors, and first jobs. Set your 90-day goal, swipe on people and roles that fit, get a guaranteed intro every week." />
   <meta property="og:title" content="Klyk — Swipe your way to your career" />
   <meta property="og:description" content="Internships, mentors, and first jobs — one swipe away. Join the waitlist." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230A66C2'/%3E%3Ctext x='32' y='45' font-family='Arial,sans-serif' font-size='38' font-weight='800' fill='white' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -104,9 +105,9 @@
       font-size: 18px; line-height: 1.6;
       max-width: 480px; margin-bottom: 32px;
     }
-    .capture { display: flex; gap: 10px; max-width: 460px; }
+    .capture { display: flex; flex-wrap: wrap; gap: 10px; max-width: 460px; }
     .capture input {
-      flex: 1;
+      flex: 1 1 200px;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 24px; padding: 14px 18px;
       color: var(--text); font-size: 15px; font-family: inherit;
@@ -285,6 +286,7 @@
       </p>
       <form class="capture" data-capture>
         <input type="email" name="email" placeholder="you@school.edu" required />
+        <input type="text" name="school" placeholder="Your school (optional)" />
         <button type="submit" class="btn">Get early access</button>
       </form>
       <p class="capture-note">Free while in beta · launching campus by campus 🎓</p>
@@ -411,7 +413,11 @@
               Authorization: `Bearer ${SUPABASE_KEY}`,
               Prefer: 'return=minimal',
             },
-            body: JSON.stringify({ email, source: 'landing' }),
+            body: JSON.stringify({
+              email,
+              school: form.school ? form.school.value.trim() || null : null,
+              source: 'landing',
+            }),
           });
           if (res.ok) {
             msg.className = 'form-msg ok';
