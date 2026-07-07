@@ -9,12 +9,13 @@ import React, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { buildTheme } from './themes';
 
-const KEY = '@goalmatch/theme';
+// v2 key: defaults changed to the light, LinkedIn-style look.
+const KEY = '@klyk/theme-v2';
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
-  const [mode, setModeState] = useState('dark');
-  const [accentKey, setAccentState] = useState('purple');
+  const [mode, setModeState] = useState('light');
+  const [accentKey, setAccentState] = useState('blue');
 
   useEffect(() => {
     (async () => {
@@ -61,7 +62,7 @@ export function ThemeProvider({ children }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
-// Always returns a valid theme, even outside a provider (defaults to dark).
+// Always returns a valid theme, even outside a provider.
 export function useTheme() {
-  return useContext(ThemeContext) || { theme: buildTheme('dark', 'purple') };
+  return useContext(ThemeContext) || { theme: buildTheme('light', 'blue') };
 }

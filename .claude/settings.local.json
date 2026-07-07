@@ -17,7 +17,9 @@
       "Bash(npx --yes kill-port 5173)",
       "mcp__Claude_Preview__preview_start",
       "Bash(npx --yes kill-port 3000)",
-      "Bash(rm -f /c/Users/launy/Downloads/cofounder-app/.claude/launch.json)"
+      "Bash(rm -f /c/Users/launy/Downloads/cofounder-app/.claude/launch.json)",
+      "PowerShell(Get-ChildItem -Recurse \"$env:USERPROFILE\\\\Downloads\\\\kalshi-bot\\\\src\", \"$env:USERPROFILE\\\\Downloads\\\\kalshi-bot\\\\dashboard\" -File | Where-Object { $_.FullName -notmatch 'node_modules' } | Select-Object FullName, Length)",
+      "WebSearch"
     ]
   }
 }

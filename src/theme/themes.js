@@ -13,10 +13,10 @@ export const ACCENTS = {
   blue: {
     key: 'blue',
     label: 'Blue',
-    color: '#3B82F6',
-    soft: '#93C5FD',
-    gradient: ['#60A5FA', '#3B82F6'],
-    textGradient: ['#93C5FD', '#3B82F6', '#22D3EE'],
+    color: '#0A66C2',
+    soft: '#4A8BD4',
+    gradient: ['#2E7FD1', '#0A66C2'],
+    textGradient: ['#0A66C2', '#0A66C2', '#2E7FD1'],
   },
   green: {
     key: 'green',
@@ -65,19 +65,20 @@ const DARK = {
   ...STATUS,
 };
 
+// Warm, professional light palette (LinkedIn-style).
 const LIGHT = {
-  bg: '#F4F4F8',
+  bg: '#F4F2EE',
   surface: '#FFFFFF',
-  surface2: '#ECECF2',
-  surface3: '#E9E9F0',
-  border: '#E2E2EA',
-  borderAccent: '#D9D4F2',
-  text: '#12121A',
-  textSoft: '#33333D',
-  textMuted: '#6A6A78',
-  textFaint: '#9A9AAB',
-  inputPlaceholder: '#A0A0AE',
-  overlay: 'rgba(244,244,248,0.97)',
+  surface2: '#EDEBE7',
+  surface3: '#E9E7E2',
+  border: '#E0DEDA',
+  borderAccent: '#CFE0F1',
+  text: '#191919',
+  textSoft: '#3D3D3D',
+  textMuted: '#666666',
+  textFaint: '#8C8C8C',
+  inputPlaceholder: '#A6A6A6',
+  overlay: 'rgba(244,242,238,0.97)',
   ...STATUS,
 };
 
