@@ -1,90 +1,58 @@
 # Klyk — Expo App
 
-An **opportunity engine**: set your 90-day goal, get connected with the people,
-jobs, and local pros who move it forward. Swipe-based discovery for people and
-jobs, real auth + profiles + chat (Supabase), goal-based recommendations,
-in-chat scheduling, and a daily Top 5 companies. Built with React Native + Expo
-and **native gesture physics** (Reanimated + Gesture Handler).
+An **opportunity engine** for college students and new grads: set your 90-day
+goal and Klyk matches you with the people, jobs, and local pros who move it
+forward. "LinkedIn meets Tinder," built with React Native + Expo and native
+gesture physics (Reanimated + Gesture Handler), backed by Supabase.
 
-> Run the SQL files in `supabase/` (schema, messages, education, meetings) in the
-> Supabase SQL editor to enable the backend features.
+## Features
 
-## What's here
-
-```
-App.js                         # Entry: loads profile, gates onboarding vs swipe deck
-app.json                       # Expo config (bundle IDs, splash, image-picker perms)
-babel.config.js                # expo preset + reanimated plugin (must be last)
-src/
-  data/
-    profiles.js                # Hardcoded demo profiles (match + no-match flows)
-    profileFields.js           # Shared field option sets (roles, commitment, ...)
-    profileStorage.js          # Load/save/clear the user's profile (AsyncStorage)
-  components/
-    SwipeCard.js               # Native swipe card: drag, rotate, CONNECT/PASS, report
-    MatchScreen.js             # "It's a Match!" overlay + Schedule a call CTA
-    SchedulingScreen.js        # when2meet-style availability picker (tap or drag)
-    ChipSelect.js              # Reusable single-select pill row
-    AvatarPicker.js            # Photo picker w/ initials fallback (expo-image-picker)
-  screens/
-    OnboardingScreen.js        # 5-step profile creation wizard (first launch)
-    SwipeScreen.js             # Deck, swipe handling, match detection, settings, block
-    EditProfileScreen.js       # Single-page profile editor
-    SettingsScreen.js          # Profile summary, edit, blocked users, reset
-```
+- **Goal-first onboarding** — the first question is your 90-day goal; everything
+  is matched against it
+- **Discover** — swipe on people and jobs, ranked by fit, with match % and
+  "why you matched" highlights; filters (states, commute, pay, role); Passed
+  list with bring-back
+- **Real accounts & matching** — Supabase auth, cloud profiles, mutual-interest
+  connections (server-side trigger)
+- **Messages** — realtime chat with previews, unread badges, AI conversation
+  starters, and in-chat scheduling (propose times → confirm → add to Google
+  Calendar)
+- **This Week** — weekly introduction guarantee, streaks + daily goals, and a
+  daily Top 5 companies ranked by peer reviews + your skills
+- **Hire** — post a need, get matched with local pros
+- **Theming** — light (LinkedIn-style, default) and dark modes, 5 accent colors
+- Custom toasts/bottom sheets, skeleton loaders, generated app icon + splash
 
 ## Run it
 
-You need Node 18+ and the Expo CLI (bundled via `npx`).
-
 ```bash
-cd cofounder-app
 npm install
-npx expo start
+npx expo start          # add --tunnel if your phone isn't on the same Wi-Fi
 ```
 
-Then:
-- Press `i` for iOS simulator (needs Xcode, macOS only)
-- Press `a` for Android emulator (needs Android Studio)
-- Or scan the QR code with the **Expo Go** app on your physical phone (easiest)
+Scan the QR with **Expo Go** (iOS/Android).
 
-## Core loop
+## Backend setup (Supabase)
 
-- **First launch:** a 5-step onboarding wizard captures your profile (name,
-  photo, role, location, commitment, idea status, skills, pitch). Saved
-  locally, so you skip straight to the deck on every later launch.
-- Drag a card past the threshold (or tap ✓ / ✕) to swipe right/left.
-- Swiping right on a profile where `likesYou: true` triggers the match screen.
-- Demo profiles 1, 3, 5 match; 2 and 4 don't (6–12 are extra deck filler).
-- **On a match:** "Schedule a call" opens a when2meet-style availability
-  picker — tap or press-and-drag to mark free slots, pick call type +
-  duration, add a note, send.
-- **"..." on any card** → block or report (removes them from the deck).
-- **Gear icon** → settings: edit profile, manage blocked users, reset profile.
+Run these once in the Supabase SQL Editor (in order):
 
-> Note: everything persists locally only. Profiles in the deck are still demo
-> data, and "send availability" / matches aren't networked yet — that's the
-> backend step below.
+1. `supabase/schema.sql` — profiles, swipes, matches, intro requests, RLS,
+   auto-match + auto-profile triggers
+2. `supabase/messages.sql` — chat messages + realtime
+3. `supabase/education.sql` — school / status / grad year columns
+4. `supabase/meetings.sql` — scheduling proposals + realtime
+5. `supabase/waitlist.sql` — landing-page waitlist capture
 
-## Match detection
+Client credentials live in `src/lib/supabaseConfig.js` (public keys; RLS does
+the protection). `PERSIST_SESSION` there toggles stay-logged-in (off for
+testing, turn on for release).
 
-Currently client-side against hardcoded `likesYou` flags. In production this becomes:
-1. Swipe right → POST to your backend.
-2. Backend checks if the other user already swiped right on you.
-3. If yes → create a match record, push-notify both users.
+## Website
 
-## Done
+`website/index.html` is the self-contained landing page + waitlist (deploy the
+`website` folder to Netlify/Vercel).
 
-- ✅ Profile creation / onboarding flow
-- ✅ Edit profile + settings + reset
-- ✅ Profile photo uploads (initials fallback)
-- ✅ Block / report (App Store requirement for people apps)
-- ✅ when2meet-style call scheduling (tap + drag-to-select)
+## Still demo / local
 
-## Next steps
-
-- **Real backend + auth** (Supabase) — accounts, persisted profiles, a real
-  deck of users, and server-side match detection. This makes "send
-  availability" and matches actually work between real people.
-- Push notifications (expo-notifications) for "It's a match!".
-- Real-time chat once two people match.
+Jobs, companies, and Hire providers are demo data; intro/quote "requests" are
+stored locally. Next big steps: push notifications, employer accounts, TestFlight.

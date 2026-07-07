@@ -65,7 +65,10 @@ export default function ChatsScreen({ myId, myProfile, onOpenSettings }) {
         match={selected}
         myId={myId}
         me={myProfile}
-        onBack={() => {
+        onBack={async () => {
+          // Mark read again on exit so messages that arrived while the chat
+          // was open don't show as unread.
+          await markRead(selected.matchId);
           setSelected(null);
           load();
         }}

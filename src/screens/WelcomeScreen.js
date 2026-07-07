@@ -6,9 +6,9 @@ import GradientButton from '../components/GradientButton';
 import { useTheme } from '../theme/ThemeContext';
 
 const PERKS = [
-  { icon: '🎯', title: 'Set your 90-day goal', sub: 'Tell us what you’re working toward' },
-  { icon: '🤝', title: 'Meet the right people', sub: 'A guaranteed introduction every week' },
-  { icon: '💼', title: 'Hire local help', sub: 'Post a need, connect with local pros' },
+  { icon: '🎯', title: 'Set your 90-day goal', sub: 'Internship, first job, mentor — your call' },
+  { icon: '🧭', title: 'Swipe on people & jobs', sub: 'Only ones that actually fit your goal' },
+  { icon: '🤝', title: 'Get introduced weekly', sub: 'A guaranteed introduction every week' },
 ];
 
 export default function WelcomeScreen({ onGetStarted, onLogin }) {
