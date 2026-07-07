@@ -6,13 +6,14 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import GradientText from '../components/GradientText';
 import GradientButton from '../components/GradientButton';
 import StreakCard from '../components/StreakCard';
+import ConfirmSheet from '../components/ConfirmSheet';
+import { useToast } from '../components/Toast';
 import { useEngagement } from '../context/EngagementContext';
 import { useTheme } from '../theme/ThemeContext';
 import { generateGoalMatches } from '../data/goalMatch';
@@ -45,27 +46,16 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
   );
 
   const companies = useMemo(() => topCompaniesForUser(myProfile), [myProfile]);
+  const [introTarget, setIntroTarget] = useState(null);
+  const toast = useToast();
 
-  const requestIntro = (p) => {
+  const requestIntro = (p) => setIntroTarget(p);
+
+  const confirmIntro = (p) => {
     const fn = p.name.split(' ')[0];
-    Alert.alert(
-      `Request an introduction to ${fn}?`,
-      `We'll introduce you to ${fn} this week — that's the guarantee.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Request',
-          onPress: () => {
-            setRequested((r) => ({ ...r, [p.id]: true }));
-            engagement?.recordIntro();
-            Alert.alert(
-              "You're in the queue",
-              `We'll introduce you to ${fn} within the week.`
-            );
-          },
-        },
-      ]
-    );
+    setRequested((r) => ({ ...r, [p.id]: true }));
+    engagement?.recordIntro();
+    toast.show(`We'll introduce you to ${fn} this week`, { icon: 'people' });
   };
 
   return (
@@ -183,6 +173,20 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
           New introductions refresh weekly. Want more now? Visit Discover.
         </Text>
       </ScrollView>
+
+      <ConfirmSheet
+        visible={!!introTarget}
+        title={`Request an introduction to ${introTarget?.name?.split(' ')[0] || ''}?`}
+        message="We'll introduce you this week — that's the guarantee."
+        actions={[
+          {
+            label: 'Request introduction',
+            style: 'primary',
+            onPress: () => confirmIntro(introTarget),
+          },
+        ]}
+        onClose={() => setIntroTarget(null)}
+      />
     </SafeAreaView>
   );
 }

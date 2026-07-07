@@ -6,7 +6,12 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": { "resizeMode": "contain", "backgroundColor": "#F4F2EE" },
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F4F2EE"
+    },
     "assetBundlePatterns": ["**/*"],
     "plugins": [
       [

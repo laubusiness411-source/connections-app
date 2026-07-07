@@ -5,14 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,6 +20,9 @@ import { PROFILES } from '../data/profiles';
 import { parseState } from '../data/usStates';
 import FiltersScreen from './FiltersScreen';
 import PassedScreen from './PassedScreen';
+import ConfirmSheet from '../components/ConfirmSheet';
+import { SkeletonCard } from '../components/Skeleton';
+import { useToast } from '../components/Toast';
 import {
   useFilters,
   activeJobCount,
@@ -65,6 +61,8 @@ export default function SwipeScreen({
   const [history, setHistory] = useState([]); // [{profile, direction}]
   const [showPassed, setShowPassed] = useState(false);
   const [daysLeft, setDaysLeft] = useState(90);
+  const [reportTarget, setReportTarget] = useState(null);
+  const toast = useToast();
 
   useEffect(() => {
     (async () => {
@@ -161,29 +159,15 @@ export default function SwipeScreen({
       engagement?.recordSwipe();
       setSeenJobs((s) => [...s, job.id]);
       if (direction === 'right') {
-        Alert.alert(
-          'Application sent',
-          `Your profile was sent to ${job.company} for the ${job.title} role. You'll be notified when they respond.`
-        );
+        toast.show(`Application sent to ${job.company}`, { icon: 'paper-plane' });
       }
     },
-    [engagement]
+    [engagement, toast]
   );
 
-  const handleReport = useCallback(
-    (profile) => {
-      Alert.alert(profile.name, 'What would you like to do?', [
-        { text: 'Block', style: 'destructive', onPress: () => onBlock?.(profile) },
-        {
-          text: 'Report',
-          style: 'destructive',
-          onPress: () => onBlock?.(profile, { reported: true }),
-        },
-        { text: 'Cancel', style: 'cancel' },
-      ]);
-    },
-    [onBlock]
-  );
+  const handleReport = useCallback((profile) => {
+    setReportTarget(profile);
+  }, []);
 
   const bringBack = (id) => {
     setSeenPeople((s) => s.filter((x) => x !== id));
@@ -276,9 +260,7 @@ export default function SwipeScreen({
 
       <View style={styles.deck}>
         {!isJobs && loading ? (
-          <View style={styles.empty}>
-            <ActivityIndicator color={theme.colors.accent} size="large" />
-          </View>
+          <SkeletonCard />
         ) : reachedEnd ? (
           <View style={styles.empty}>
             <Text style={styles.emptyTitle}>
@@ -368,6 +350,25 @@ export default function SwipeScreen({
           />
         </View>
       )}
+
+      <ConfirmSheet
+        visible={!!reportTarget}
+        title={reportTarget?.name}
+        message="Blocking removes them from your deck. Reporting also flags their profile for review."
+        actions={[
+          {
+            label: 'Block',
+            style: 'destructive',
+            onPress: () => onBlock?.(reportTarget),
+          },
+          {
+            label: 'Report & block',
+            style: 'destructive',
+            onPress: () => onBlock?.(reportTarget, { reported: true }),
+          },
+        ]}
+        onClose={() => setReportTarget(null)}
+      />
     </SafeAreaView>
   );
 }

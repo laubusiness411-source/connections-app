@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import GradientText from '../components/GradientText';
 import ChatScreen from './ChatScreen';
+import { SkeletonRows } from '../components/Skeleton';
 import { useTheme } from '../theme/ThemeContext';
 import { fetchMatchesWithPreview } from '../lib/db';
 import { getReads, markRead, isUnread } from '../lib/reads';
@@ -83,9 +84,7 @@ export default function ChatsScreen({ myId, myProfile, onOpenSettings }) {
       </View>
 
       {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={theme.colors.accent} size="large" />
-        </View>
+        <SkeletonRows count={4} />
       ) : matches.length === 0 ? (
         <View style={styles.center}>
           <Text style={styles.emptyTitle}>No connections yet</Text>

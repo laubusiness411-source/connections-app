@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useToast } from '../components/Toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThisWeekScreen from './ThisWeekScreen';
 import HireScreen from './HireScreen';
@@ -28,6 +29,7 @@ export default function MainTabs({
   onLogout,
 }) {
   const insets = useSafeAreaInsets();
+  const toast = useToast();
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [tab, setTab] = useState('week');
@@ -50,15 +52,18 @@ export default function MainTabs({
     refreshUnread();
   }, [refreshUnread, tab]);
 
-  const handleBlock = useCallback((profile, { reported } = {}) => {
-    setBlocked((b) => (b.some((x) => x.id === profile.id) ? b : [...b, profile]));
-    if (reported) {
-      Alert.alert(
-        'Report received',
-        `Thanks — we'll review ${profile.name.split(' ')[0]}'s profile. They won't appear again.`
+  const handleBlock = useCallback(
+    (profile, { reported } = {}) => {
+      setBlocked((b) => (b.some((x) => x.id === profile.id) ? b : [...b, profile]));
+      toast.show(
+        reported
+          ? `Report received — ${profile.name.split(' ')[0]} won't appear again`
+          : `${profile.name.split(' ')[0]} blocked`,
+        { icon: 'shield-checkmark' }
       );
-    }
-  }, []);
+    },
+    [toast]
+  );
 
   const unblock = useCallback((id) => {
     setBlocked((b) => b.filter((x) => x.id !== id));

@@ -10,6 +10,7 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import { supabase } from './src/lib/supabase';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { FiltersProvider } from './src/context/FiltersContext';
+import { ToastProvider } from './src/components/Toast';
 import {
   fetchMyProfile,
   saveMyProfile,
@@ -139,8 +140,10 @@ export default function App() {
       <SafeAreaProvider>
         <ThemeProvider>
           <FiltersProvider>
-            <ThemedStatusBar />
-            {content}
+            <ToastProvider>
+              <ThemedStatusBar />
+              {content}
+            </ToastProvider>
           </FiltersProvider>
         </ThemeProvider>
       </SafeAreaProvider>

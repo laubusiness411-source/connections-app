@@ -8,12 +8,13 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import GradientText from '../components/GradientText';
 import GradientButton from '../components/GradientButton';
+import ConfirmSheet from '../components/ConfirmSheet';
+import { useToast } from '../components/Toast';
 import { useTheme } from '../theme/ThemeContext';
 import { NEED_CATEGORIES, matchProviders } from '../data/needMatch';
 
@@ -35,27 +36,17 @@ export default function HireScreen({ onOpenSettings }) {
 
   const started = !!category || text.trim().length > 0;
 
-  const requestQuote = (p) => {
+  const [quoteTarget, setQuoteTarget] = useState(null);
+  const toast = useToast();
+
+  const requestQuote = (p) => setQuoteTarget(p);
+
+  const confirmQuote = (p) => {
     const fn = p.name.split(' ')[0];
-    Alert.alert(
-      `Request a quote from ${fn}?`,
-      `We'll send ${fn} your request${
-        text.trim() ? `: "${text.trim()}"` : ''
-      } and they'll get back to you.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Send request',
-          onPress: () => {
-            setRequested((r) => ({ ...r, [p.id]: true }));
-            Alert.alert(
-              'Request sent',
-              `${fn} will reach out with a quote. You're supporting a local business.`
-            );
-          },
-        },
-      ]
-    );
+    setRequested((r) => ({ ...r, [p.id]: true }));
+    toast.show(`Request sent — ${fn} will reach out with a quote`, {
+      icon: 'briefcase',
+    });
   };
 
   return (
@@ -164,6 +155,24 @@ export default function HireScreen({ onOpenSettings }) {
           })}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <ConfirmSheet
+        visible={!!quoteTarget}
+        title={`Request a quote from ${quoteTarget?.name?.split(' ')[0] || ''}?`}
+        message={
+          text.trim()
+            ? `We'll send your request: "${text.trim()}"`
+            : "We'll send your request and they'll get back to you."
+        }
+        actions={[
+          {
+            label: 'Send request',
+            style: 'primary',
+            onPress: () => confirmQuote(quoteTarget),
+          },
+        ]}
+        onClose={() => setQuoteTarget(null)}
+      />
     </SafeAreaView>
   );
 }
