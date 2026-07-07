@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import GradientText from '../components/GradientText';
 import ChatScreen from './ChatScreen';
 import { useTheme } from '../theme/ThemeContext';
@@ -77,7 +78,7 @@ export default function ChatsScreen({ myId, myProfile, onOpenSettings }) {
       <View style={styles.header}>
         <GradientText style={styles.logo}>Messages</GradientText>
         <TouchableOpacity style={styles.gearBtn} onPress={load} hitSlop={10}>
-          <Text style={styles.gear}>🔄</Text>
+          <Ionicons name="refresh" size={19} color={theme.colors.textSoft} />
         </TouchableOpacity>
       </View>
 

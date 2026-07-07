@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThisWeekScreen from './ThisWeekScreen';
 import HireScreen from './HireScreen';
@@ -14,10 +15,10 @@ import { fetchMatchesWithPreview } from '../lib/db';
 import { getReads, isUnread } from '../lib/reads';
 
 const TABS = [
-  { key: 'week', label: 'This Week', icon: '🎯' },
-  { key: 'hire', label: 'Hire', icon: '💼' },
-  { key: 'swipe', label: 'Discover', icon: '🧭' },
-  { key: 'chats', label: 'Messages', icon: '💬' },
+  { key: 'week', label: 'This Week', icon: 'today' },
+  { key: 'hire', label: 'Hire', icon: 'briefcase' },
+  { key: 'swipe', label: 'Discover', icon: 'compass' },
+  { key: 'chats', label: 'Messages', icon: 'chatbubbles' },
 ];
 
 export default function MainTabs({
@@ -108,9 +109,11 @@ export default function MainTabs({
               activeOpacity={0.8}
             >
               <View>
-                <Text style={[styles.tabIcon, !active && styles.tabInactive]}>
-                  {t.icon}
-                </Text>
+                <Ionicons
+                  name={active ? t.icon : `${t.icon}-outline`}
+                  size={22}
+                  color={active ? theme.colors.accent : theme.colors.textFaint}
+                />
                 {t.key === 'chats' && unread > 0 && (
                   <View style={styles.badge}>
                     <Text style={styles.badgeText}>{unread > 9 ? '9+' : unread}</Text>

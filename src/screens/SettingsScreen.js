@@ -42,9 +42,9 @@ export default function SettingsScreen({
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>settings</Text>
+        <Text style={styles.headerTitle}>Settings</Text>
         <TouchableOpacity onPress={onClose} hitSlop={12}>
-          <Text style={styles.done}>done</Text>
+          <Text style={styles.done}>Done</Text>
         </TouchableOpacity>
       </View>
 
@@ -68,7 +68,7 @@ export default function SettingsScreen({
         </View>
 
         <TouchableOpacity style={styles.row} onPress={onEditProfile}>
-          <Text style={styles.rowText}>edit profile</Text>
+          <Text style={styles.rowText}>Edit profile</Text>
           <Text style={styles.chevron}>›</Text>
         </TouchableOpacity>
 
@@ -133,11 +133,11 @@ export default function SettingsScreen({
         <Text style={styles.sectionLabel}>ACCOUNT</Text>
         {onLogout && (
           <TouchableOpacity style={styles.row} onPress={onLogout}>
-            <Text style={styles.rowText}>log out</Text>
+            <Text style={styles.rowText}>Log out</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity style={styles.row} onPress={confirmReset}>
-          <Text style={[styles.rowText, styles.danger]}>reset profile</Text>
+          <Text style={[styles.rowText, styles.danger]}>Reset profile</Text>
         </TouchableOpacity>
 
         <Text style={styles.version}>Klyk · v1.0.0</Text>

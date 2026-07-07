@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import {
   useEngagement,
   SWIPE_GOAL,
@@ -39,7 +40,9 @@ export default function StreakCard() {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.flame}>🔥</Text>
+        <View style={styles.flameWrap}>
+          <Ionicons name="flame" size={22} color={theme.colors.warn} />
+        </View>
         <View style={styles.headText}>
           <Text style={styles.streakNum}>
             {streak} day{streak === 1 ? '' : 's'}
@@ -88,7 +91,15 @@ const makeStyles = (t) =>
       marginTop: 12,
     },
     header: { flexDirection: 'row', alignItems: 'center' },
-    flame: { fontSize: 32, marginRight: 12 },
+    flameWrap: {
+      width: 42,
+      height: 42,
+      borderRadius: 21,
+      backgroundColor: t.colors.surface2,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
     headText: { flex: 1 },
     streakNum: { color: t.colors.text, fontSize: 22, fontWeight: '800' },
     streakSub: { color: t.colors.textMuted, fontSize: 13, marginTop: 2 },

@@ -11,6 +11,7 @@ import Animated, {
   Extrapolation,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { computeSimilarities, computeMatchPercent } from '../data/similarities';
 
@@ -105,7 +106,7 @@ export default function SwipeCard({ profile, isTop, onSwipe, onReport, me }) {
               onPress={() => onReport(profile)}
               hitSlop={10}
             >
-              <Text style={styles.reportIcon}>⋯</Text>
+              <Ionicons name="ellipsis-horizontal" size={18} color="#fff" />
             </TouchableOpacity>
           )}
         </View>

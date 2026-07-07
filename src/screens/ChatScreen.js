@@ -12,6 +12,7 @@ import {
   Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import {
   fetchMessages,
   sendMessage,
@@ -120,8 +121,9 @@ export default function ChatScreen({ match, myId, me, onBack }) {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.header}>
-          <TouchableOpacity onPress={onBack} hitSlop={12}>
-            <Text style={styles.back}>‹ Back</Text>
+          <TouchableOpacity onPress={onBack} hitSlop={12} style={styles.backBtn}>
+            <Ionicons name="chevron-back" size={20} color={theme.colors.accent} />
+            <Text style={styles.back}>Back</Text>
           </TouchableOpacity>
           <View style={styles.headerCenter}>
             {profile?.photoUri ? (
@@ -205,7 +207,7 @@ export default function ChatScreen({ match, myId, me, onBack }) {
 
           {messages.length === 0 && starters.length > 0 && (
             <View style={styles.starters}>
-              <Text style={styles.startersLabel}>✨ Conversation starters</Text>
+              <Text style={styles.startersLabel}>CONVERSATION STARTERS</Text>
               {starters.map((s) => (
                 <TouchableOpacity
                   key={s}
@@ -242,7 +244,7 @@ export default function ChatScreen({ match, myId, me, onBack }) {
             style={styles.input}
             value={text}
             onChangeText={setText}
-            placeholder="message…"
+            placeholder="Message"
             placeholderTextColor={theme.colors.inputPlaceholder}
             multiline
           />
@@ -251,7 +253,7 @@ export default function ChatScreen({ match, myId, me, onBack }) {
             onPress={send}
             disabled={!text.trim()}
           >
-            <Text style={styles.sendText}>send</Text>
+            <Ionicons name="arrow-up" size={19} color="#fff" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -282,7 +284,8 @@ const makeStyles = (t) =>
       borderBottomWidth: 1,
       borderBottomColor: t.colors.border,
     },
-    back: { color: t.colors.accent, fontSize: 16, fontWeight: '700', width: 50 },
+    backBtn: { flexDirection: 'row', alignItems: 'center', width: 70 },
+    back: { color: t.colors.accent, fontSize: 16, fontWeight: '700' },
     headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     headerAvatar: {
       width: 30,
@@ -397,11 +400,12 @@ const makeStyles = (t) =>
       fontSize: 15,
     },
     sendBtn: {
-      backgroundColor: t.colors.accent,
+      width: 40,
+      height: 40,
       borderRadius: 20,
-      paddingHorizontal: 18,
-      paddingVertical: 11,
+      backgroundColor: t.colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     sendBtnOff: { backgroundColor: t.colors.surface2 },
-    sendText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   });

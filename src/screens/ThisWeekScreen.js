@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import GradientText from '../components/GradientText';
 import GradientButton from '../components/GradientButton';
 import StreakCard from '../components/StreakCard';
@@ -76,7 +77,7 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
           onPress={onOpenSettings}
           hitSlop={10}
         >
-          <Text style={styles.gear}>⚙</Text>
+          <Ionicons name="settings-outline" size={19} color={theme.colors.textSoft} />
         </TouchableOpacity>
       </View>
 

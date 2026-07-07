@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SwipeCard from '../components/SwipeCard';
 import JobCard from '../components/JobCard';
@@ -210,7 +211,7 @@ export default function SwipeScreen({
         <GradientText style={styles.logo}>Klyk</GradientText>
         <View style={styles.headerBtns}>
           <TouchableOpacity style={styles.gearBtn} onPress={refresh} hitSlop={10}>
-            <Text style={styles.gear}>🔄</Text>
+            <Ionicons name="refresh" size={19} color={theme.colors.textSoft} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.goalPill}
@@ -218,7 +219,8 @@ export default function SwipeScreen({
             hitSlop={8}
             activeOpacity={0.85}
           >
-            <Text style={styles.goalPillText}>🎯 Goal · {daysLeft} days left</Text>
+            <Ionicons name="flag" size={13} color={theme.colors.accent} />
+            <Text style={styles.goalPillText}>Goal · {daysLeft} days left</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -250,8 +252,9 @@ export default function SwipeScreen({
           onPress={() => setShowFilters(true)}
           activeOpacity={0.85}
         >
+          <Ionicons name="options-outline" size={15} color={theme.colors.textSoft} />
           <Text style={styles.filterText}>
-            ⚙ Filters
+            Filters
             {(() => {
               const c = isJobs ? activeJobCount(jf) : activePeopleCount(pf);
               return c ? ` · ${c}` : '';
@@ -264,8 +267,9 @@ export default function SwipeScreen({
             onPress={() => setShowPassed(true)}
             activeOpacity={0.85}
           >
+            <Ionicons name="arrow-undo-outline" size={15} color={theme.colors.textSoft} />
             <Text style={styles.filterText}>
-              ↩ Passed{history.length ? ` · ${history.length}` : ''}
+              Passed{history.length ? ` · ${history.length}` : ''}
             </Text>
           </TouchableOpacity>
         )}
@@ -330,7 +334,7 @@ export default function SwipeScreen({
             }
             activeOpacity={0.85}
           >
-            <Text style={styles.passIcon}>✕</Text>
+            <Ionicons name="close" size={26} color={theme.colors.danger} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.likeWrap}
@@ -347,7 +351,11 @@ export default function SwipeScreen({
               end={{ x: 1, y: 1 }}
               style={styles.likeBtn}
             >
-              <Text style={styles.likeIcon}>{isJobs ? '↗' : '✓'}</Text>
+              <Ionicons
+                name={isJobs ? 'paper-plane' : 'checkmark'}
+                size={28}
+                color="#fff"
+              />
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -400,6 +408,7 @@ const makeStyles = (t) =>
     goalPill: {
       flexDirection: 'row',
       alignItems: 'center',
+      gap: 6,
       height: 44,
       paddingHorizontal: 14,
       borderRadius: 22,
@@ -423,6 +432,9 @@ const makeStyles = (t) =>
     segTextOn: { color: '#fff' },
     filterRow: { flexDirection: 'row', gap: 10, paddingHorizontal: 20, marginTop: 10 },
     filterPill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
       backgroundColor: t.colors.surface,
       borderWidth: 1,
       borderColor: t.colors.border,
