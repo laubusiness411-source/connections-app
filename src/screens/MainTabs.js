@@ -185,8 +185,6 @@ const makeStyles = (t) =>
       paddingTop: 10,
     },
     tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    tabIcon: { fontSize: 20 },
-    tabInactive: { opacity: 0.45 },
     tabLabel: { color: t.colors.textFaint, fontSize: 11, fontWeight: '700', marginTop: 3 },
     tabLabelActive: { color: t.colors.accent },
     badge: {

@@ -190,7 +190,6 @@ const makeStyles = (t) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
-    reportIcon: { color: '#fff', fontSize: 20, fontWeight: '800', lineHeight: 22 },
     body: { padding: 20, flex: 1 },
     name: { color: t.colors.text, fontSize: 24, fontWeight: '800' },
     role: { color: t.colors.textSoft, fontSize: 15, fontWeight: '600', marginTop: 3 },

@@ -213,7 +213,6 @@ const makeStyles = (t) =>
       borderWidth: 1,
       borderColor: t.colors.border,
     },
-    gear: { color: t.colors.textSoft, fontSize: 20 },
     content: { paddingHorizontal: 16, paddingBottom: 32 },
     goalCard: {
       backgroundColor: t.colors.surface,

@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -335,21 +335,25 @@ export default function SwipeScreen({
         </View>
       )}
 
-      {showFilters && (
-        <View style={styles.filtersOverlay}>
-          <FiltersScreen mode={mode} onClose={() => setShowFilters(false)} />
-        </View>
-      )}
+      <Modal
+        visible={showFilters}
+        animationType="slide"
+        onRequestClose={() => setShowFilters(false)}
+      >
+        <FiltersScreen mode={mode} onClose={() => setShowFilters(false)} />
+      </Modal>
 
-      {showPassed && (
-        <View style={styles.filtersOverlay}>
-          <PassedScreen
-            history={history}
-            onBringBack={bringBack}
-            onClose={() => setShowPassed(false)}
-          />
-        </View>
-      )}
+      <Modal
+        visible={showPassed}
+        animationType="slide"
+        onRequestClose={() => setShowPassed(false)}
+      >
+        <PassedScreen
+          history={history}
+          onBringBack={bringBack}
+          onClose={() => setShowPassed(false)}
+        />
+      </Modal>
 
       <ConfirmSheet
         visible={!!reportTarget}
@@ -397,7 +401,6 @@ const makeStyles = (t) =>
       borderWidth: 1,
       borderColor: t.colors.border,
     },
-    gear: { color: t.colors.textSoft, fontSize: 20 },
     goalPill: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -436,11 +439,6 @@ const makeStyles = (t) =>
       paddingVertical: 8,
     },
     filterText: { color: t.colors.textSoft, fontSize: 13, fontWeight: '700' },
-    filtersOverlay: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: t.colors.bg,
-      zIndex: 500,
-    },
     deck: { flex: 1, marginHorizontal: 16, marginVertical: 8 },
     controls: {
       flexDirection: 'row',
@@ -467,8 +465,6 @@ const makeStyles = (t) =>
       justifyContent: 'center',
       backgroundColor: t.colors.accent,
     },
-    passIcon: { color: t.colors.danger, fontSize: 26, fontWeight: '700' },
-    likeIcon: { color: '#fff', fontSize: 30, fontWeight: '800' },
     empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
     emptyTitle: { color: t.colors.text, fontSize: 20, fontWeight: '700' },
     emptyText: {

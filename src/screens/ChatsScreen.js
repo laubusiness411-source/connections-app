@@ -6,7 +6,6 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -164,7 +163,6 @@ const makeStyles = (t) =>
       borderWidth: 1,
       borderColor: t.colors.border,
     },
-    gear: { color: t.colors.textSoft, fontSize: 20 },
     center: {
       flex: 1,
       alignItems: 'center',

@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Linking,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -258,15 +259,17 @@ export default function ChatScreen({ match, myId, me, onBack }) {
         </View>
       </KeyboardAvoidingView>
 
-      {showSchedule && (
-        <View style={styles.scheduleOverlay}>
-          <SchedulingScreen
-            profile={profile}
-            onSend={propose}
-            onClose={() => setShowSchedule(false)}
-          />
-        </View>
-      )}
+      <Modal
+        visible={showSchedule}
+        animationType="slide"
+        onRequestClose={() => setShowSchedule(false)}
+      >
+        <SchedulingScreen
+          profile={profile}
+          onSend={propose}
+          onClose={() => setShowSchedule(false)}
+        />
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -335,11 +338,6 @@ const makeStyles = (t) =>
       marginTop: 12,
     },
     calText: { color: '#fff', fontSize: 14, fontWeight: '700' },
-    scheduleOverlay: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: t.colors.bg,
-      zIndex: 500,
-    },
     starters: { marginBottom: 8 },
     startersLabel: {
       color: t.colors.accentSoft,
