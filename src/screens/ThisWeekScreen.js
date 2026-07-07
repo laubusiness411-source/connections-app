@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import GradientText from '../components/GradientText';
 import GradientButton from '../components/GradientButton';
 import StreakCard from '../components/StreakCard';
@@ -24,9 +25,17 @@ function initialsOf(name) {
   return name ? name.split(' ').map((n) => n[0]).join('').slice(0, 2) : '?';
 }
 
+const REQ_KEY = '@klyk/introRequested';
+
 export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings }) {
   const [requested, setRequested] = useState({});
   const engagement = useEngagement();
+
+  useEffect(() => {
+    AsyncStorage.getItem(REQ_KEY)
+      .then((r) => r && setRequested(JSON.parse(r)))
+      .catch(() => {});
+  }, []);
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
@@ -53,7 +62,11 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
 
   const confirmIntro = (p) => {
     const fn = p.name.split(' ')[0];
-    setRequested((r) => ({ ...r, [p.id]: true }));
+    setRequested((r) => {
+      const next = { ...r, [p.id]: true };
+      AsyncStorage.setItem(REQ_KEY, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
     engagement?.recordIntro();
     toast.show(`We'll introduce you to ${fn} this week`, { icon: 'people' });
   };

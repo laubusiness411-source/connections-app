@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,6 +15,7 @@ import GradientText from '../components/GradientText';
 import GradientButton from '../components/GradientButton';
 import ConfirmSheet from '../components/ConfirmSheet';
 import { useToast } from '../components/Toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../theme/ThemeContext';
 import { NEED_CATEGORIES, matchProviders } from '../data/needMatch';
 
@@ -39,11 +40,23 @@ export default function HireScreen({ onOpenSettings }) {
   const [quoteTarget, setQuoteTarget] = useState(null);
   const toast = useToast();
 
+  useEffect(() => {
+    AsyncStorage.getItem('@klyk/quoteRequested')
+      .then((r) => r && setRequested(JSON.parse(r)))
+      .catch(() => {});
+  }, []);
+
   const requestQuote = (p) => setQuoteTarget(p);
 
   const confirmQuote = (p) => {
     const fn = p.name.split(' ')[0];
-    setRequested((r) => ({ ...r, [p.id]: true }));
+    setRequested((r) => {
+      const next = { ...r, [p.id]: true };
+      AsyncStorage.setItem('@klyk/quoteRequested', JSON.stringify(next)).catch(
+        () => {}
+      );
+      return next;
+    });
     toast.show(`Request sent — ${fn} will reach out with a quote`, {
       icon: 'briefcase',
     });

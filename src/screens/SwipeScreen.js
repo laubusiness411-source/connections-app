@@ -23,6 +23,7 @@ import PassedScreen from './PassedScreen';
 import ConfirmSheet from '../components/ConfirmSheet';
 import { SkeletonCard } from '../components/Skeleton';
 import { useToast } from '../components/Toast';
+import { computeMatchPercent } from '../data/similarities';
 import {
   useFilters,
   activeJobCount,
@@ -98,16 +99,24 @@ export default function SwipeScreen({
   const pf = filters.people;
   const peopleVisible = useMemo(() => {
     const all = [...people, ...DEMO_PEOPLE];
-    return all.filter((p) => {
-      if (seenSet.has(p.id) || blockedIds.has(p.id)) return false;
-      if (pf.roles.length && !pf.roles.includes(p.role)) return false;
-      if (pf.lookingFor.length && !pf.lookingFor.includes(p.lookingFor)) return false;
-      const st = parseState(p.location);
-      if (st === 'Remote') return pf.includeRemote;
-      if (pf.states.length && !pf.states.includes(st)) return false;
-      return true;
-    });
-  }, [people, seenSet, blockedIds, pf]);
+    return all
+      .filter((p) => {
+        if (seenSet.has(p.id) || blockedIds.has(p.id)) return false;
+        if (pf.roles.length && !pf.roles.includes(p.role)) return false;
+        if (pf.lookingFor.length && !pf.lookingFor.includes(p.lookingFor)) return false;
+        const st = parseState(p.location);
+        if (st === 'Remote') return pf.includeRemote;
+        if (pf.states.length && !pf.states.includes(st)) return false;
+        return true;
+      })
+      // Real users first, then best goal/skill fit within each group.
+      .sort((a, b) => {
+        if (!!a.isDemo !== !!b.isDemo) return a.isDemo ? 1 : -1;
+        return (
+          computeMatchPercent(myProfile, b) - computeMatchPercent(myProfile, a)
+        );
+      });
+  }, [people, seenSet, blockedIds, pf, myProfile]);
 
   const jf = filters.jobs;
   const jobsVisible = useMemo(() => {
