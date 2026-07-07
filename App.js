@@ -11,6 +11,7 @@ import { supabase } from './src/lib/supabase';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { FiltersProvider } from './src/context/FiltersContext';
 import { ToastProvider } from './src/components/Toast';
+import ErrorBoundary from './src/components/ErrorBoundary';
 import {
   fetchMyProfile,
   saveMyProfile,
@@ -142,7 +143,7 @@ export default function App() {
           <FiltersProvider>
             <ToastProvider>
               <ThemedStatusBar />
-              {content}
+              <ErrorBoundary>{content}</ErrorBoundary>
             </ToastProvider>
           </FiltersProvider>
         </ThemeProvider>

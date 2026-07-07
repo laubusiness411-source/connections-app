@@ -2,6 +2,7 @@
 // Mirrors the shape of the demo cards in profiles.js.
 
 export const ROLES = [
+  'Student / Early career',
   'Technical Co-Founder',
   'Business Co-Founder',
   'Design + Product',
@@ -19,6 +20,8 @@ export const IDEA_STATUSES = [
 ];
 
 export const LOOKING_FOR = [
+  'Internship or first job',
+  'A mentor',
   'Technical partner',
   'Business / GTM partner',
   'Design / Product partner',

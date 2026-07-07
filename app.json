@@ -22,7 +22,13 @@
       ]
     ],
     "ios": { "supportsTablet": true, "bundleIdentifier": "com.cofounder.app" },
-    "android": { "package": "com.cofounder.app" },
+    "android": {
+      "package": "com.cofounder.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0A66C2"
+      }
+    },
     "web": { "bundler": "metro" }
   }
 }
