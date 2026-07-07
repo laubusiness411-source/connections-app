@@ -10,6 +10,7 @@ import Animated, {
   interpolate,
   Extrapolation,
 } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -19,9 +20,13 @@ function companyInitials(name) {
   return name ? name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '?';
 }
 
-export default function JobCard({ job, isTop, onSwipe }) {
+export default function JobCard({ job, isTop, onSwipe, me }) {
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
+  const skillFit = useMemo(() => {
+    const mine = new Set((me?.skills || []).map((s) => s.toLowerCase()));
+    return (job.tags || []).filter((t) => mine.has(t.toLowerCase())).length;
+  }, [me, job]);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
@@ -96,6 +101,14 @@ export default function JobCard({ job, isTop, onSwipe }) {
             {job.location}  ·  {job.type}
           </Text>
           <Text style={styles.salary}>{job.salary}</Text>
+          {skillFit > 0 && (
+            <View style={styles.fitRow}>
+              <Ionicons name="checkmark-circle" size={15} color={theme.colors.accent} />
+              <Text style={styles.fitText}>
+                Matches {skillFit} of your skill{skillFit === 1 ? '' : 's'}
+              </Text>
+            </View>
+          )}
 
           <Text style={styles.description} numberOfLines={6} ellipsizeMode="tail">
             {job.description}
@@ -158,6 +171,8 @@ const makeStyles = (t) =>
     title: { color: t.colors.text, fontSize: 24, fontWeight: '800' },
     meta: { color: t.colors.textMuted, fontSize: 13, marginTop: 8 },
     salary: { color: t.colors.success, fontSize: 16, fontWeight: '700', marginTop: 6 },
+    fitRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
+    fitText: { color: t.colors.accent, fontSize: 13, fontWeight: '700' },
     description: { color: t.colors.textSoft, fontSize: 14, lineHeight: 21, marginTop: 16 },
     spacer: { flex: 1, minHeight: 8 },
     tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

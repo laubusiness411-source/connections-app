@@ -121,6 +121,11 @@ export default function SwipeScreen({
   const jf = filters.jobs;
   const jobsVisible = useMemo(() => {
     const seen = new Set(seenJobs);
+    const mySkills = new Set(
+      (myProfile?.skills || []).map((s) => s.toLowerCase())
+    );
+    const fit = (j) =>
+      (j.tags || []).filter((t) => mySkills.has(t.toLowerCase())).length;
     return JOBS.filter((j) => {
       if (seen.has(j.id)) return false;
       if (jf.types.length && !jf.types.includes(j.type)) return false;
@@ -129,8 +134,8 @@ export default function SwipeScreen({
       if (jf.states.length && !jf.states.includes(j.state)) return false;
       if (j.distanceMi > jf.maxCommute) return false;
       return true;
-    });
-  }, [seenJobs, jf]);
+    }).sort((a, b) => fit(b) - fit(a));
+  }, [seenJobs, jf, myProfile]);
 
   // Guard against a second swipe before re-render.
   const lockRef = useRef(false);
@@ -298,6 +303,7 @@ export default function SwipeScreen({
               <JobCard
                 key={job.id}
                 job={job}
+                me={myProfile}
                 isTop={i === arr.length - 1}
                 onSwipe={handleJobSwipe}
               />

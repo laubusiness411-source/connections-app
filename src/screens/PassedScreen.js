@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 
 function initialsOf(name) {
@@ -31,6 +32,12 @@ export default function PassedScreen({ history = [], onBringBack, onClose }) {
 
       {history.length === 0 ? (
         <View style={styles.center}>
+          <Ionicons
+            name="arrow-undo-outline"
+            size={36}
+            color={theme.colors.textFaint}
+            style={{ marginBottom: 12 }}
+          />
           <Text style={styles.emptyTitle}>Nothing here yet</Text>
           <Text style={styles.emptyText}>
             People you swipe on will show up here so you can bring them back.
