@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Klyk — Swipe your way to your career</title>
+  <meta name="description" content="Klyk matches college students with internships, mentors, and first jobs. Set your 90-day goal, swipe on people and roles that fit, get a guaranteed intro every week." />
+  <meta property="og:title" content="Klyk — Swipe your way to your career" />
+  <meta property="og:description" content="Internships, mentors, and first jobs — one swipe away. Join the waitlist." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0B0B0F;
+      --surface: #16161D;
+      --surface2: #232331;
+      --border: #26262F;
+      --border-accent: #2E2A45;
+      --text: #FFFFFF;
+      --text-soft: #C8C8D4;
+      --text-muted: #8A8A99;
+      --text-faint: #6A6A78;
+      --accent: #6C5CE7;
+      --accent-soft: #A99CF0;
+      --grad: linear-gradient(135deg, #8E7BFF, #6C5CE7 55%, #5BC0EB);
+      --grad-text: linear-gradient(90deg, #A99CF0, #6C5CE7, #5BC0EB);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .grad-text {
+      background: var(--grad-text);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(11,11,15,0.8);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .logo { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none;
+      font-size: 14px; font-weight: 600;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .btn {
+      display: inline-block;
+      background: var(--grad);
+      color: #fff; text-decoration: none;
+      font-weight: 700; font-size: 14px;
+      padding: 11px 22px; border-radius: 24px;
+      border: none; cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(108,92,231,0.45); }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      display: grid; grid-template-columns: 1.1fr 0.9fr;
+      align-items: center; gap: 40px;
+      padding: 90px 0 100px;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -120px; left: -180px;
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(108,92,231,0.22), transparent 65%);
+      pointer-events: none;
+    }
+    .kicker {
+      display: inline-block;
+      background: var(--surface); border: 1px solid var(--border-accent);
+      color: var(--accent-soft);
+      font-size: 12px; font-weight: 800; letter-spacing: 1.2px;
+      padding: 7px 14px; border-radius: 16px;
+      margin-bottom: 22px; text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(38px, 5.4vw, 60px);
+      font-weight: 900; line-height: 1.06; letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+    .sub {
+      color: var(--text-muted);
+      font-size: 18px; line-height: 1.6;
+      max-width: 480px; margin-bottom: 32px;
+    }
+    .capture { display: flex; gap: 10px; max-width: 460px; }
+    .capture input {
+      flex: 1;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 24px; padding: 14px 18px;
+      color: var(--text); font-size: 15px; font-family: inherit;
+      outline: none;
+    }
+    .capture input:focus { border-color: var(--accent); }
+    .capture .btn { white-space: nowrap; }
+    .capture-note { color: var(--text-faint); font-size: 13px; margin-top: 12px; }
+    .form-msg { font-size: 14px; font-weight: 600; margin-top: 12px; display: none; }
+    .form-msg.ok { color: #2ECC71; display: block; }
+    .form-msg.err { color: #FF4D6D; display: block; }
+
+    /* Phone mockup */
+    .phone-col { display: flex; justify-content: center; }
+    .phone {
+      width: 300px; border-radius: 40px;
+      background: #060609;
+      border: 1px solid #2a2a35;
+      padding: 14px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(108,92,231,0.18);
+      transform: rotate(2.5deg);
+    }
+    .screen {
+      background: var(--bg); border-radius: 28px; overflow: hidden;
+      padding: 14px 12px 18px;
+    }
+    .screen-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 2px 4px 12px;
+    }
+    .screen-logo { font-size: 16px; font-weight: 900; }
+    .goal-pill {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text-soft); font-size: 10px; font-weight: 700;
+      padding: 5px 10px; border-radius: 12px;
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; overflow: hidden;
+    }
+    .card-banner {
+      position: relative; height: 130px;
+      background: var(--grad);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-banner span { font-size: 44px; font-weight: 900; color: #fff; letter-spacing: 2px; }
+    .match-badge {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(11,11,15,0.6);
+      color: #fff; font-size: 10px; font-weight: 800;
+      padding: 5px 10px; border-radius: 12px;
+    }
+    .card-body { padding: 14px; }
+    .card-name { font-size: 17px; font-weight: 800; }
+    .card-role { color: var(--text-soft); font-size: 12px; font-weight: 600; margin-top: 2px; }
+    .card-meta { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
+    .why { color: var(--accent-soft); font-size: 9px; font-weight: 800; letter-spacing: 1px; margin: 12px 0 8px; }
+    .chip {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--surface2); border: 1px solid var(--border-accent);
+      border-radius: 11px; padding: 7px 10px; margin-bottom: 6px;
+      font-size: 11px; font-weight: 600; color: var(--text-soft);
+      width: fit-content;
+    }
+    .chip::before {
+      content: ''; width: 5px; height: 5px; border-radius: 3px;
+      background: var(--accent); flex-shrink: 0;
+    }
+    .screen-controls {
+      display: flex; justify-content: center; align-items: center;
+      gap: 26px; padding-top: 16px;
+    }
+    .ctrl-x {
+      width: 42px; height: 42px; border-radius: 21px;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: #FF4D6D; font-size: 16px; font-weight: 700;
+    }
+    .ctrl-check {
+      width: 50px; height: 50px; border-radius: 25px;
+      background: var(--grad);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 20px; font-weight: 800;
+      box-shadow: 0 6px 22px rgba(108,92,231,0.55);
+    }
+
+    /* Sections */
+    section { padding: 84px 0; }
+    .section-kicker {
+      color: var(--accent-soft); font-size: 12px; font-weight: 800;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;
+    }
+    h2 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 900; letter-spacing: -1px; margin-bottom: 14px; }
+    .section-sub { color: var(--text-muted); font-size: 16px; max-width: 540px; line-height: 1.6; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 44px; }
+    .step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 26px;
+    }
+    .step-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 17px;
+      background: var(--grad); color: #fff;
+      font-weight: 800; font-size: 15px; margin-bottom: 16px;
+    }
+    .step h3 { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+    .step p { color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+
+    .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 44px; }
+    .feature {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 22px;
+      transition: border-color .2s ease, transform .2s ease;
+    }
+    .feature:hover { border-color: var(--border-accent); transform: translateY(-3px); }
+    .feature .emoji { font-size: 26px; margin-bottom: 12px; display: block; }
+    .feature h3 { font-size: 15px; font-weight: 800; margin-bottom: 7px; }
+    .feature p { color: var(--text-muted); font-size: 13px; line-height: 1.55; }
+
+    /* Final CTA */
+    .cta-box {
+      position: relative; overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border-accent);
+      border-radius: 26px; padding: 64px 28px; text-align: center;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute; top: -140px; left: 50%; transform: translateX(-50%);
+      width: 520px; height: 320px;
+      background: radial-gradient(circle, rgba(108,92,231,0.28), transparent 65%);
+      pointer-events: none;
+    }
+    .cta-box .capture { margin: 26px auto 0; justify-content: center; }
+    .cta-box h2 { position: relative; }
+    .cta-box .section-sub { margin: 0 auto; position: relative; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 34px 0; margin-top: 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--text-faint); font-size: 13px;
+    }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; padding: 56px 0 70px; text-align: center; }
+      .sub { margin-left: auto; margin-right: auto; }
+      .capture { margin: 0 auto; flex-direction: column; }
+      .capture .btn { width: 100%; }
+      .phone-col { margin-top: 40px; }
+      .steps, .features { grid-template-columns: 1fr; }
+      .nav-links a:not(.btn) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="wrap nav-inner">
+      <div class="logo grad-text">Klyk</div>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#join" class="btn">Join the waitlist</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="wrap hero">
+    <div>
+      <span class="kicker">For college students &amp; new grads</span>
+      <h1>Swipe your way to <span class="grad-text">your career.</span></h1>
+      <p class="sub">
+        Internships, mentors, and first jobs — one swipe away. Set your 90-day goal
+        and Klyk matches you with the people and roles that actually move it forward.
+      </p>
+      <form class="capture" data-capture>
+        <input type="email" name="email" placeholder="you@school.edu" required />
+        <button type="submit" class="btn">Get early access</button>
+      </form>
+      <p class="capture-note">Free while in beta · launching campus by campus 🎓</p>
+      <p id="form-msg" class="form-msg"></p>
+    </div>
+
+    <div class="phone-col">
+      <div class="phone">
+        <div class="screen">
+          <div class="screen-head">
+            <span class="screen-logo grad-text">Klyk</span>
+            <span class="goal-pill">🎯 Goal · 47 days left</span>
+          </div>
+          <div class="card">
+            <div class="card-banner">
+              <span>JL</span>
+              <div class="match-badge">94% match</div>
+            </div>
+            <div class="card-body">
+              <div class="card-name">Jordan Lee</div>
+              <div class="card-role">Marketing Intern → Full-time</div>
+              <div class="card-meta">Boston, MA · 🎓 UMass Amherst · 2026</div>
+              <div class="why">WHY YOU MATCHED</div>
+              <div class="chip">Hiring for your exact skills</div>
+              <div class="chip">2 shared 90-day goals</div>
+            </div>
+          </div>
+          <div class="screen-controls">
+            <div class="ctrl-x">✕</div>
+            <div class="ctrl-check">✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="how" class="wrap">
+    <p class="section-kicker">How it works</p>
+    <h2>Three steps. No cover letters.</h2>
+    <p class="section-sub">LinkedIn is a feed. Job boards are a black hole. Klyk is a loop that ends in a real conversation.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <h3>Set your 90-day goal</h3>
+        <p>"Land a summer internship." "Find a mentor in product." One goal — everything you see is matched against it.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <h3>Swipe on people &amp; roles</h3>
+        <p>Real profiles, real openings, and exactly why each one fits you. Swipe right to connect or apply in one motion.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <h3>Get a weekly intro</h3>
+        <p>Every week, Klyk introduces you to at least one person who can move your goal forward. A real intro — not a feed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="wrap">
+    <p class="section-kicker">Why Klyk</p>
+    <h2>Built for how students actually connect.</h2>
+    <div class="features">
+      <div class="feature">
+        <span class="emoji">🎯</span>
+        <h3>Goal-first matching</h3>
+        <p>See your match % and exactly what you have in common before you swipe.</p>
+      </div>
+      <div class="feature">
+        <span class="emoji">⚡</span>
+        <h3>One-swipe apply</h3>
+        <p>Swipe right on a role and your profile goes straight to the employer. No portals.</p>
+      </div>
+      <div class="feature">
+        <span class="emoji">💬</span>
+        <h3>Chat that starts itself</h3>
+        <p>Matched? Klyk suggests openers from what you share, then helps you schedule the call.</p>
+      </div>
+      <div class="feature">
+        <span class="emoji">🔥</span>
+        <h3>Momentum, daily</h3>
+        <p>Streaks and daily goals keep your search moving — 10 minutes a day beats a Sunday panic.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="join" class="wrap">
+    <div class="cta-box">
+      <h2>Your first job shouldn't <span class="grad-text">feel like a job.</span></h2>
+      <p class="section-sub">Join the waitlist and get early access when Klyk lands on your campus.</p>
+      <form class="capture" data-capture>
+        <input type="email" name="email" placeholder="you@school.edu" required />
+        <button type="submit" class="btn">Join the waitlist</button>
+      </form>
+      <p id="form-msg-2" class="form-msg"></p>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <span class="grad-text" style="font-weight:900;">Klyk</span>
+    <span>© 2026 Klyk · hello@klyk.app</span>
+  </footer>
+
+  <script>
+    // Waitlist capture -> Supabase (insert-only via RLS; emails are not readable publicly).
+    const SUPABASE_URL = 'https://dwsmfvtbltzhmzthwjuk.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_275bDRTTQ7vy9n45CNOG0g_JGbjIkRo';
+
+    document.querySelectorAll('[data-capture]').forEach((form, i) => {
+      const msg = document.getElementById(i === 0 ? 'form-msg' : 'form-msg-2');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = form.email.value.trim().toLowerCase();
+        if (!email) return;
+        const btn = form.querySelector('button');
+        const label = btn.textContent;
+        btn.disabled = true; btn.textContent = 'Joining…';
+        try {
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: SUPABASE_KEY,
+              Authorization: `Bearer ${SUPABASE_KEY}`,
+              Prefer: 'return=minimal',
+            },
+            body: JSON.stringify({ email, source: 'landing' }),
+          });
+          if (res.ok) {
+            msg.className = 'form-msg ok';
+            msg.textContent = "🎉 You're on the list — see you on campus.";
+            form.reset();
+          } else if (res.status === 409) {
+            msg.className = 'form-msg ok';
+            msg.textContent = "You're already on the list — we got you.";
+          } else {
+            throw new Error('bad status ' + res.status);
+          }
+        } catch {
+          msg.className = 'form-msg err';
+          msg.textContent = 'Something went wrong — try again in a sec.';
+        } finally {
+          btn.disabled = false; btn.textContent = label;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

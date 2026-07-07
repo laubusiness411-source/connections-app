@@ -11,7 +11,13 @@
       "Bash(gh auth *)",
       "PowerShell($gh = Get-Command gh -ErrorAction SilentlyContinue; if \\($gh\\) { \"gh found: $\\($gh.Source\\)\"; gh auth status } else { \"gh NOT installed\" })",
       "Bash(git push *)",
-      "Bash(node -e \"const d=require\\('./package.json'\\).dependencies; console.log\\('supabase-js', d['@supabase/supabase-js']\\); console.log\\('url-polyfill', d['react-native-url-polyfill']\\)\")"
+      "Bash(node -e \"const d=require\\('./package.json'\\).dependencies; console.log\\('supabase-js', d['@supabase/supabase-js']\\); console.log\\('url-polyfill', d['react-native-url-polyfill']\\)\")",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(npx --yes kill-port 5173)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx --yes kill-port 3000)",
+      "Bash(rm -f /c/Users/launy/Downloads/cofounder-app/.claude/launch.json)"
     ]
   }
 }
