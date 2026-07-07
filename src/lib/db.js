@@ -223,6 +223,34 @@ export async function sendMessage(matchId, senderId, body) {
 }
 
 // ---------------------------------------------------------------------------
+// Intro requests (the weekly introduction guarantee).
+// ---------------------------------------------------------------------------
+export async function createIntroRequest(requesterId, targetId, goalSnapshot) {
+  const { error } = await supabase.from('intro_requests').insert({
+    requester: requesterId,
+    target: targetId,
+    goal_snapshot: goalSnapshot ?? null,
+  });
+  // 23505 = duplicate (already requested) — treat as success.
+  if (error && error.code !== '23505') {
+    console.warn('createIntroRequest failed:', error.message);
+    throw error;
+  }
+}
+
+export async function fetchMyIntroRequests(requesterId) {
+  const { data, error } = await supabase
+    .from('intro_requests')
+    .select('target')
+    .eq('requester', requesterId);
+  if (error) {
+    console.warn('fetchMyIntroRequests failed:', error.message);
+    return [];
+  }
+  return (data || []).map((r) => r.target);
+}
+
+// ---------------------------------------------------------------------------
 // Meetings (scheduling).
 // ---------------------------------------------------------------------------
 export async function getLatestMeeting(matchId) {

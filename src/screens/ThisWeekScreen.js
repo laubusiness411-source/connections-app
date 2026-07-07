@@ -20,6 +20,11 @@ import { useTheme } from '../theme/ThemeContext';
 import { generateGoalMatches } from '../data/goalMatch';
 import { topCompaniesForUser } from '../data/topCompanies';
 import { PROFILES } from '../data/profiles';
+import {
+  fetchCandidates,
+  createIntroRequest,
+  fetchMyIntroRequests,
+} from '../lib/db';
 
 function initialsOf(name) {
   return name ? name.split(' ').map((n) => n[0]).join('').slice(0, 2) : '?';
@@ -31,11 +36,33 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
   const [requested, setRequested] = useState({});
   const engagement = useEngagement();
 
+  const [realPeople, setRealPeople] = useState([]);
+
   useEffect(() => {
     AsyncStorage.getItem(REQ_KEY)
       .then((r) => r && setRequested(JSON.parse(r)))
       .catch(() => {});
   }, []);
+
+  // Pull real users + any intro requests already on the backend.
+  useEffect(() => {
+    if (!myProfile?.id) return;
+    let live = true;
+    fetchCandidates(myProfile.id, []).then((list) => {
+      if (live) setRealPeople(list);
+    });
+    fetchMyIntroRequests(myProfile.id).then((ids) => {
+      if (live && ids.length) {
+        setRequested((r) => ({
+          ...r,
+          ...Object.fromEntries(ids.map((id) => [id, true])),
+        }));
+      }
+    });
+    return () => {
+      live = false;
+    };
+  }, [myProfile?.id]);
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
@@ -44,15 +71,14 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
     [blocked]
   );
 
-  const matches = useMemo(
-    () =>
-      generateGoalMatches(
-        myProfile?.goal,
-        myProfile,
-        PROFILES.filter((p) => !blockedIds.has(p.id))
-      ),
-    [myProfile, blockedIds]
-  );
+  const matches = useMemo(() => {
+    // Real users take priority in the pool; demo people fill it out.
+    const pool = [
+      ...realPeople,
+      ...PROFILES.map((p) => ({ ...p, isDemo: true })),
+    ].filter((p) => !blockedIds.has(p.id));
+    return generateGoalMatches(myProfile?.goal, myProfile, pool);
+  }, [myProfile, blockedIds, realPeople]);
 
   const companies = useMemo(() => topCompaniesForUser(myProfile), [myProfile]);
   const [introTarget, setIntroTarget] = useState(null);
@@ -60,7 +86,7 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
 
   const requestIntro = (p) => setIntroTarget(p);
 
-  const confirmIntro = (p) => {
+  const confirmIntro = async (p) => {
     const fn = p.name.split(' ')[0];
     setRequested((r) => {
       const next = { ...r, [p.id]: true };
@@ -68,6 +94,14 @@ export default function ThisWeekScreen({ myProfile, blocked = [], onOpenSettings
       return next;
     });
     engagement?.recordIntro();
+    // Real users: record the request on the backend too.
+    if (!p.isDemo && myProfile?.id) {
+      try {
+        await createIntroRequest(myProfile.id, p.id, myProfile.goal);
+      } catch {
+        // local state already reflects the request; backend retry is manual
+      }
+    }
     toast.show(`We'll introduce you to ${fn} this week`, { icon: 'people' });
   };
 
